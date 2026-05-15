@@ -1,0 +1,18 @@
+#!/bin/sh
+
+basedir="$( cd "$( dirname "${0}" )/.." && /bin/pwd )"
+
+declare -a cmd=()
+
+if
+    ! jq \
+        -r -e \
+        --arg flox_dir "${basedir}/.flox" \
+        '[.[].environment.path] | contains([$flox_dir])' >/dev/null \
+    <<< "${_FLOX_ACTIVE_ENVIRONMENTS}"
+then
+    cmd+=( flox activate -d "${basedir}" -- )
+fi
+
+cmd+=( "${basedir}/node_modules/.bin/pi" "$@" )
+exec "${cmd[@]}"

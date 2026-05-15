@@ -1,0 +1,139 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.10.0",
+    "install": {
+      "nodejs": {
+        "pkg-path": "nodejs"
+      }
+    },
+    "hook": {
+      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n    # export PI_PACKAGE_DIR=\"${FLOX_ENV_PROJECT}/node_modules/@mariozechner/pi-coding-agent\"\n\n    # mkdir -p \"${PI_PACKAGE_DIR}\"\n    # echo '{}' >| \"${PI_PACKAGE_DIR}/package.json\"\n"
+    },
+    "options": {
+      "cuda-detection": false
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/1m7745r13n7wk43fzx5yr3jjr3vdc1db-nodejs-24.14.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "name": "nodejs-24.14.1",
+      "pname": "nodejs",
+      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "rev_count": 992384,
+      "rev_date": "2026-05-05T04:14:16Z",
+      "scrape_date": "2026-05-06T08:07:39.823177Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.14.1",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/sf85v1qd1glkmsyfxwn9p8wridb4qf6y-nodejs-24.14.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/3h5ymdg61db3f9xwhwclj05afipbxiq2-nodejs-24.14.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "name": "nodejs-24.14.1",
+      "pname": "nodejs",
+      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "rev_count": 992384,
+      "rev_date": "2026-05-05T04:14:16Z",
+      "scrape_date": "2026-05-06T08:44:22.672198Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.14.1",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/amh21igq2gjg6ai42f3ksan8fh89qvpm-nodejs-24.14.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/aarkp2y0aj12skgji58mbf5va0dcf9bd-nodejs-24.14.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "name": "nodejs-24.14.1",
+      "pname": "nodejs",
+      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "rev_count": 992384,
+      "rev_date": "2026-05-05T04:14:16Z",
+      "scrape_date": "2026-05-06T09:16:33.762Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.14.1",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/w9axwcpzxv1cd78d6v748az2j08k6vfw-nodejs-24.14.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/8l6p07vmrcj7lsry0jz2ayp1rmpyjdai-nodejs-24.14.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "name": "nodejs-24.14.1",
+      "pname": "nodejs",
+      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "rev_count": 992384,
+      "rev_date": "2026-05-05T04:14:16Z",
+      "scrape_date": "2026-05-06T09:53:02.365451Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.14.1",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/785jidgnryzj566s25s3rb262d4g5znb-nodejs-24.14.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}
