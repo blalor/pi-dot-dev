@@ -6,6 +6,7 @@ nodejs.pkg-path = "nodejs"
 jq.pkg-path = "jq"
 
 git-crypt.pkg-path = "git-crypt"
+fd.pkg-path = "fd"
 
 [hook]
 on-activate = '''
@@ -30,7 +31,10 @@ on-activate = '''
     fi
 
     # Keep session transcripts out of this repository.
-    export PI_CODING_AGENT_SESSION_DIR="${HOME}/.pi/agent/sessions"
+    ## nope, that doesn't work
+    # export PI_CODING_AGENT_SESSION_DIR="${HOME}/.pi/agent/sessions"
+
+    ln -sf "${HOME}/.pi/agent/sessions/" "${PI_CODING_AGENT_DIR}/sessions"
 
     export PATH="${_PI_ROOT}/bin:${PATH}"
 '''

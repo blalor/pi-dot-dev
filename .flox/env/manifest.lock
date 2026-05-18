@@ -3,6 +3,9 @@
   "manifest": {
     "schema-version": "1.10.0",
     "install": {
+      "fd": {
+        "pkg-path": "fd"
+      },
       "git-crypt": {
         "pkg-path": "git-crypt"
       },
@@ -14,13 +17,133 @@
       }
     },
     "hook": {
-      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    # Keep session transcripts out of this repository.\n    export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
+      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    # Keep session transcripts out of this repository.\n    ## nope, that doesn't work\n    # export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    ln -sf \"${HOME}/.pi/agent/sessions/\" \"${PI_CODING_AGENT_DIR}/sessions\"\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
     },
     "options": {
       "cuda-detection": false
     }
   },
   "packages": [
+    {
+      "attr_path": "fd",
+      "broken": false,
+      "derivation": "/nix/store/170i67nbac16a9cf9fxrbrdyv1wnsb0m-fd-10.4.2.drv",
+      "description": "Simple, fast and user-friendly alternative to find",
+      "install_id": "fd",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "fd-10.4.2",
+      "pname": "fd",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:05:51.464176Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "10.4.2",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/49sp3ra3l2sg1vgaf83w7h4jxf3kpiy4-fd-10.4.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fd",
+      "broken": false,
+      "derivation": "/nix/store/y0ysjsa33a2phljj7g2gv5m6klyamz8m-fd-10.4.2.drv",
+      "description": "Simple, fast and user-friendly alternative to find",
+      "install_id": "fd",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "fd-10.4.2",
+      "pname": "fd",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:33:30.116047Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "10.4.2",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xi0y4mhkn0lbcpj1nl3vafdw967n5679-fd-10.4.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fd",
+      "broken": false,
+      "derivation": "/nix/store/sdrfhhk25ijp4x76dz4jrcf8dcg39m59-fd-10.4.2.drv",
+      "description": "Simple, fast and user-friendly alternative to find",
+      "install_id": "fd",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "fd-10.4.2",
+      "pname": "fd",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:01:17.965501Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "10.4.2",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/8kf4k045jk6p8kax1225kkrmr7fijyib-fd-10.4.2"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "fd",
+      "broken": false,
+      "derivation": "/nix/store/xrsywfs24vwpkgbw7g0w4wi1xdx9pr5d-fd-10.4.2.drv",
+      "description": "Simple, fast and user-friendly alternative to find",
+      "install_id": "fd",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "fd-10.4.2",
+      "pname": "fd",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:32:10.449914Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "10.4.2",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/4fi2lyz8xn4mhq1gk5sp3zgfw43fjl56-fd-10.4.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
     {
       "attr_path": "git-crypt",
       "broken": false,
