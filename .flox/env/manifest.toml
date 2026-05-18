@@ -3,6 +3,10 @@ schema-version = "1.10.0"
 [install]
 nodejs.pkg-path = "nodejs"
 
+jq.pkg-path = "jq"
+
+git-crypt.pkg-path = "git-crypt"
+
 [hook]
 on-activate = '''
     export _PI_ROOT="${FLOX_ENV_PROJECT}"
@@ -13,11 +17,22 @@ on-activate = '''
     # checks, package update checks, and install/update telemetry.
     export PI_OFFLINE=1
 
-    export PATH="${_PI_ROOT}/bin:${PATH}"
-    # export PI_PACKAGE_DIR="${FLOX_ENV_PROJECT}/node_modules/@mariozechner/pi-coding-agent"
+    # Capture Pi configuration (settings, auth, extensions, skills,
+    # prompts, themes, installed-package declarations) in this repository.
+    export PI_CODING_AGENT_DIR="${_PI_ROOT}/agent-config"
 
-    # mkdir -p "${PI_PACKAGE_DIR}"
-    # echo '{}' >| "${PI_PACKAGE_DIR}/package.json"
+    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back
+    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this
+    # repository-local config when present.
+    if [ -z "${KAGI_SESSION_TOKEN:-}" ] && [ -f "${PI_CODING_AGENT_DIR}/kagi-search.json" ]; then
+        KAGI_SESSION_TOKEN="$( jq -e -r .sessionToken "${PI_CODING_AGENT_DIR}/kagi-search.json" )"
+        export KAGI_SESSION_TOKEN
+    fi
+
+    # Keep session transcripts out of this repository.
+    export PI_CODING_AGENT_SESSION_DIR="${HOME}/.pi/agent/sessions"
+
+    export PATH="${_PI_ROOT}/bin:${PATH}"
 '''
 
 [options]

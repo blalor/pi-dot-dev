@@ -1,1 +1,14 @@
 node_modules/
+
+# Pi generated/runtime state. The durable source of truth is
+# agent-config/settings.json plus committed local resources.
+agent-config/npm/
+agent-config/git/
+agent-config/sessions/
+agent-config/pi-debug.log
+
+# Keep plaintext provider credentials out of normal git. Commit an encrypted
+# copy instead (for example agent-config/auth.json.sops), or use git-crypt and
+# remove this ignore rule once encryption is configured.
+agent-config/auth.json
+agent-config/kagi-search.json
