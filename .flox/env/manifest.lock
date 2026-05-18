@@ -3,6 +3,9 @@
   "manifest": {
     "schema-version": "1.10.0",
     "install": {
+      "beads": {
+        "pkg-path": "beads"
+      },
       "fd": {
         "pkg-path": "fd"
       },
@@ -17,13 +20,129 @@
       }
     },
     "hook": {
-      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # Keep session transcripts out of this repository.\n    ## nope, that doesn't work\n    # export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    ln -sf \"${HOME}/.pi/agent/sessions/\" \"${PI_CODING_AGENT_DIR}/sessions\"\n    [ -d \"${HOME}/.pi/agent/sessions/\" ] || mkdir -p \"${HOME}/.pi/agent/sessions/\"\n\n    # do after setting PI_CODING_* vars but before PI_OFFLINE\n    [ -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ] || node_modules/.bin/pi update --extensions\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
+      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # Keep session transcripts out of this repository.\n    ## nope, that doesn't work\n    # export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    ln -sf \"${HOME}/.pi/agent/sessions/\" \"${PI_CODING_AGENT_DIR}/sessions\"\n    [ -d \"${HOME}/.pi/agent/sessions/\" ] || mkdir -p \"${HOME}/.pi/agent/sessions/\"\n\n    # do after setting PI_CODING_* vars but before PI_OFFLINE\n    if [ -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
     },
     "options": {
       "cuda-detection": false
     }
   },
   "packages": [
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/jnqk73cxz177jf7fi02r5vsi4s5iwii9-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:05:50.480041Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/kv3y3vhqvd93qj2bir7s5bnb79pdsjy2-beads-1.0.3"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/9x1yavib5834ggjrhbwrgrr8v7990f5l-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:33:28.896369Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bf80qgz3hakkar68lk9mv1853ivjwwkm-beads-1.0.3"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/2rxbwgr5pav26zx7bqwqlviy15f5ddc8-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:01:17.107417Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/z9dlc8pfjvval8bf6hxy5rlg9gfylsz2-beads-1.0.3"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "beads",
+      "broken": false,
+      "derivation": "/nix/store/sy8sgjshn97cc5sa5f4kcgch38csnpiw-beads-1.0.3.drv",
+      "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
+      "install_id": "beads",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "beads-1.0.3",
+      "pname": "beads",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:32:09.077403Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.0.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/rg85rjzrgxpcsm7bmpq11889vlb7cyic-beads-1.0.3"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
     {
       "attr_path": "fd",
       "broken": false,
