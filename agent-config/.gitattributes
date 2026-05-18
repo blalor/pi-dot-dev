@@ -1,2 +1,2 @@
 auth.json filter=git-crypt diff=git-crypt
-kagi-search filter=git-crypt diff=git-crypt
+kagi-search.json filter=git-crypt diff=git-crypt
