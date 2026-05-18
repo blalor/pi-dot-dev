@@ -28,7 +28,7 @@ on-activate = '''
     [ -d "${HOME}/.pi/agent/sessions/" ] || mkdir -p "${HOME}/.pi/agent/sessions/"
 
     # do after setting PI_CODING_* vars but before PI_OFFLINE
-    if [ -e "${FLOX_ENV_CACHE}/pi-did-update-extensions" ]; then
+    if [ ! -e "${FLOX_ENV_CACHE}/pi-did-update-extensions" ]; then
         node_modules/.bin/pi update --extensions
         touch "${FLOX_ENV_CACHE}/pi-did-update-extensions"
     fi
