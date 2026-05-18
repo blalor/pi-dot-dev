@@ -1,0 +1,28 @@
+{
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "theme": "dark",
+  "hideThinkingBlock": false,
+  "quietStartup": true,
+  "enableInstallTelemetry": false,
+  "packages": [
+    "npm:pi-mcp-adapter",
+    "git:github.com/mjakl/pi-kagi-search",
+    "git:github.com/earendil-works/pi-review",
+    "npm:pi-beads-extension",
+    "npm:@mjakl/pi-kagi-search"
+  ],
+  "extensions": [
+    "extensions"
+  ],
+  "skills": [
+    "skills"
+  ],
+  "prompts": [
+    "prompts"
+  ],
+  "themes": [
+    "themes"
+  ]
+}

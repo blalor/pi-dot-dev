@@ -3,12 +3,18 @@
   "manifest": {
     "schema-version": "1.10.0",
     "install": {
+      "git-crypt": {
+        "pkg-path": "git-crypt"
+      },
+      "jq": {
+        "pkg-path": "jq"
+      },
       "nodejs": {
         "pkg-path": "nodejs"
       }
     },
     "hook": {
-      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n    # export PI_PACKAGE_DIR=\"${FLOX_ENV_PROJECT}/node_modules/@mariozechner/pi-coding-agent\"\n\n    # mkdir -p \"${PI_PACKAGE_DIR}\"\n    # echo '{}' >| \"${PI_PACKAGE_DIR}/package.json\"\n"
+      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    # Keep session transcripts out of this repository.\n    export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
     },
     "options": {
       "cuda-detection": false
@@ -16,19 +22,281 @@
   },
   "packages": [
     {
+      "attr_path": "git-crypt",
+      "broken": false,
+      "derivation": "/nix/store/adjxxnzpab0k4jjp8q8bmrnfrpz86yxm-git-crypt-0.8.0.drv",
+      "description": "Transparent file encryption in git",
+      "install_id": "git-crypt",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "git-crypt-0.8.0",
+      "pname": "git-crypt",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:05:51.797462Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/yxq9jsamlrnhq64sl2rznl9wmrq5jni6-git-crypt-0.8.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git-crypt",
+      "broken": false,
+      "derivation": "/nix/store/130p0fil4ibid4b3h1yc3p6d31bwfsjb-git-crypt-0.8.0.drv",
+      "description": "Transparent file encryption in git",
+      "install_id": "git-crypt",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "git-crypt-0.8.0",
+      "pname": "git-crypt",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:33:30.605116Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ygmplf3jz58hz8nw1n2mb3dcdfclq12h-git-crypt-0.8.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git-crypt",
+      "broken": false,
+      "derivation": "/nix/store/sivwl77mqgjm7ka4bjy5x0fis7aq2bds-git-crypt-0.8.0.drv",
+      "description": "Transparent file encryption in git",
+      "install_id": "git-crypt",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "git-crypt-0.8.0",
+      "pname": "git-crypt",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:01:18.279984Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/6xvkffdyd5x1n07wxrs5ah09s271kn8a-git-crypt-0.8.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git-crypt",
+      "broken": false,
+      "derivation": "/nix/store/1xc2nq30y6m50i0q71v4z1gwl6c0di22-git-crypt-0.8.0.drv",
+      "description": "Transparent file encryption in git",
+      "install_id": "git-crypt",
+      "license": "GPL-3.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "git-crypt-0.8.0",
+      "pname": "git-crypt",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:32:10.994514Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.8.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xj3lmnhi1cnrlf0pd54dmmipjd08i8gr-git-crypt-0.8.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/8m1acd54mxn25zahyn0scbi10a49v91c-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:06:07.708604Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "man",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/zpaiv3csv85i5qdhwlivlbg8a5clnqmh-jq-1.8.1-bin",
+        "dev": "/nix/store/h46rnp90pvk5ky12r9drbzhl1fqlmjnf-jq-1.8.1-dev",
+        "doc": "/nix/store/iksz05vk9j78ls9agfg9blhax9azgv69-jq-1.8.1-doc",
+        "man": "/nix/store/vs9rx9xgqachcay4mn95m1gwifzxrhm4-jq-1.8.1-man",
+        "out": "/nix/store/inmyqx7646xrcqrwxipacv5gkf3ca6m3-jq-1.8.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/6bm9kiq3c81i6f3hs1qdvk281w8sjk1s-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:33:50.658834Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/blgzs73jx017qji4n78v4wg1qxcg3cav-jq-1.8.1-bin",
+        "dev": "/nix/store/lx675fc624glij1dh9iw89pavkvfkv73-jq-1.8.1-dev",
+        "doc": "/nix/store/r992wf8cylhf9ayxwf64lawdfxcr4cl8-jq-1.8.1-doc",
+        "man": "/nix/store/s8h2klkc7rw485yqj3s73ancc5915v2m-jq-1.8.1-man",
+        "out": "/nix/store/2v9443fs97gdg5mz9lk3q603hryhqijm-jq-1.8.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/kma4dqri44q18xcdicm42rh69fvxf2q8-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:01:34.801295Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/cpq0n6nrgs7jwyr121qshzk2fvjkmjbh-jq-1.8.1-bin",
+        "dev": "/nix/store/0p7h41icsq99c08sym6iw4wzdsl35r13-jq-1.8.1-dev",
+        "doc": "/nix/store/h6wn2lzbxq1v2dypaj4kpv4nnkkm9yld-jq-1.8.1-doc",
+        "man": "/nix/store/flsm1xvpbr9681y4y8101v5c5m3qmcim-jq-1.8.1-man",
+        "out": "/nix/store/spn7m9y4302yvw9zafpy1g2sz3z9xnx1-jq-1.8.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jq",
+      "broken": false,
+      "derivation": "/nix/store/b7xrk5idxkza33wiaizqzs9fqzvw5lqb-jq-1.8.1.drv",
+      "description": "Lightweight and flexible command-line JSON processor",
+      "install_id": "jq",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "name": "jq-1.8.1",
+      "pname": "jq",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:32:32.450313Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.8.1",
+      "outputs_to_install": [
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "bin",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/v5c3inhfq6xshmwg1c254vfbcy4jp3k9-jq-1.8.1-bin",
+        "dev": "/nix/store/p8x5zv9s9qg3ld8b7jdm03hkpdqybjl9-jq-1.8.1-dev",
+        "doc": "/nix/store/g2wlgi44rn837jdirpwi3lk5f2iy13zg-jq-1.8.1-doc",
+        "man": "/nix/store/lsyqny7h1riwhzajwy2vjjdd63viiwvm-jq-1.8.1-man",
+        "out": "/nix/store/09bq2i0kb008ccg3qdbyxv81ggxxnn09-jq-1.8.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "nodejs",
       "broken": false,
       "derivation": "/nix/store/1m7745r13n7wk43fzx5yr3jjr3vdc1db-nodejs-24.14.1.drv",
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
       "name": "nodejs-24.14.1",
       "pname": "nodejs",
-      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
-      "rev_count": 992384,
-      "rev_date": "2026-05-05T04:14:16Z",
-      "scrape_date": "2026-05-06T08:07:39.823177Z",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:06:15.323831Z",
       "stabilities": [
         "unstable"
       ],
@@ -52,13 +320,13 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
       "name": "nodejs-24.14.1",
       "pname": "nodejs",
-      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
-      "rev_count": 992384,
-      "rev_date": "2026-05-05T04:14:16Z",
-      "scrape_date": "2026-05-06T08:44:22.672198Z",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T07:34:06.207991Z",
       "stabilities": [
         "unstable"
       ],
@@ -82,13 +350,13 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
       "name": "nodejs-24.14.1",
       "pname": "nodejs",
-      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
-      "rev_count": 992384,
-      "rev_date": "2026-05-05T04:14:16Z",
-      "scrape_date": "2026-05-06T09:16:33.762Z",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:01:42.769829Z",
       "stabilities": [
         "unstable"
       ],
@@ -112,13 +380,13 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=549bd84d6279f9852cae6225e372cc67fb91a4c1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
       "name": "nodejs-24.14.1",
       "pname": "nodejs",
-      "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
-      "rev_count": 992384,
-      "rev_date": "2026-05-05T04:14:16Z",
-      "scrape_date": "2026-05-06T09:53:02.365451Z",
+      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "rev_count": 998534,
+      "rev_date": "2026-05-15T18:21:44Z",
+      "scrape_date": "2026-05-17T08:32:50.624798Z",
       "stabilities": [
         "unstable"
       ],

@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e -u -o pipefail
 
-basedir="$( cd "$( dirname "${0}" )/.." && /bin/pwd )"
+basedir="$( cd "$( dirname "$( readlink -f "${0}" )" )/.." && /bin/pwd )"
 
 declare -a cmd=()
 
