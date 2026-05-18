@@ -11,7 +11,8 @@
     "git:github.com/mjakl/pi-kagi-search",
     "git:github.com/earendil-works/pi-review",
     "npm:pi-beads-extension",
-    "npm:@mjakl/pi-kagi-search"
+    "npm:@mjakl/pi-kagi-search",
+    "../../../../Library/Application Support/Sublime Text/Packages/Agent Bridge"
   ],
   "extensions": [
     "extensions"
@@ -24,5 +25,6 @@
   ],
   "themes": [
     "themes"
-  ]
+  ],
+  "lastChangelogVersion": "0.75.3"
 }
