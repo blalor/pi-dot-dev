@@ -29,7 +29,7 @@ on-activate = '''
 
     # do after setting PI_CODING_* vars but before PI_OFFLINE
     if [ ! -e "${FLOX_ENV_CACHE}/pi-did-update-extensions" ]; then
-        node_modules/.bin/pi update --extensions
+        ${_PI_ROOT}/node_modules/.bin/pi update --extensions
         touch "${FLOX_ENV_CACHE}/pi-did-update-extensions"
     fi
 
