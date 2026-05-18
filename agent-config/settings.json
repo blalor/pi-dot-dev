@@ -1,6 +1,6 @@
 {
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultProvider": "wandb",
+  "defaultModel": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
   "defaultThinkingLevel": "medium",
   "theme": "dark",
   "hideThinkingBlock": false,
