@@ -11,6 +11,8 @@ beads.pkg-path = "beads"
 
 [hook]
 on-activate = '''
+    echo "PATHBEFORE: $( echo ${PATH} | tr : '\n' )"
+
     export _PI_ROOT="${FLOX_ENV_PROJECT}"
 
     # do the base install
@@ -45,7 +47,11 @@ on-activate = '''
         export KAGI_SESSION_TOKEN
     fi
 
-    export PATH="${_PI_ROOT}/bin:${PATH}"
+    # /bin at the front for bash for pi-sandbox
+    export PATH="/bin:${_PI_ROOT}/bin:${_PI_ROOT}/node_modules/.bin:${PATH}"
+
+    echo "PATHAFTER: $( echo ${PATH} | tr : '\n' )"
+
 '''
 
 [options]

@@ -1,0 +1,38 @@
+{
+  "enabled": true,
+  "filesystem": {
+    "allowRead": [
+      ".",
+      "~/.flox/run/aarch64-darwin.default.run/bin/bash",
+      "~/devel/Personal/pi-dot-dev/node_modules/@earendil-works/pi-coding-agent/",
+      "~/Library/Application Support/Sublime Text/Packages/Agent Bridge/",
+      "~/devel/WandB/.gitconfig",
+      "~/.config/git/",
+      "~/.config/gh/",
+      "/tmp"
+    ],
+    "denyRead": [
+      "~/.config",
+      "~/.local"
+    ],
+    "allowWrite": [
+      ".",
+      "/tmp"
+    ],
+    "denyWrite": []
+  },
+  "network": {
+    "allowAllUnixSockets": true,
+    "allowLocalBinding": true,
+    "allowedDomains": [
+      "registry.terraform.io",
+      "charts.wandb.ai",
+      "cdn.wandb.ai",
+      "raw.githubusercontent.com",
+      "*.github.com",
+      "github.com",
+      "*.wandb.dev"
+    ],
+    "deniedDomains": []
+  }
+}
