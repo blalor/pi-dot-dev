@@ -20,7 +20,7 @@
       }
     },
     "hook": {
-      "on-activate": "    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # Keep session transcripts out of this repository.\n    ## nope, that doesn't work\n    # export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    ln -sf \"${HOME}/.pi/agent/sessions/\" \"${PI_CODING_AGENT_DIR}/sessions\"\n    [ -d \"${HOME}/.pi/agent/sessions/\" ] || mkdir -p \"${HOME}/.pi/agent/sessions/\"\n\n    # do after setting PI_CODING_* vars but before PI_OFFLINE\n    if [ ! -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        ${_PI_ROOT}/node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    export PATH=\"${_PI_ROOT}/bin:${PATH}\"\n"
+      "on-activate": "    echo \"PATHBEFORE: $( echo ${PATH} | tr : '\\n' )\"\n\n    export _PI_ROOT=\"${FLOX_ENV_PROJECT}\"\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # Capture Pi configuration (settings, auth, extensions, skills,\n    # prompts, themes, installed-package declarations) in this repository.\n    export PI_CODING_AGENT_DIR=\"${_PI_ROOT}/agent-config\"\n\n    # Keep session transcripts out of this repository.\n    ## nope, that doesn't work\n    # export PI_CODING_AGENT_SESSION_DIR=\"${HOME}/.pi/agent/sessions\"\n\n    ln -sf \"${HOME}/.pi/agent/sessions/\" \"${PI_CODING_AGENT_DIR}/sessions\"\n    [ -d \"${HOME}/.pi/agent/sessions/\" ] || mkdir -p \"${HOME}/.pi/agent/sessions/\"\n\n    # do after setting PI_CODING_* vars but before PI_OFFLINE\n    if [ ! -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        ${_PI_ROOT}/node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    export PI_OFFLINE=1\n\n    # The Kagi search extension checks KAGI_SESSION_TOKEN before falling back\n    # to its hard-coded ~/.pi/kagi-search.json path. Load the token from this\n    # repository-local config when present.\n    if [ -z \"${KAGI_SESSION_TOKEN:-}\" ] && [ -f \"${PI_CODING_AGENT_DIR}/kagi-search.json\" ]; then\n        KAGI_SESSION_TOKEN=\"$( jq -e -r .sessionToken \"${PI_CODING_AGENT_DIR}/kagi-search.json\" )\"\n        export KAGI_SESSION_TOKEN\n    fi\n\n    # /bin at the front for bash for pi-sandbox\n    export PATH=\"/bin:${_PI_ROOT}/bin:${_PI_ROOT}/node_modules/.bin:${PATH}\"\n\n    echo \"PATHAFTER: $( echo ${PATH} | tr : '\\n' )\"\n\n"
     },
     "options": {
       "cuda-detection": false
@@ -42,7 +42,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:05:50.480041Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -71,7 +72,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:33:28.896369Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -100,7 +102,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:01:17.107417Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -129,7 +132,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:32:09.077403Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -158,7 +162,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:05:51.464176Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -188,7 +193,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:33:30.116047Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -218,7 +224,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:01:17.965501Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -248,7 +255,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:32:10.449914Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -278,7 +286,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:05:51.797462Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -307,7 +316,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:33:30.605116Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -336,7 +346,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:01:18.279984Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -365,7 +376,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:32:10.994514Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -394,7 +406,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:06:07.708604Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -402,6 +415,7 @@
         "bin",
         "bin",
         "bin",
+        "man",
         "man",
         "man"
       ],
@@ -431,7 +445,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:33:50.658834Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -439,6 +454,7 @@
         "bin",
         "bin",
         "bin",
+        "man",
         "man"
       ],
       "outputs": {
@@ -467,13 +483,15 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:01:34.801295Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.8.1",
       "outputs_to_install": [
         "bin",
         "bin",
+        "man",
         "man"
       ],
       "outputs": {
@@ -502,7 +520,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:32:32.450313Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -512,6 +531,7 @@
         "bin",
         "bin",
         "bin",
+        "man",
         "man"
       ],
       "outputs": {
@@ -540,7 +560,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:06:15.323831Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "24.14.1",
@@ -570,7 +591,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T07:34:06.207991Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "24.14.1",
@@ -600,7 +622,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:01:42.769829Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "24.14.1",
@@ -630,7 +653,8 @@
       "rev_date": "2026-05-15T18:21:44Z",
       "scrape_date": "2026-05-17T08:32:50.624798Z",
       "stabilities": [
-        "unstable"
+        "unstable",
+        "staging"
       ],
       "unfree": false,
       "version": "24.14.1",

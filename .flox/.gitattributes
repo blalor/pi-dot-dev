@@ -1,1 +1,2 @@
-env/manifest.lock linguist-generated=true linguist-language=JSON
+# these lockfiles get big and are not human-edited.
+env/manifest.lock linguist-generated=true linguist-language=JSON -diff

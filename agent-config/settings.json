@@ -1,6 +1,6 @@
 {
-  "defaultProvider": "wandb",
-  "defaultModel": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "medium",
   "theme": "dark",
   "hideThinkingBlock": false,
@@ -11,7 +11,8 @@
     "git:github.com/earendil-works/pi-review",
     "npm:pi-beads-extension",
     "npm:@mjakl/pi-kagi-search",
-    "../../../../Library/Application Support/Sublime Text/Packages/Agent Bridge"
+    "../../../../Library/Application Support/Sublime Text/Packages/Agent Bridge",
+    "npm:pi-sandbox"
   ],
   "extensions": [
     "extensions"
@@ -25,5 +26,5 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.75.3"
+  "lastChangelogVersion": "0.79.0"
 }
