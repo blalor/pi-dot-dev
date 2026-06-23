@@ -30,20 +30,20 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/jnqk73cxz177jf7fi02r5vsi4s5iwii9-beads-1.0.3.drv",
+      "derivation": "/nix/store/0bij7n94ryg7rwzckma0s8zbkhifxz5x-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:05:50.480041Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:13:13.639374Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -51,7 +51,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/kv3y3vhqvd93qj2bir7s5bnb79pdsjy2-beads-1.0.3"
+        "out": "/nix/store/m0964ylgmhhv0pb8pf1zpjl704l9lplv-beads-1.0.3"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -60,20 +60,20 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/9x1yavib5834ggjrhbwrgrr8v7990f5l-beads-1.0.3.drv",
+      "derivation": "/nix/store/7mh3rwjvfa38vzvw0vrbjlsvigfkgm8v-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:33:28.896369Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:44:07.953265Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -81,7 +81,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/bf80qgz3hakkar68lk9mv1853ivjwwkm-beads-1.0.3"
+        "out": "/nix/store/6akl9hhdlhffsj09rpmaqb5f000ialll-beads-1.0.3"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -90,20 +90,20 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/2rxbwgr5pav26zx7bqwqlviy15f5ddc8-beads-1.0.3.drv",
+      "derivation": "/nix/store/aampm62j0sy7qjklzprd4b03xswg9wdz-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:01:17.107417Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:13:05.894526Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -111,7 +111,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/z9dlc8pfjvval8bf6hxy5rlg9gfylsz2-beads-1.0.3"
+        "out": "/nix/store/4ncq17cm1vbckmsh6wn7qpwahp67z3ls-beads-1.0.3"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
@@ -120,20 +120,20 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/sy8sgjshn97cc5sa5f4kcgch38csnpiw-beads-1.0.3.drv",
+      "derivation": "/nix/store/lp900w30n2dl97bbfkcfbxjnr59ncz6q-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:32:09.077403Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:47:03.945510Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.0.3",
@@ -141,7 +141,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/rg85rjzrgxpcsm7bmpq11889vlb7cyic-beads-1.0.3"
+        "out": "/nix/store/b28s0b883v7n69mz4i250bbwbryisgqh-beads-1.0.3"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -150,29 +150,30 @@
     {
       "attr_path": "fd",
       "broken": false,
-      "derivation": "/nix/store/170i67nbac16a9cf9fxrbrdyv1wnsb0m-fd-10.4.2.drv",
+      "derivation": "/nix/store/3ry39w60h84gqvdcs53nk9rqpc7c5dxq-fd-10.4.2.drv",
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "fd-10.4.2",
       "pname": "fd",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:05:51.464176Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:13:14.504347Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "10.4.2",
       "outputs_to_install": [
         "out",
+        "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/49sp3ra3l2sg1vgaf83w7h4jxf3kpiy4-fd-10.4.2"
+        "out": "/nix/store/h07wyxfpicdwj0j3xbg9841hd0grb9sy-fd-10.4.2"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -181,20 +182,20 @@
     {
       "attr_path": "fd",
       "broken": false,
-      "derivation": "/nix/store/y0ysjsa33a2phljj7g2gv5m6klyamz8m-fd-10.4.2.drv",
+      "derivation": "/nix/store/1hcmpnybrxj9k6md9y4kaz7mqlv90jcc-fd-10.4.2.drv",
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "fd-10.4.2",
       "pname": "fd",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:33:30.116047Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:44:09.265325Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -203,7 +204,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/xi0y4mhkn0lbcpj1nl3vafdw967n5679-fd-10.4.2"
+        "out": "/nix/store/493wwp79iq7db1dy1gj3a9dpazh17v42-fd-10.4.2"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -212,20 +213,20 @@
     {
       "attr_path": "fd",
       "broken": false,
-      "derivation": "/nix/store/sdrfhhk25ijp4x76dz4jrcf8dcg39m59-fd-10.4.2.drv",
+      "derivation": "/nix/store/63sh7w04bai7v0cg2zlrfz1xg49ncpi4-fd-10.4.2.drv",
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "fd-10.4.2",
       "pname": "fd",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:01:17.965501Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:13:06.840634Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "10.4.2",
@@ -234,7 +235,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/8kf4k045jk6p8kax1225kkrmr7fijyib-fd-10.4.2"
+        "out": "/nix/store/h350vnmjbhxgiqm4v7hihq43kk7ixswk-fd-10.4.2"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
@@ -243,29 +244,30 @@
     {
       "attr_path": "fd",
       "broken": false,
-      "derivation": "/nix/store/xrsywfs24vwpkgbw7g0w4wi1xdx9pr5d-fd-10.4.2.drv",
+      "derivation": "/nix/store/j1q9ajrn3cdd15ji50qfgyd1kdxwh2fi-fd-10.4.2.drv",
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "fd-10.4.2",
       "pname": "fd",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:32:10.449914Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:47:05.404081Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "10.4.2",
       "outputs_to_install": [
         "out",
+        "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/4fi2lyz8xn4mhq1gk5sp3zgfw43fjl56-fd-10.4.2"
+        "out": "/nix/store/wci2b3l9gs8nq3alx6czffsq55bg44cv-fd-10.4.2"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -274,20 +276,20 @@
     {
       "attr_path": "git-crypt",
       "broken": false,
-      "derivation": "/nix/store/adjxxnzpab0k4jjp8q8bmrnfrpz86yxm-git-crypt-0.8.0.drv",
+      "derivation": "/nix/store/rm2b21l9f3n1csmph0krb05cz8kqbwlk-git-crypt-0.8.0.drv",
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:05:51.797462Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:13:14.863548Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -295,7 +297,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/yxq9jsamlrnhq64sl2rznl9wmrq5jni6-git-crypt-0.8.0"
+        "out": "/nix/store/dp8v7j9km86h0zfm8w7bw4igi3pvny4f-git-crypt-0.8.0"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -304,20 +306,20 @@
     {
       "attr_path": "git-crypt",
       "broken": false,
-      "derivation": "/nix/store/130p0fil4ibid4b3h1yc3p6d31bwfsjb-git-crypt-0.8.0.drv",
+      "derivation": "/nix/store/cklsy3fwh6p88fz0cd7mznjjprfr405a-git-crypt-0.8.0.drv",
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:33:30.605116Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:44:09.807607Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -325,7 +327,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/ygmplf3jz58hz8nw1n2mb3dcdfclq12h-git-crypt-0.8.0"
+        "out": "/nix/store/gl205xvws9gf5d5qkxp11j8vcwz72kgd-git-crypt-0.8.0"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -334,20 +336,20 @@
     {
       "attr_path": "git-crypt",
       "broken": false,
-      "derivation": "/nix/store/sivwl77mqgjm7ka4bjy5x0fis7aq2bds-git-crypt-0.8.0.drv",
+      "derivation": "/nix/store/ia2z32b3gwxz45ri4r3l3c1zg0i3nj21-git-crypt-0.8.0.drv",
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:01:18.279984Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:13:07.178450Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -355,7 +357,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/6xvkffdyd5x1n07wxrs5ah09s271kn8a-git-crypt-0.8.0"
+        "out": "/nix/store/izgn1zp0mpi5y80ggx3ha42s8jg97xij-git-crypt-0.8.0"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
@@ -364,20 +366,20 @@
     {
       "attr_path": "git-crypt",
       "broken": false,
-      "derivation": "/nix/store/1xc2nq30y6m50i0q71v4z1gwl6c0di22-git-crypt-0.8.0.drv",
+      "derivation": "/nix/store/rifc2lzj0c2qpvp67si28l6mgapzk272-git-crypt-0.8.0.drv",
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:32:10.994514Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:47:05.977981Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "0.8.0",
@@ -385,7 +387,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/xj3lmnhi1cnrlf0pd54dmmipjd08i8gr-git-crypt-0.8.0"
+        "out": "/nix/store/sd0xi3b0xqq2s1k3j5zm45zm02bpgf0g-git-crypt-0.8.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -394,20 +396,20 @@
     {
       "attr_path": "jq",
       "broken": false,
-      "derivation": "/nix/store/8m1acd54mxn25zahyn0scbi10a49v91c-jq-1.8.1.drv",
+      "derivation": "/nix/store/bmchk7n1crrqvaw88rk288m1934gwlzq-jq-1.8.1.drv",
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "jq-1.8.1",
       "pname": "jq",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:06:07.708604Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:13:31.265729Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -420,11 +422,11 @@
         "man"
       ],
       "outputs": {
-        "bin": "/nix/store/zpaiv3csv85i5qdhwlivlbg8a5clnqmh-jq-1.8.1-bin",
-        "dev": "/nix/store/h46rnp90pvk5ky12r9drbzhl1fqlmjnf-jq-1.8.1-dev",
-        "doc": "/nix/store/iksz05vk9j78ls9agfg9blhax9azgv69-jq-1.8.1-doc",
-        "man": "/nix/store/vs9rx9xgqachcay4mn95m1gwifzxrhm4-jq-1.8.1-man",
-        "out": "/nix/store/inmyqx7646xrcqrwxipacv5gkf3ca6m3-jq-1.8.1"
+        "bin": "/nix/store/d551vj6hjc2bqiyg8dim6lv1v1xw7841-jq-1.8.1-bin",
+        "dev": "/nix/store/dy2cgp8adlm5gl3hkpykcgccv4dlhawb-jq-1.8.1-dev",
+        "doc": "/nix/store/afjz34n0jz7a0zjjp6qkvnxqph53ifbw-jq-1.8.1-doc",
+        "man": "/nix/store/cyykpwx7q87ryqyhkz4slm163300rzjh-jq-1.8.1-man",
+        "out": "/nix/store/yj3m8xi9h48mz4i7732zcwbqbb8bl402-jq-1.8.1"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -433,20 +435,20 @@
     {
       "attr_path": "jq",
       "broken": false,
-      "derivation": "/nix/store/6bm9kiq3c81i6f3hs1qdvk281w8sjk1s-jq-1.8.1.drv",
+      "derivation": "/nix/store/rnq1r4544wynnzab3f9rk862lpdlhgpa-jq-1.8.1.drv",
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "jq-1.8.1",
       "pname": "jq",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:33:50.658834Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:44:31.099705Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -458,11 +460,11 @@
         "man"
       ],
       "outputs": {
-        "bin": "/nix/store/blgzs73jx017qji4n78v4wg1qxcg3cav-jq-1.8.1-bin",
-        "dev": "/nix/store/lx675fc624glij1dh9iw89pavkvfkv73-jq-1.8.1-dev",
-        "doc": "/nix/store/r992wf8cylhf9ayxwf64lawdfxcr4cl8-jq-1.8.1-doc",
-        "man": "/nix/store/s8h2klkc7rw485yqj3s73ancc5915v2m-jq-1.8.1-man",
-        "out": "/nix/store/2v9443fs97gdg5mz9lk3q603hryhqijm-jq-1.8.1"
+        "bin": "/nix/store/d6mx57dmjq61j69ap45f6fm3jb0lslyc-jq-1.8.1-bin",
+        "dev": "/nix/store/qv69wdjr2zd2w6yg5n8lxfn6c8mg4bwf-jq-1.8.1-dev",
+        "doc": "/nix/store/fway55wsvvly58sz7zn7vlq68v0q1ig3-jq-1.8.1-doc",
+        "man": "/nix/store/bnwzc47h7zhc3zwkjmy4br8jd2ki9pyj-jq-1.8.1-man",
+        "out": "/nix/store/6y9n87w9lsk3x0fscm6kfirk3ssc0syr-jq-1.8.1"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -471,20 +473,20 @@
     {
       "attr_path": "jq",
       "broken": false,
-      "derivation": "/nix/store/kma4dqri44q18xcdicm42rh69fvxf2q8-jq-1.8.1.drv",
+      "derivation": "/nix/store/0rlalgyahkwxqihahidkwic07lhgrz2v-jq-1.8.1.drv",
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "jq-1.8.1",
       "pname": "jq",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:01:34.801295Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:13:24.080171Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -495,11 +497,11 @@
         "man"
       ],
       "outputs": {
-        "bin": "/nix/store/cpq0n6nrgs7jwyr121qshzk2fvjkmjbh-jq-1.8.1-bin",
-        "dev": "/nix/store/0p7h41icsq99c08sym6iw4wzdsl35r13-jq-1.8.1-dev",
-        "doc": "/nix/store/h6wn2lzbxq1v2dypaj4kpv4nnkkm9yld-jq-1.8.1-doc",
-        "man": "/nix/store/flsm1xvpbr9681y4y8101v5c5m3qmcim-jq-1.8.1-man",
-        "out": "/nix/store/spn7m9y4302yvw9zafpy1g2sz3z9xnx1-jq-1.8.1"
+        "bin": "/nix/store/pnm2frw3jwfrlycf730z5bfgixiyjal4-jq-1.8.1-bin",
+        "dev": "/nix/store/hg1vhcfr1lwv39vn84cijdn187jmcfnj-jq-1.8.1-dev",
+        "doc": "/nix/store/mzarfihn2c84s6qw7zp0rbbj7hb09dv2-jq-1.8.1-doc",
+        "man": "/nix/store/0yyamki3lhy0rp6vn45mn6cdhqb2c64a-jq-1.8.1-man",
+        "out": "/nix/store/8c9m07iqwczlfzx1sk0c5g2a9nnzvhc3-jq-1.8.1"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
@@ -508,20 +510,20 @@
     {
       "attr_path": "jq",
       "broken": false,
-      "derivation": "/nix/store/b7xrk5idxkza33wiaizqzs9fqzvw5lqb-jq-1.8.1.drv",
+      "derivation": "/nix/store/pq80zlnpxhzi25ninrrjjl0y1sd90hzk-jq-1.8.1.drv",
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
       "name": "jq-1.8.1",
       "pname": "jq",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:32:32.450313Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:47:28.480167Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
       "version": "1.8.1",
@@ -531,15 +533,16 @@
         "bin",
         "bin",
         "bin",
+        "bin",
         "man",
         "man"
       ],
       "outputs": {
-        "bin": "/nix/store/v5c3inhfq6xshmwg1c254vfbcy4jp3k9-jq-1.8.1-bin",
-        "dev": "/nix/store/p8x5zv9s9qg3ld8b7jdm03hkpdqybjl9-jq-1.8.1-dev",
-        "doc": "/nix/store/g2wlgi44rn837jdirpwi3lk5f2iy13zg-jq-1.8.1-doc",
-        "man": "/nix/store/lsyqny7h1riwhzajwy2vjjdd63viiwvm-jq-1.8.1-man",
-        "out": "/nix/store/09bq2i0kb008ccg3qdbyxv81ggxxnn09-jq-1.8.1"
+        "bin": "/nix/store/s04d6wm3kqjdgr7zdhlk214f6a2291ks-jq-1.8.1-bin",
+        "dev": "/nix/store/fmsvbcz2s85pmszdvwp4mhlamiv5lnzg-jq-1.8.1-dev",
+        "doc": "/nix/store/hhh2h4x4rhh6qbqa6620bvhz652cgw4m-jq-1.8.1-doc",
+        "man": "/nix/store/ncw52xsl5hgplh8csybbp9fli64iw1aq-jq-1.8.1-man",
+        "out": "/nix/store/7a1hndk12kz9wwh9sz8hzkkwgxq6rrnk-jq-1.8.1"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -548,29 +551,30 @@
     {
       "attr_path": "nodejs",
       "broken": false,
-      "derivation": "/nix/store/1m7745r13n7wk43fzx5yr3jjr3vdc1db-nodejs-24.14.1.drv",
+      "derivation": "/nix/store/vbx35am7lar9zvwhk4nfl3lysmbd0ils-nodejs-24.15.0.drv",
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
-      "name": "nodejs-24.14.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "name": "nodejs-24.15.0",
       "pname": "nodejs",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:06:15.323831Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:13:39.213888Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
-      "version": "24.14.1",
+      "version": "24.15.0",
       "outputs_to_install": [
+        "out",
         "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/sf85v1qd1glkmsyfxwn9p8wridb4qf6y-nodejs-24.14.1"
+        "out": "/nix/store/3mvbmkd7lmxi3xlka1avra24flwbgjv9-nodejs-24.15.0"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -579,29 +583,29 @@
     {
       "attr_path": "nodejs",
       "broken": false,
-      "derivation": "/nix/store/3h5ymdg61db3f9xwhwclj05afipbxiq2-nodejs-24.14.1.drv",
+      "derivation": "/nix/store/zc41z1042wi0d1gmyc8mlwv5av8fds2q-nodejs-24.15.0.drv",
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
-      "name": "nodejs-24.14.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "name": "nodejs-24.15.0",
       "pname": "nodejs",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T07:34:06.207991Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T03:44:48.128392Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
-      "version": "24.14.1",
+      "version": "24.15.0",
       "outputs_to_install": [
         "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/amh21igq2gjg6ai42f3ksan8fh89qvpm-nodejs-24.14.1"
+        "out": "/nix/store/rmdjmd0iy5zlyg0j2i1cd0s7ha1562fs-nodejs-24.15.0"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -610,29 +614,29 @@
     {
       "attr_path": "nodejs",
       "broken": false,
-      "derivation": "/nix/store/aarkp2y0aj12skgji58mbf5va0dcf9bd-nodejs-24.14.1.drv",
+      "derivation": "/nix/store/f0ay9hny5gn4c0lfrb95xrakm7yf3s2q-nodejs-24.15.0.drv",
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
-      "name": "nodejs-24.14.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "name": "nodejs-24.15.0",
       "pname": "nodejs",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:01:42.769829Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:13:32.462339Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
-      "version": "24.14.1",
+      "version": "24.15.0",
       "outputs_to_install": [
         "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/w9axwcpzxv1cd78d6v748az2j08k6vfw-nodejs-24.14.1"
+        "out": "/nix/store/rhv8jiklgw2bw4ljh4nm3h3r3bpnkcl3-nodejs-24.15.0"
       },
       "system": "x86_64-darwin",
       "group": "toplevel",
@@ -641,29 +645,29 @@
     {
       "attr_path": "nodejs",
       "broken": false,
-      "derivation": "/nix/store/8l6p07vmrcj7lsry0jz2ayp1rmpyjdai-nodejs-24.14.1.drv",
+      "derivation": "/nix/store/f8i8jydaqs0ngxm97c091zna2mnjb43f-nodejs-24.15.0.drv",
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb",
-      "name": "nodejs-24.14.1",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "name": "nodejs-24.15.0",
       "pname": "nodejs",
-      "rev": "d233902339c02a9c334e7e593de68855ad26c4cb",
-      "rev_count": 998534,
-      "rev_date": "2026-05-15T18:21:44Z",
-      "scrape_date": "2026-05-17T08:32:50.624798Z",
+      "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
+      "rev_count": 1017464,
+      "rev_date": "2026-06-16T02:33:49Z",
+      "scrape_date": "2026-06-17T04:47:47.914293Z",
       "stabilities": [
-        "unstable",
-        "staging"
+        "staging",
+        "unstable"
       ],
       "unfree": false,
-      "version": "24.14.1",
+      "version": "24.15.0",
       "outputs_to_install": [
         "out",
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/785jidgnryzj566s25s3rb262d4g5znb-nodejs-24.14.1"
+        "out": "/nix/store/5a8ysg1jnj8jmzzyfcfw7rvpvnp5rfpa-nodejs-24.15.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
