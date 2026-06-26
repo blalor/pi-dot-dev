@@ -7,12 +7,17 @@
   "quietStartup": true,
   "enableInstallTelemetry": false,
   "packages": [
-    "npm:pi-mcp-adapter",
-    "git:github.com/earendil-works/pi-review",
-    "npm:pi-beads-extension",
-    "npm:@mjakl/pi-kagi-search",
-    "../../../../Library/Application Support/Sublime Text/Packages/Agent Bridge",
-    "npm:pi-sandbox"
+    {
+      "source": "git:github.com/earendil-works/pi-review",
+      "extensions": [
+        "+review.ts"
+      ]
+    },
+    "npm:pi-beads-extension@0.1.0",
+    "~/Library/Application Support/Sublime Text/Packages/Agent Bridge",
+    "npm:pi-sandbox",
+    "npm:pi-subagents",
+    "npm:@mjakl/pi-kagi-search"
   ],
   "extensions": [
     "extensions"
@@ -26,5 +31,6 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.79.0"
+  "lastChangelogVersion": "0.80.2",
+  "httpIdleTimeoutMs": 30000
 }

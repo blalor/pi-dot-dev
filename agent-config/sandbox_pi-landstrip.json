@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "filesystem": {
+    "allowRead": [
+      "/tmp/",
+      "/private/tmp/",
+      "/Users/blalor/devel/Personal/pi-dot-dev/"
+    ],
+    "allowWrite": [
+      "/tmp/",
+      "/private/tmp/"
+    ]
+  }
+}
