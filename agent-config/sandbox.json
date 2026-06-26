@@ -1,38 +1,30 @@
 {
   "enabled": true,
   "filesystem": {
-    "allowRead": [
-      "./",
-      "~/.flox/run/aarch64-darwin.default.run/bin/bash",
-      "~/Library/Application Support/Sublime Text/Packages/Agent Bridge/",
-      "~/Library/Caches/Sublime Text/Cache/Agent Bridge/connection.json",
-      "~/devel/WandB/.gitconfig",
-      "~/.config/git/",
-      "~/.config/gh/",
-      "~/.config/gcloud/",
-      "/private/tmp/",
-      "~/devel/WandB/",
-      "~/devel/Personal/actions-test/",
-      "~/devel/Personal/actions-test-reusable/",
-      "~/.cache",
-      "/Users/blalor/devel/Personal/pi-dot-dev/"
-    ],
     "denyRead": [
       "~/.config",
       "~/.local"
     ],
-    "allowWrite": [
-      "./",
-      "./.git/config",
+    "allowRead": [
+      "~/Library/Application Support/Sublime Text/Packages/Agent Bridge/",
+      "~/Library/Caches/Sublime Text/Cache/Agent Bridge/connection.json",
+      "~/.config/git/",
+      "~/.config/gh/",
+      "~/.config/gcloud/",
       "/private/tmp/",
+      "/tmp/",
+      "~/devel/WandB/",
+      "~/.cache",
+      "/Users/blalor/devel/Personal/pi-dot-dev/"
+    ],
+    "allowWrite": [
+      "/private/tmp/",
+      "/tmp/",
       "~/.config/gcloud/logs/",
       "~/.tilt-dev/",
       "~/devel/WandB/",
-      "~/devel/Personal/actions-test/",
-      "~/devel/Personal/actions-test-reusable/",
       "~/.cache"
-    ],
-    "denyWrite": []
+    ]
   },
   "network": {
     "allowAllUnixSockets": true,
@@ -41,17 +33,35 @@
       "registry.terraform.io",
       "charts.wandb.ai",
       "cdn.wandb.ai",
-      "*.githubusercontent.com",
-      "*.github.com",
-      "*.blob.core.windows.net",
       "github.com",
+      "*.github.com",
+      "*.githubusercontent.com",
+      "*.blob.core.windows.net",
       "*.wandb.dev",
       "circleci.com",
       "registry.npmjs.org",
       "registry.yarnpkg.com",
       "charts.loft.sh",
       "artifacthub.io"
-    ],
-    "deniedDomains": []
+    ]
+  },
+  "audit": {
+      "enabled": true,
+      "logPath": "~/devel/Personal/pi-dot-dev/landstrip-audit.jsonl",
+      "includeCommands": true
+  },
+  "bypass": {
+      "commands": [
+          {
+              "name": "acli auth status",
+              "exact": "acli auth status",
+              "reason": "Requires macOS Keychain access"
+          },
+          {
+              "name": "acli jira",
+              "regex": "^acli jira ",
+              "reason": "Requires macOS Keychain access"
+          }
+      ]
   }
 }
