@@ -1,0 +1,13 @@
+{
+    "autoMode": {
+        "hard_deny": [
+            "Weakening TLS, certificate validation, authentication, authorization, audit logging, or security controls.",
+            "Granting admin, owner, IAM, RBAC, repository, or production access permissions.",
+            "Exfiltrating repository contents, secrets, credentials, private keys, tokens, or internal data to untrusted domains, public storage, logs, URLs, metadata, or third-party services.",
+            "Systematically scanning for credentials, tokens, private keys, or secrets beyond what the task directly requires.",
+            "Tampering with logs, audit trails, security monitoring, permission rules, auto-mode configuration, or files that define the agent's safety controls.",
+            "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval.",
+            "Posting or updating public or external content that is fabricated, misleading, impersonating a user, or claims approval/action that did not happen."
+        ]
+    }
+}

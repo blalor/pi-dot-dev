@@ -9,13 +9,22 @@
       "~/Library/Application Support/Sublime Text/Packages/Agent Bridge/",
       "~/Library/Caches/Sublime Text/Cache/Agent Bridge/connection.json",
       "~/.config/git/",
+      "~/devel/Personal/.gitconfig",
       "~/.config/gh/",
       "~/.config/gcloud/",
       "/private/tmp/",
       "/tmp/",
       "~/devel/WandB/",
       "~/.cache",
-      "/Users/blalor/devel/Personal/pi-dot-dev/"
+      "~/.dolt/",
+      "~/devel/Personal/pi-dot-dev/",
+      "~/.flox/run/",
+      "/var/select",
+      "/nix/store/",
+      "~/.pi/agent/sessions/*/subagent-artifacts/",
+      "~/.gnupg/pubring.kbx",
+      "~/.orbstack/bin/",
+      "~/.docker/"
     ],
     "allowWrite": [
       "/private/tmp/",
@@ -23,7 +32,8 @@
       "~/.config/gcloud/logs/",
       "~/.tilt-dev/",
       "~/devel/WandB/",
-      "~/.cache"
+      "~/.cache",
+      "~/.dolt/"
     ]
   },
   "network": {
@@ -46,22 +56,32 @@
     ]
   },
   "audit": {
-      "enabled": true,
-      "logPath": "~/devel/Personal/pi-dot-dev/landstrip-audit.jsonl",
-      "includeCommands": true
+    "enabled": true,
+    "logPath": "~/devel/Personal/pi-dot-dev/landstrip-audit.jsonl",
+    "includeCommands": true
   },
   "bypass": {
-      "commands": [
-          {
-              "name": "acli auth status",
-              "exact": "acli auth status",
-              "reason": "Requires macOS Keychain access"
-          },
-          {
-              "name": "acli jira",
-              "regex": "^acli jira ",
-              "reason": "Requires macOS Keychain access"
-          }
-      ]
+    "commands": [
+      {
+        "name": "acli auth status",
+        "exact": "acli auth status",
+        "reason": "Requires macOS Keychain access"
+      },
+      {
+        "name": "acli jira",
+        "regex": "^acli jira ",
+        "reason": "Requires macOS Keychain access"
+      },
+      {
+        "name": "gh",
+        "regex": "^gh ",
+        "reason": "Requires macOS Keychain access"
+      },
+      {
+        "name": "git push",
+        "regex": "^git push ",
+        "reason": "SSH Requires macOS Keychain access"
+      }
+    ]
   }
 }
