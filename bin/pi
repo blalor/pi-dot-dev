@@ -9,7 +9,7 @@ if
     ! jq \
         -r -e \
         --arg flox_dir "${basedir}/.flox" \
-        '[.[].environment.path] | contains([$flox_dir])' >/dev/null \
+        '[ .[].environment.path ] | contains([ $flox_dir ])' >/dev/null \
     <<< "${_FLOX_ACTIVE_ENVIRONMENTS}"
 then
     cmd+=( flox activate -d "${basedir}" -- )

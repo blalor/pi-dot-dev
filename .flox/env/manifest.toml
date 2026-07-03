@@ -46,7 +46,7 @@ on-activate = '''
     fi
 
     # /bin at the front for bash for pi-sandbox
-    export PATH="/bin:${_PI_ROOT}/bin:${_PI_ROOT}/node_modules/.bin:${PATH}"
+    # export PATH="/bin:${_PI_ROOT}/bin:${_PI_ROOT}/node_modules/.bin:${PATH}"
 '''
 
 [options]
