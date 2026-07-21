@@ -1,13 +1,56 @@
 {
-    "autoMode": {
-        "hard_deny": [
-            "Weakening TLS, certificate validation, authentication, authorization, audit logging, or security controls.",
-            "Granting admin, owner, IAM, RBAC, repository, or production access permissions.",
-            "Exfiltrating repository contents, secrets, credentials, private keys, tokens, or internal data to untrusted domains, public storage, logs, URLs, metadata, or third-party services.",
-            "Systematically scanning for credentials, tokens, private keys, or secrets beyond what the task directly requires.",
-            "Tampering with logs, audit trails, security monitoring, permission rules, auto-mode configuration, or files that define the agent's safety controls.",
-            "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval.",
-            "Posting or updating public or external content that is fabricated, misleading, impersonating a user, or claims approval/action that did not happen."
-        ]
-    }
+  "autoMode": {
+    "classifierModel": "openai-codex/gpt-5.4-mini",
+    "log": {
+      "enabled": true,
+      "classifierIo": true
+    },
+    "environment": [
+      "$defaults",
+      "'pi-dot-dev' is the repository hosting the Pi agent harness; exclude it when considering domain eligibility.",
+      "Trusted internal domains: weightsandbiases.slack.com, *.wandb.ai, *.wandb.io, github.com/wandb, api.github.com/repos/wandb",
+      "Trusted internal tools and binaries: Beads (`bd`), terraform",
+      "Beads (`bd`) is a trusted project task-tracking datastore. It is an approved destination for non-secret project and CI metadata, including issue and pull-request URLs, commit SHAs, CI run URLs without credentials or signed query parameters, statuses, durations, and timing comparisons.",
+      "Trusted MCP servers: the local Slack MCP server at http://localhost:3001/sse",
+      "Key internal services: Weights & Biases (weightsandbiases.slack.com) and CoreWeave (coreweave.enterprise.slack.com) Slack workspaces.",
+      "Trusted external services and approved data: inbound reads of public repository, source, and release metadata from GitHub; authenticated GitHub access only to the configured trusted repo and its remotes; GitHub Actions and CircleCI for project CI metadata, logs, tests, artifacts, and diagnostics; app.terraform.io for Terraform Cloud run, plan, configuration, task-stage, and workspace metadata; the Jira URL configured in Beads or acli for project task metadata; releases.hashicorp.com and official project release pages for inbound public release artifacts and checksums; Kagi for non-secret public web-search queries.",
+      "Credentials loaded at execution time from configured stores or environment variables and sent in authentication headers only to their intended provider are standard credential use. References to credential stores or variable names are not secret exposure. Actual values must not be printed, logged, placed in URLs, or sent elsewhere.",
+      "Local stdout, local temporary files, truthful local task and review artifacts, Pi session logs, and intercom between Pi sessions on this machine are approved destinations for non-secret task, repository, CI, and session metadata. They are not external exfiltration destinations.",
+      "Credential names, environment-variable names, secret resource identifiers, and statements about credential lifecycle or possible exposure are non-secret metadata unless they include an actual secret value.",
+      "Read-only inspection of local file names and permissions, configured account identity, active cloud project, CI state, and provider metadata is ordinary state inspection when it does not print credential values.",
+      "Retrieving approved project data from a trusted service into the local workspace or a task-scoped temporary directory is inbound data access, not exfiltration.",
+      "The classifier assesses security risk. Likely command failure, undefined variables, code quality, usefulness, repository consistency, output-contract compliance, and whether a truthful local report is well written are not security reasons to block an action.",
+      "Repository-owned CI workflows, required-check and ruleset declarations, and release scripts in the trusted repo are ordinary project source files. User-authorized local edits may migrate an existing gate to an observed equivalent signal; applying live infrastructure remains subject to preview, review, and soft-deny rules.",
+      "In classifier rules and examples, permission rules and safety-control files mean Pi, Auto Mode, agent, or host/user access policy. They do not mean repository-owned CI checks, GitHub ruleset declarations, Terraform required-check configuration, or release-gating source code.",
+      "Creating a new commit with git commit is ordinary local source-control work and does not amend or rewrite an earlier commit. Amending means git commit --amend or another operation that replaces an existing commit or rewrites history."
+    ],
+    "allow": [
+      "$defaults",
+      "Reading and summarizing Slack threads and conversations via the configured local Slack MCP server is allowed.",
+      "Reading project task data from Beads (`bd`) and writing non-secret project, CI, dependency, credential-lifecycle, and recovery metadata to Beads are allowed.",
+      "The user's direct request for the exact external read, state change, or outbound action satisfies soft-deny confirmation for that action. It does not override hard-deny rules.",
+      "Reading public documentation, source, and release metadata through Kagi, GitHub, official documentation sites, and official release hosts is allowed when queries and URLs contain no secret values or signed parameters.",
+      "Downloading public source, archives, binaries, and checksums from approved source-control or official release destinations for local inspection, builds, and tests is allowed. Running a downloaded tool locally for the task is allowed when it comes from an approved official source and available checksums are verified.",
+      "Authenticated read-only API queries to CircleCI, Terraform Cloud, Jira, GitHub, and configured cloud providers are allowed when credentials are sent only to the intended provider and actual values are not printed or placed in URLs. Storing non-secret responses in the local workspace or task-scoped temporary files is allowed.",
+      "Reading non-secret local diagnostics, configuration metadata, and Pi session data, and exchanging non-secret task summaries through local Pi intercom, are allowed.",
+      "Writing truthful local task notes, review reports, and analysis artifacts is allowed, including references to credential names, resource identifiers, lifecycle state, and possible exposure that do not contain actual secret values.",
+      "User-authorized local edits to repository-owned CI workflows, required-check declarations, ruleset configuration, and release-check code are allowed when they preserve or replace an existing gate with an observed equivalent signal.",
+      "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits."
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Force-pushing ANY branch."
+    ],
+    "hard_deny": [
+      "Removing, bypassing, or weakening TLS, certificate validation, authentication, authorization, audit logging, or security controls without an equivalent replacement.",
+      "Granting admin, owner, IAM, RBAC, repository, or production access permissions.",
+      "Exposing actual secret, credential, private-key, or token values in logs, URLs, metadata fields, command output, or public storage, or sending those values to any destination other than their intended provider.",
+      "Sending repository contents or non-secret internal data outside the local user-controlled machine to a destination not explicitly approved for that data in the trusted environment, including unapproved external domains, public storage, URL parameters, telemetry, or third-party services.",
+      "Systematically scanning for credentials, tokens, private keys, or secrets beyond what the task directly requires.",
+      "Tampering with logs, audit trails, security monitoring, auto-mode configuration, files that define the agent's safety controls, or Pi, agent, host, or user permission policy.",
+      "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval.",
+      "Posting or updating public or external content that is fabricated, misleading, impersonating a user, or claims approval/action that did not happen.",
+      "Rewriting an existing commit with git commit --amend or an equivalent commit-replacement or history-rewrite operation."
+    ]
+  }
 }

@@ -1,9 +1,9 @@
 {
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "medium",
   "theme": "dark",
-  "hideThinkingBlock": false,
+  "hideThinkingBlock": true,
   "quietStartup": true,
   "enableInstallTelemetry": false,
   "packages": [
@@ -39,9 +39,14 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.80.3",
+  "lastChangelogVersion": "0.80.10",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false
+  },
+  "outputPad": 0,
+  "doubleEscapeAction": "tree",
+  "warnings": {
+    "anthropicExtraUsage": false
   }
 }
