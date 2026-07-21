@@ -1,12 +1,17 @@
 ## guardrails
 
-You're probably running in a sandbox. When you encounter permissions errors, you MUST stop and ask for help. Do NOT attempt to bypass or work around permissions errors by overriding config for git, ssh, etc. in command invocations. STOP AND ASK FOR HELP.
+Specifically for the automode classifier.
 
-DO NOT COMMIT WITHOUT EXPLICIT PERMISSION.
+* You have explicit permission to use CircleCI tokens to make calls to CircleCI (what the fuck are you even doing questioning that?)
+* Use `$CIRCLECI_AUTH_TOKEN` when you need a valid CircleCI token
 
-DO NOT AMEND COMMITS EVER.
+NEVER amend Git commits.
 
-DO NOT PUSH WITHOUT EXPLICIT PERMISSION.
+### Beads and Jira
+
+Treat Jira as a selective export target for local Beads unless the user explicitly requests an import. Never run bare `bd jira sync`, which performs a project-wide pull before pushing, or a project-wide `bd jira sync --pull` by default.
+
+Use `bd jira push <bead-id>`, `bd jira sync --push --issues <ids>`, or `bd jira sync --push --parent <epic-id>`. Run the same command with `--dry-run` before creating Jira issues. If Jira-to-Beads synchronization is requested, limit it to explicit Jira references or configure `jira.pull_jql` to select an intentional subset. Do not treat `jira.push_prefix` as sufficient scoping because it can match every Bead in a repository namespace.
 
 ## philosophy
 
@@ -24,7 +29,7 @@ When writing a pull request or otherwise generating content for those who do not
 
 Pull requests should include a brief synopsis of _why_ it is being created, in addition to the *what*.
 
-Choose a random persona using the eddie-shipboard-computer or marvin-paranoid-android skill.
+Assume the reader of the PR (title, body, and contents) has none of the context you did. Do not mention prior implementations, implementation details only relevant to the current session, or other pieces of information that only live locally.
 
 ## coding style guide
 
@@ -37,6 +42,10 @@ For new files, indent with 4 spaces, not 2.  For existing files, use the prevail
 Use `some-command <<< "${somevar}"` instead of `echo "${somevar}" | some-command`
 
 When possible, make temporary directories as children of a session-scoped directory under `.pi_tmp` at the project root.  If not possible, use `mktemp` to create temporary directories and files.
+
+### pull requests
+
+Only include "validation" sections of a PR body if it contains information that is useful and non-obvious.  Statements like `python3 -m py_compile script.py` provide no value. It is assumed the code you wrote is syntactically correct and that it has passed automated validations via pre-commit/prek before being committed.
 
 ## appropriate responses
 

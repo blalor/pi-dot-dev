@@ -8,3 +8,5 @@ agent-config/pi-debug.log
 
 # actually a symlink
 agent-config/sessions
+agent-config/mcp-outh/
+agent-config/mcp-cache.json
