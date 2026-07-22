@@ -39,7 +39,7 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.80.10",
+  "lastChangelogVersion": "0.81.1",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false

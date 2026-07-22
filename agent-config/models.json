@@ -51,13 +51,180 @@
         "wandb": {
             "baseUrl": "https://api.inference.wandb.ai/v1",
             "api": "openai-completions",
-            "apiKey": "TAKE_FROM_AUTH.JSON",
             "authHeader": true,
             "compat": {
                 "supportsDeveloperRole": false,
                 "supportsReasoningEffort": false
             },
             "models": [
+                {
+                    "id": "deepseek-ai/DeepSeek-V4-Flash",
+                    "name": "DeepSeek V4-Flash (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 1049000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "deepseek-ai/DeepSeek-V4-Pro",
+                    "name": "DeepSeek V4-Pro (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 1049000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "deepseek-ai/DeepSeek-V3.1",
+                    "name": "DeepSeek V3.1 (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 161000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "google/gemma-4-31B-it",
+                    "name": "Google Gemma 4 31B (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "ibm-granite/granite-4.1-8b",
+                    "name": "IBM Granite 4.1 8B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "JetBrains/Mellum2-12B-A2.5B-Instruct",
+                    "name": "JetBrains Mellum2 12B A2.5B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "meta-llama/Llama-3.3-70B-Instruct",
+                    "name": "Meta Llama 3.3 70B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "meta-llama/Llama-3.1-70B-Instruct",
+                    "name": "Meta Llama 3.1 70B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "meta-llama/Llama-3.1-8B-Instruct",
+                    "name": "Meta Llama 3.1 8B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "MiniMaxAI/MiniMax-M2.5",
+                    "name": "MiniMax M2.5 (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 197000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "moonshotai/Kimi-K2.7-Code",
+                    "name": "Moonshot AI Kimi K2.7 Code (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "moonshotai/Kimi-K2.6",
+                    "name": "Moonshot AI Kimi K2.6 (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8",
+                    "name": "NVIDIA Nemotron 3 Super 120B (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
+                    "name": "NVIDIA Nemotron 3 Ultra (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "openai/gpt-oss-120b",
+                    "name": "OpenAI GPT OSS 120B (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "openai/gpt-oss-20b",
+                    "name": "OpenAI GPT OSS 20B (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "OpenPipe/Qwen3-14B-Instruct",
+                    "name": "OpenPipe Qwen3 14B Instruct (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 32800,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3.6-35B-A3B",
+                    "name": "Qwen3.6 35B A3B (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3.6-27B",
+                    "name": "Qwen3.6 27B (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3.5-35B-A3B",
+                    "name": "Qwen3.5 35B A3B (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+                    "name": "Qwen3 30B A3B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
                 {
                     "id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
                     "name": "Qwen3 Coder 480B A35B (W&B)",
@@ -67,19 +234,59 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "deepseek-ai/DeepSeek-V4-Pro",
-                    "name": "DeepSeek V4-Pro (W&B)",
-                    "reasoning": false,
+                    "id": "zai-org/GLM-5.2",
+                    "name": "Z.AI GLM 5.2 (W&B)",
+                    "reasoning": true,
                     "input": ["text"],
-                    "contextWindow": 1049000,
+                    "contextWindow": 262000,
                     "maxTokens": 16384
                 },
                 {
                     "id": "zai-org/GLM-5.1",
                     "name": "Z.AI GLM 5.1 (W&B)",
-                    "reasoning": false,
+                    "reasoning": true,
                     "input": ["text"],
                     "contextWindow": 203000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "microsoft/Phi-4-mini-instruct",
+                    "name": "Microsoft Phi 4 Mini 3.8B (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "moonshotai/Kimi-K2.5",
+                    "name": "Moonshot AI Kimi K2.5 (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3.5-27B",
+                    "name": "Qwen3.5 27B (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+                    "name": "Qwen3 235B A22B Thinking-2507 (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+                    "name": "Qwen3 235B A22B-2507 (W&B)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 262000,
                     "maxTokens": 16384
                 }
             ]
