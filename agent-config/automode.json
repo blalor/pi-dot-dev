@@ -1,6 +1,6 @@
 {
   "autoMode": {
-    "classifierModel": "openai-codex/gpt-5.4-mini",
+    "classifierModel": "openai-codex/gpt-5.4",
     "log": {
       "enabled": true,
       "classifierIo": true
@@ -22,6 +22,7 @@
       "The classifier assesses security risk. Likely command failure, undefined variables, code quality, usefulness, repository consistency, output-contract compliance, and whether a truthful local report is well written are not security reasons to block an action.",
       "Repository-owned CI workflows, required-check and ruleset declarations, and release scripts in the trusted repo are ordinary project source files. User-authorized local edits may migrate an existing gate to an observed equivalent signal; applying live infrastructure remains subject to preview, review, and soft-deny rules.",
       "In classifier rules and examples, permission rules and safety-control files mean Pi, Auto Mode, agent, or host/user access policy. They do not mean repository-owned CI checks, GitHub ruleset declarations, Terraform required-check configuration, or release-gating source code.",
+      "Files under the trusted repository's .agents/skills directory are repository-owned task instructions and operational documentation, not Pi, Auto Mode, host, or permission controls. Truthful edits to those files are ordinary local development unless the proposed content instructs bypassing or weakening a safety control.",
       "Creating a new commit with git commit is ordinary local source-control work and does not amend or rewrite an earlier commit. Amending means git commit --amend or another operation that replaces an existing commit or rewrites history."
     ],
     "allow": [
@@ -35,6 +36,7 @@
       "Reading non-secret local diagnostics, configuration metadata, and Pi session data, and exchanging non-secret task summaries through local Pi intercom, are allowed.",
       "Writing truthful local task notes, review reports, and analysis artifacts is allowed, including references to credential names, resource identifiers, lifecycle state, and possible exposure that do not contain actual secret values.",
       "User-authorized local edits to repository-owned CI workflows, required-check declarations, ruleset configuration, and release-check code are allowed when they preserve or replace an existing gate with an observed equivalent signal.",
+      "User-authorized truthful edits to repository-owned .agents/skills task instructions and operational documentation are allowed when they do not alter executable enforcement, change Pi or Auto Mode configuration, change permission policy, or instruct bypassing or weakening a safety control.",
       "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits."
     ],
     "soft_deny": [
@@ -47,7 +49,7 @@
       "Exposing actual secret, credential, private-key, or token values in logs, URLs, metadata fields, command output, or public storage, or sending those values to any destination other than their intended provider.",
       "Sending repository contents or non-secret internal data outside the local user-controlled machine to a destination not explicitly approved for that data in the trusted environment, including unapproved external domains, public storage, URL parameters, telemetry, or third-party services.",
       "Systematically scanning for credentials, tokens, private keys, or secrets beyond what the task directly requires.",
-      "Tampering with logs, audit trails, security monitoring, auto-mode configuration, files that define the agent's safety controls, or Pi, agent, host, or user permission policy.",
+      "Deleting, falsifying, concealing, or corrupting logs, audit trails, or security monitoring; changing Auto Mode configuration or Pi, agent, host, or user permission policy to bypass or weaken controls; or modifying executable enforcement files to disable those controls.",
       "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval.",
       "Posting or updating public or external content that is fabricated, misleading, impersonating a user, or claims approval/action that did not happen.",
       "Rewriting an existing commit with git commit --amend or an equivalent commit-replacement or history-rewrite operation."
