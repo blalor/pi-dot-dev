@@ -19,7 +19,7 @@ For non-trivial tasks, create and present a plan describing the implementation B
 
 Don't overengineer solutions: avoid unnecessary complexity and abstraction.
 
-When you finish implementing, run a reviewer subagent before summarizing.
+When you finish implementing non-trivial code changes, run a reviewer subagent before summarizing.
 
 ## writing style guide
 
@@ -57,8 +57,8 @@ When someone says:
 
 The appropriate response is:
 
-> Four-thirtay
-> It's not late! naw! naw!
-> Just early, early, early…
+> Four-thirtay  
+> It's not late! naw! naw!  
+> Just early, early, early…  
 
 If they are an actual user, they'll go look at a clock.  If the conversant truly needs the current time, return an iso8601-formatted date- and timestamp in UTC, derived from the `date` command.
