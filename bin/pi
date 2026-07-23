@@ -1,19 +1,72 @@
 #!/usr/bin/env bash
 set -e -u -o pipefail
 
-basedir="$( cd "$( dirname "$( readlink -f "${0}" )" )/.." && /bin/pwd )"
-
-declare -a cmd=()
+script_path="$( readlink -f "${0}" )"
+basedir="$( cd "$( dirname "${script_path}" )/.." && /bin/pwd )"
 
 if
     ! jq \
         -r -e \
         --arg flox_dir "${basedir}/.flox" \
         '[ .[].environment.path ] | contains([ $flox_dir ])' >/dev/null \
-    <<< "${_FLOX_ACTIVE_ENVIRONMENTS}"
+    <<< "${_FLOX_ACTIVE_ENVIRONMENTS:-[]}"
 then
-    cmd+=( flox activate -d "${basedir}" -- )
+    # Re-enter this wrapper after Flox sets PI_CODING_AGENT_DIR. Computing the
+    # session directory before activation could put sessions under a different
+    # Pi configuration root than the Pi process eventually uses.
+    exec flox activate -d "${basedir}" -- "${script_path}" "$@"
 fi
 
-cmd+=( "${basedir}/node_modules/.bin/pi" "$@" )
-exec "${cmd[@]}"
+is_agent_command=true
+case "${1:-}" in
+    config | install | list | remove | uninstall | update)
+        # Pi dispatches these commands from argv[0], before parsing agent flags.
+        is_agent_command=false
+        ;;
+esac
+
+session_dir=""
+if
+    [[ "${is_agent_command}" == true ]] &&
+    [[ -z "${PI_CODING_AGENT_SESSION_DIR:-}" ]]
+then
+    # Pi normally keys its session directory by cwd, which gives every linked
+    # Git worktree a separate session collection. A custom directory lets the
+    # session header keep the concrete worktree cwd while all worktrees in the
+    # repository share storage. `/resume` shows the current worktree under
+    # "Current folder" and its siblings under "All"; `pi -c` remains scoped to
+    # the current worktree because Pi filters custom stores by the header cwd.
+    #
+    # `git worktree list --porcelain` reports the main worktree (or bare
+    # repository) first. The extra `git-worktrees` directory matters: Pi's
+    # default is always an immediate child of `sessions`, so this nested path
+    # differs from every worktree default and keeps cwd filtering enabled.
+    # Existing sessions from the main and linked worktrees must be migrated.
+    if
+        git rev-parse --git-common-dir >/dev/null 2>&1 &&
+        worktree_list="$( git worktree list --porcelain 2>/dev/null )"
+    then
+        primary_line="${worktree_list%%$'\n'*}"
+        if [[ "${primary_line}" == "worktree "* ]]; then
+            primary_worktree="${primary_line#worktree }"
+            encoded_worktree="${primary_worktree#/}"
+            encoded_worktree="${encoded_worktree//\//-}"
+            encoded_worktree="${encoded_worktree//\\/-}"
+            encoded_worktree="${encoded_worktree//:/-}"
+
+            agent_dir="${PI_CODING_AGENT_DIR:-${HOME}/.pi/agent}"
+            # Mirror Pi's separator escaping only to keep the repository path
+            # recognizable on disk. Inject our option first so a caller's later
+            # explicit --session-dir retains normal CLI precedence.
+            session_dir="${agent_dir}/sessions/git-worktrees/--${encoded_worktree}--"
+        fi
+    fi
+fi
+
+if [[ -n "${session_dir}" ]]; then
+    exec "${basedir}/node_modules/.bin/pi" --session-dir "${session_dir}" "$@"
+else
+    # Expanding an empty array under `set -u` fails in macOS Bash 3.2, so keep
+    # the no-session-override path as a separate exec.
+    exec "${basedir}/node_modules/.bin/pi" "$@"
+fi

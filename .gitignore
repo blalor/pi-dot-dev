@@ -1,12 +1,13 @@
 node_modules/
 
 # Pi generated/runtime state. The durable source of truth is
-# agent-config/settings.json plus committed local resources.
-agent-config/npm/
-agent-config/git/
-agent-config/pi-debug.log
+# agent/settings.json plus committed local resources.
+agent/npm/
+agent/git/
+agent/pi-debug.log
 
-# actually a symlink
-agent-config/sessions
-agent-config/mcp-outh/
-agent-config/mcp-cache.json
+agent/sessions/
+agent/mcp-oauth/
+agent/mcp-cache.json
+agent/intercom/
+agent/trust.json
