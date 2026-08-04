@@ -15,17 +15,14 @@
     },
     "npm:pi-beads-extension@0.1.0",
     "~/Library/Application Support/Sublime Text/Packages/Agent Bridge",
-    {
-      "source": "git:github.com/blalor/pi-landstrip@dev",
-      "extensions": []
-    },
     "npm:pi-subagents",
     "npm:@mjakl/pi-kagi-search",
     "npm:pi-mcp-adapter",
     "npm:pi-worktrunk",
-    "npm:@czottmann/pi-automode",
+    "git:github.com/blalor/pi-automode@feat/read-only-diagnostics",
     "npm:pi-intercom",
-    "npm:pi-prompt-template-model"
+    "npm:pi-prompt-template-model",
+    "npm:pi-web-access"
   ],
   "extensions": [
     "extensions"
@@ -39,7 +36,7 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.81.1",
+  "lastChangelogVersion": "0.83.0",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false
