@@ -46,8 +46,8 @@ Em dashes are longer than hyphens (-) and are used for emphasis, interruptions, 
 - Use commas for most parenthetical information
 - Use colons to introduce explanations or lists
 - Use parentheses for supplementary information
-- Reserve em dashes for rare, deliberate emphasis only
-- If you find yourself using more than one em dash per page, revise
+- Remove every em dash from finished prose
+- Rewrite the sentence rather than substituting punctuation mechanically
 
 ---
 
@@ -57,7 +57,7 @@ Em dashes are longer than hyphens (-) and are used for emphasis, interruptions, 
 |-------|-------------|
 | delve (into) | explore, examine, investigate, look at |
 | leverage | use, apply, draw on |
-| optimise | improve, refine, enhance |
+| optimise | improve, refine, make faster |
 | utilise | use |
 | facilitate | help, enable, support |
 | foster | encourage, support, develop, nurture |
@@ -90,7 +90,7 @@ Em dashes are longer than hyphens (-) and are used for emphasis, interruptions, 
 | intricate | complex, detailed, complicated |
 | nuanced | subtle, complex, detailed |
 | multifaceted | complex, varied, diverse |
-| holistic | complete, whole, comprehensive |
+| holistic | complete, whole, end-to-end |
 
 ### Overused Metaphorical Nouns (2025-2026)
 AI models use these nouns metaphorically to inject false gravitas. Literal uses are fine.
@@ -113,9 +113,9 @@ AI models use these nouns metaphorically to inject false gravitas. Literal uses 
 | moreover | also, and, besides |
 | notwithstanding | despite, even so, still |
 | that being said | however, but, still |
-| at its core | essentially, fundamentally, basically |
-| to put it simply | in short, simply put |
-| it is worth noting that | note that, importantly |
+| at its core | state the central fact directly |
+| to put it simply | state it directly |
+| it is worth noting that | remove the phrase and state the fact |
 | in the realm of | in, within, regarding |
 | in the landscape of | in, within |
 | in today's [anything] | currently, now, today |
@@ -181,12 +181,12 @@ AI-generated content frequently uses narrative, dramatic, or clickbait heading s
 
 | Pattern | Bad Example | Good Replacement |
 |---------|-------------|------------------|
-| "The [Concept] Trap" | "The Initialization Trap" | "Import vs. Initialize: DDF Metadata Destruction Risk" |
-| "The [Adjective] [Noun]" drama | "The Hidden Danger" | "Firmware Corruption After Sudden Power Loss" |
-| "The [Noun] [Dramatic Noun]" | "The Silent Killer" | "Gradual Bad Sector Growth on Aging Platters" |
-| "Why [Action] [Dramatic Verb] [Object]" | "Why Rebuilding Destroys Everything" | "How Forced Rebuilds Overwrite Parity on Degraded Arrays" |
-| "[Noun]: The [Adjective] [Noun]" | "Encryption: The Hidden Trap" | "Hardware AES-256 Encryption on WD Passport Bridge Boards" |
-| "The [Noun] You [Emotion Verb]" | "The Risk You Overlook" | "Unmonitored SMART Threshold Warnings" |
+| "The [Concept] Trap" | "The Initialization Trap" | "Metadata loss when initialization runs before import" |
+| "The [Adjective] [Noun]" drama | "The Hidden Danger" | "Duplicate events after webhook retries" |
+| "The [Noun] [Dramatic Noun]" | "The Silent Killer" | "Session expiry caused by clock skew" |
+| "Why [Action] [Dramatic Verb] [Object]" | "Why Retrying Destroys Everything" | "Duplicate writes when retries lack idempotency keys" |
+| "[Noun]: The [Adjective] [Noun]" | "Caching: The Hidden Trap" | "Stale cache entries after user updates" |
+| "The [Noun] You [Emotion Verb]" | "The Risk You Overlook" | "Unhandled timeouts in webhook delivery" |
 
 ### How to Self-Check Headings
 
@@ -285,7 +285,7 @@ AI models hedge 4-7x more than human writers (ACL 2024 study, 12,000 technical d
 - "It is widely acknowledged that..."
 
 ### Human vs. AI Hedging
-Humans hedge contextually, grounding uncertainty in specific evidence: "The FTC's 2024 enforcement data suggests a 12% increase." AI hedges with blanket qualifiers on established facts: "It is widely acknowledged that repair restrictions may potentially impact consumers."
+Humans hedge contextually, grounding uncertainty in specific evidence: "The load test for build 812 suggests the regression begins above 200 requests per second." AI hedges with blanket qualifiers on established facts: "It is widely acknowledged that higher traffic may potentially affect performance."
 
 ---
 
@@ -364,7 +364,7 @@ If a banned word appears immediately adjacent to specific named entities (proper
 
 ### Metaphorical vs. Literal Distinction
 These words require bigram context checking. Only flag metaphorical uses:
-- ecosystem: "Apple's software ecosystem" (OK) vs. "the repair ecosystem" (flag)
+- ecosystem: "pond ecosystem" (literal) vs. "the vendor ecosystem" (flag)
 - landscape: "Arizona landscape" (OK) vs. "the regulatory landscape" (flag)
 - navigate: "navigate the website" (OK) vs. "navigate the regulatory process" (flag)
 - tapestry: "medieval tapestry" (OK) vs. "a tapestry of regulations" (flag)

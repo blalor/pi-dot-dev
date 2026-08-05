@@ -1,105 +1,147 @@
 ---
 name: no-ai-slop
-description: "Rules and worked examples for writing prose that does not read like AI-generated slop. Consult before writing or editing any prose."
+description: "Self-contained rules and examples for writing clear, direct prose without common AI-generated patterns. Consult before writing or editing prose."
+ref: https://github.com/realrossmanngroup/no_ai_slop_writing_rules/blob/35e32ae45878148a6bd898572a9d15c96711affe/CLAUDE.md
 ---
 
 # No AI Slop
 
-The full rule list lives in the project `CLAUDE.md` (rules 1 through 24). This skill turns the rules that have worked examples into actionable guidance: each shows a WRONG version (the slop) and a RIGHT version (the fix). The pattern behind every fix is the same: replace the vague claim with a specific, checkable fact.
+Use this skill to write clear, direct, specific prose. Accuracy comes first; never invent a detail to make a sentence sound more concrete.
 
-## Rule 1: No emdashes
+These rules apply to the prose being drafted. They do not override required terminology, exact quotations, code, configuration, product names, or factual work logs. The bundled [`references/ai-writing-detection.md`](references/ai-writing-detection.md) contains longer word lists and pattern checks, but this file contains the complete working rules.
 
-The character is banned. Use a semicolon, a period, a comma, or restructure.
+## Rules
 
-- WRONG: "The policy -- which affected millions -- was later reversed."
-- RIGHT: "The policy affected millions of devices. The company reversed it in December 2017."
+1. **Do not use em dashes.** Use a period, comma, colon, semicolon, parentheses, or rewrite the sentence.
 
-## Rule 4: No intensifiers
+2. **Use only attributable numbers.** Every statistic, date, amount, and measured quantity must come from a real source. If it cannot be supported, remove it.
 
-"Significantly", "dramatically", "extremely" and their kin are placeholders for evidence. Replace the word with the number it was standing in for.
+3. **Do not put clarifications in headings.** Name the section directly. Put qualifications in the body when needed.
 
-- WRONG: "The pricing was significantly higher than the cost of the part."
-- RIGHT: "They charged $1,200 for a repair that needed a $5 chip."
+4. **Cut intensifiers.** Words such as `extremely`, `dramatically`, `exceptionally`, `significantly`, `incredibly`, `remarkably`, `truly`, `absolutely`, and `literally` usually stand in for evidence. Replace them with a fact or remove them.
 
-## Rule 5: No hollow statements
+5. **Cut hollow claims.** A claim should name a concrete fact, behavior, result, mechanism, or source. Delete statements that assert importance without explaining what happened.
 
-A sentence that asserts importance without a detail says nothing. End every claim on a concrete fact.
+6. **Do not repeat a point.** Say it once. Combine overlapping sections or paragraphs.
 
-- WRONG: "This practice has had a significant impact on people."
-- RIGHT: "The company replaced 11 million batteries in 2018, against the 1 to 2 million it had expected."
+7. **Vary structure when the material calls for it.** Repeated paragraph lengths, sentence shapes, and section layouts make prose mechanical. Do not force unlike material into identical templates.
 
-## Rule 7: No structural slop (repetitive layouts)
+8. **Connect ideas without narrating the document.** Avoid `as discussed above`, `as noted earlier`, and `as we will see`. State the relationship directly.
 
-Three sections built from the same template read as machine output, even when each fact is true. Vary paragraph count, sentence rhythm, and how each section opens.
+9. **Do not manufacture urgency.** A call to act must name the real deadline, penalty, failure mode, or consequence.
 
-- WRONG (three sections, identical shape):
-  ```
-  In [year], [party] did [thing]. This affected [number] people. [Party] responded by [action].
-  In [year], [party] did [thing]. This affected [number] people. [Party] responded by [action].
-  In [year], [party] did [thing]. This affected [number] people. [Party] responded by [action].
-  ```
-- RIGHT (vary the shape):
-  ```
-  Section one: a detailed narrative with timeline and context across two paragraphs.
-  Section two: a two-sentence summary, because the event is thinly documented.
-  Section three: opens with the party's stated justification, then the contradicting evidence.
-  ```
+10. **Do not use scare quotes around ordinary words.** Use quotation marks for exact quotations, titles, or terms that genuinely require them.
 
-## Rule 11: No filler phrases
+11. **Cut filler openings.** Do not use phrases such as `In today's world`, `It's important to note`, `When it comes to`, `At the end of the day`, `In the realm of`, `It goes without saying`, `This is where X comes in`, or `Look no further`. Start with the fact.
 
-"In today's world", "It's important to note", "When it comes to" add length, not meaning. Open on the fact.
+12. **Do not start with `Whether you're`.** Address the subject directly.
 
-- WRONG: "In today's world, planned obsolescence affects many devices."
-- RIGHT: "Apple, Samsung, and Google have each faced lawsuits alleging planned obsolescence."
+13. **Write like a researcher, not a copywriter.** Use specific, checkable statements. If a sentence could appear unchanged on an unrelated marketing page, rewrite or remove it.
 
-## Rule 13: Write like a researcher, not a copywriter
+14. **Do not add synthetic enthusiasm.** Avoid cheerleading, decorative exclamation marks, and unsupported praise. Let the evidence carry the point.
 
-If a sentence could sit on any advocacy or marketing site without changing a word, it is generic. Anchor it to something checkable.
+15. **Remove empty hedging.** Phrases such as `helps ensure`, `may be able to`, and `can potentially` obscure the claim. State what happens. Keep uncertainty only when the facts are uncertain, and explain why.
 
-- WRONG: "People deserve the right to repair their own devices."
-- RIGHT: "The FTC voted 5-0 in July 2021 to step up enforcement against illegal repair restrictions."
+16. **Use descriptive headings.** Do not use dramatic, narrative, clickbait, or vague headings such as `The Hidden Cost`, `Broader Implications`, or `The X Trap`. Name the subject and the concrete issue covered by the section.
 
-## Rule 15: No weasel words
+17. **Do not fabricate cases or scenarios.** Label hypotheticals as hypothetical. Present an event as real only when it is documented.
 
-"May potentially", "can help to", "might be able to" hedge a claim into meaninglessness. Either the thing happens or it does not. Say which.
+18. **Do not fabricate history.** Verify launches, dates, milestones, and sequences before stating them.
 
-- WRONG: "Serialization may potentially prevent independent repair."
-- RIGHT: "Replacing an iPhone 15 camera module without the manufacturer's calibration software disables optical image stabilization."
+19. **Do not fabricate attributions.** Attribute a statement or position only when a real document, transcript, recording, or public statement supports it. Do not infer a person's position from their role, affiliation, or reputation.
 
-## Rule 16: No dramatic headings
+20. **Replace stock transitions.** Avoid `Furthermore`, `Moreover`, `Notwithstanding`, `That being said`, `At its core`, `In essence`, `It is worth noting that`, `In the landscape of`, and `To put it simply`. Use a plain connector when one is needed.
 
-A heading names what the section holds. It does not tease, dramatize, or abstract.
+21. **Replace inflated verbs.** Avoid `delve`, `leverage`, `utilize`, `facilitate`, `foster`, `bolster`, `underscore`, `unveil`, metaphorical `navigate`, `streamline`, `endeavour`, `ascertain`, and `elucidate`. Prefer direct verbs such as `examine`, `use`, `help`, `support`, `show`, `manage`, `simplify`, `try`, `find`, and `explain`.
 
-- WRONG: "The Hidden Cost of Planned Obsolescence"
-- RIGHT: "Economic impact of shortened product lifespans"
+22. **Replace academic filler.** Avoid `shed light on`, `pave the way for`, `a myriad of`, `a plethora of`, `paramount`, `pertaining to`, `prior to`, `subsequent to`, `in light of`, `with respect to`, `in terms of`, and `the fact that`. Use the shorter direct equivalent.
 
-## Rule 19: No fabricated attributions
+23. **Quote sources exactly.** Do not silently correct or clean up quoted text. Mark necessary changes with square brackets, or paraphrase without quotation marks. Name the speaker and medium. Use a block quote for a long quotation so the source's words remain distinct from yours.
 
-Never put a position in a named person's mouth from inference. State only what they actually did or said, with the real source.
+24. **Do not narrate unsuccessful research inside the finished prose.** Report supported facts and omit unsupported claims. Do not pad the document with lists of searches that found nothing. This does not apply when the requested artifact is a research log, validation report, or limitations section where the method and missing evidence are themselves relevant.
 
-- WRONG: "Senator Smith has argued that the right to repair is essential."
-- RIGHT: "Senator Smith co-sponsored the Fair Repair Act in January 2024."
+## Concrete comparison rule
 
-## Root-cause differentiation
+When contrasting two things, name the difference that explains the contrast. Identify the part, version, date, mechanism, configuration, or supply-chain change. If that detail is unknown, do not imply that one case is exempt, newer, better, or unaffected.
 
-When you contrast two things, name the concrete difference that separates them. Do not assert that one is exempt, newer, better, or unaffected without saying what specifically makes it so.
+Bad:
 
-- WRONG: "2020+ Leaf models are unaffected and use the MyNISSAN app instead."
-- RIGHT: "2020+ Leaf models shipped with 4G/LTE telematics units connected to a newer cloud platform, replacing the 2G/3G units in earlier models. Those vehicles use the MyNISSAN app, which talks to a different backend."
+> New clients are unaffected because they use the new API.
 
-Whenever you say A differs from B, name the part, the version, the date, the mechanism, or the supply-chain change that makes the difference real. If you do not have that detail, do not imply the difference exists.
+Better:
 
-## Self-check before returning text
+> Clients using the `v2` endpoint send a cursor token. The changed offset calculation runs only on requests to the `v1` endpoint.
 
-Run this pass on every piece of prose before you hand it back. The full banned lists are in `references/ai-writing-detection.md`; check against them directly.
+## Worked examples
 
-1. Search for the emdash character. Remove every one (Rule 1).
-2. Scan for banned verbs (delve, leverage, utilize, foster, bolster, underscore, unveil, streamline) and replace with plain equivalents.
-3. Scan for banned adjectives and intensifiers (robust, comprehensive, pivotal, seamless, significantly, extremely, truly) and cut or replace.
-4. Scan for banned transitions and openers (Furthermore, Moreover, That being said, In today's world, It's worth noting that).
-5. Check every number: is it real and attributable? If not, cut it (Rule 2).
-6. Check every sentence ends on a concrete detail, not an assertion of importance (Rule 5).
-7. Check headings: does each name the content rather than tease it (Rule 16)?
-8. Check for repeated points and repeated section shapes (Rules 6, 7).
-9. Count hedging markers per paragraph. More than three is a red flag.
-10. Read it aloud. If a phrase would sound unnatural to a colleague, rewrite it.
+The examples below show sentence patterns, not facts to copy. Replace placeholders and technical details with evidence from the work being described.
+
+### Replace an intensifier with evidence
+
+Bad:
+
+> The new query is significantly faster.
+
+Better:
+
+> Under `<benchmark workload>`, median query time fell from `<before>` to `<after>`.
+
+Use measured values only when the benchmark output is available.
+
+### Replace a hollow statement with a fact
+
+Bad:
+
+> This change has an important effect on reliability.
+
+Better:
+
+> The change retries failed uploads three times before returning an error.
+
+### Define the mechanism
+
+Bad:
+
+> Caching may potentially improve performance.
+
+Better:
+
+> `getUser` checks the in-memory cache before sending an HTTP request, so a cache hit makes no network call.
+
+### Use a descriptive heading
+
+Bad:
+
+> The Hidden Cost of Caching
+
+Better:
+
+> Cache invalidation after user updates
+
+### Attribute only documented positions
+
+Bad:
+
+> The maintainer has argued that compatibility is essential.
+
+Better:
+
+> In `<issue link>`, `<maintainer>` wrote: “<exact quotation>.”
+
+Use the better pattern only when the linked source contains that quotation.
+
+## Self-check
+
+Before returning prose:
+
+1. Search for the em dash character and remove it.
+2. Check every number, date, quotation, and attribution against a source.
+3. Remove intensifiers, filler openings, stock transitions, inflated verbs, and academic filler.
+4. Replace hollow claims with concrete facts or delete them.
+5. Remove repeated points and repeated structural patterns.
+6. Check that each heading describes its section without drama or parenthetical clarification.
+7. Check each comparison for the concrete difference that makes it true.
+8. Keep uncertainty only where the evidence is uncertain, and name the reason.
+9. Search for unprocessed citation artifacts such as `oaicite`, `contentReference`, `turn0search0`, and `grok_card`.
+10. Read the prose aloud. Rewrite anything that would sound unnatural in a conversation with a colleague.
+11. Consult [`references/ai-writing-detection.md`](references/ai-writing-detection.md) for the expanded lint pass when the prose is intended for publication or external review.
