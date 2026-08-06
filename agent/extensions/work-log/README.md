@@ -9,13 +9,18 @@ The extension summarizes a work episode at these boundaries:
 - 20 minutes after the agent becomes idle
 - The next settled boundary after an episode has lasted two hours
 - Before context compaction
-- Before switching, forking, or navigating the session tree
+- When switching or forking a session
+- Before navigating the session tree
 - During normal session shutdown
 - When the user runs `/work-log`
 
 A new agent request cancels the pending idle checkpoint. Related requests completed within the idle window are summarized as one episode. Shutdown capture is best effort because a killed process cannot finish a model request.
 
 The summarizer returns `SKIP` when the episode contains no meaningful outcome. Skipped ranges still advance the session cursor, so they are not reconsidered later.
+
+Switch, fork, reload, and quit shutdowns do not wait for the summary model. The extension displays a shutdown status, writes a redacted episode snapshot to `_pending`, advances the session cursor, and starts a detached Node worker. The worker runs from the home directory rather than the session working directory, so deleting a checkout after exit does not prevent the summary. Repository facts are marked unavailable if the recorded directory has disappeared.
+
+A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. If summary-model credentials were not ready when shutdown began, the extension leaves the snapshot for that later retry rather than delaying exit to resolve credentials.
 
 ## Storage
 
@@ -28,9 +33,11 @@ Episode records are appended to daily JSONL files:
       2026-08-06.jsonl
   _state/
     <session-id>.json
+  _pending/
+    <episode-id>.json
 ```
 
-The `_state` files store the last summarized session entry. They are separate from the daily records consumed by reporting jobs.
+The `_state` files store the last summarized session entry. Temporary `_pending` files hold shutdown work until a detached worker completes it. Both are separate from the daily records consumed by reporting jobs.
 
 Each episode has this shape:
 
@@ -99,7 +106,7 @@ Invalid or non-positive values use the 20-minute default.
 
 Before sending evidence to the summary model, the extension redacts common credential formats, including bearer tokens, private keys, GitHub tokens, API keys, passwords, and AWS access-key IDs. The model is also instructed not to copy secrets or raw command output.
 
-Pattern-based redaction is not a complete secret scanner. Episode records may contain repository paths, commit subjects, issue references, and short descriptions of private work. The `agent/work-log/` runtime directory is excluded from this repository through `.gitignore`.
+Pattern-based redaction is not a complete secret scanner. Episode records may contain repository paths, commit subjects, issue references, and short descriptions of private work. Pending shutdown transcripts are redacted, clipped to the same size limit as foreground summaries, stored with owner-only permissions, and deleted after successful processing. Model credentials are passed to the detached worker through a pipe and are not written to the pending file. The `agent/work-log/` runtime directory is excluded from this repository through `.gitignore`.
 
 ## Manual checkpoint
 
@@ -114,5 +121,6 @@ Run the focused tests from the Pi configuration repository:
 ```bash
 node --experimental-strip-types --test \
     agent/extensions/work-log/lib.test.ts \
+    agent/extensions/work-log/shutdown-worker.test.mjs \
     agent/extensions/work-log/work-log-report.test.mjs
 ```
