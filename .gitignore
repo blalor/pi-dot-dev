@@ -6,6 +6,7 @@ agent/npm/
 agent/git/
 agent/pi-debug.log
 agent/friction-log/
+agent/work-log/
 
 agent/sessions/
 agent/mcp-oauth/
