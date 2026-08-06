@@ -5,6 +5,7 @@ node_modules/
 agent/npm/
 agent/git/
 agent/pi-debug.log
+agent/friction-log/
 
 agent/sessions/
 agent/mcp-oauth/
