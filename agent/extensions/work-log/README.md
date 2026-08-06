@@ -1,6 +1,6 @@
 # Work log extension
 
-This Pi extension records compact summaries of meaningful work while the session context is still available. It produces input for a separate daily or weekly reporting job. It does not generate the rollup itself.
+This Pi extension records compact summaries of meaningful work while the session context is still available. The bundled `work-log-report` command formats those records for a day or date range. It does not read GitHub, Slack, Git, session transcripts, or any source outside the work log.
 
 ## Checkpoint behavior
 
@@ -57,6 +57,26 @@ Each episode has this shape:
 
 The stable `id` is derived from the session and entry range. Retrying a checkpoint does not append the same episode twice.
 
+## Reports
+
+The command is exposed on the local `PATH` through `agent/bin/work-log-report`:
+
+```bash
+work-log-report today
+work-log-report yesterday
+work-log-report --since 2026-08-01 --until 2026-08-06
+```
+
+With no arguments, it reports today. The date range is inclusive. Markdown is written to standard output, so reports can be saved with shell redirection:
+
+```bash
+work-log-report yesterday > ~/work-reports/2026-08-05.md
+```
+
+The report groups episodes by their recorded Git remote or working directory, deduplicates identical category items, and lists the contributing session IDs and times. Missing daily files are treated as days with no recorded episodes. Malformed records stop the report with the file and line number.
+
+`work-log-report` is deterministic. It reads only dated JSONL files beneath `~/.pi/agent/work-log/`; it ignores `_state`, makes no model or agent calls, performs no network requests, and does not inspect repositories or session files.
+
 ## Model configuration
 
 The default summary model is `openai-codex/gpt-5.4-mini`. Override it with a fully qualified model ID:
@@ -92,5 +112,7 @@ Run `/reload` after installing or changing the extension.
 Run the focused tests from the Pi configuration repository:
 
 ```bash
-node --experimental-strip-types --test agent/extensions/work-log/lib.test.ts
+node --experimental-strip-types --test \
+    agent/extensions/work-log/lib.test.ts \
+    agent/extensions/work-log/work-log-report.test.mjs
 ```
