@@ -1,17 +1,20 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rename, rm, utimes } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
 import {
     appendWorkEpisode,
     episodeFile,
+    listPendingWorkFiles,
     parseWorkSummary,
+    queuePendingWorkEpisode,
     readWorkLogState,
     redactSensitiveText,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
+    type PendingWorkEpisode,
     type WorkEpisode,
 } from "./lib.ts";
 
@@ -73,6 +76,41 @@ test("selectEpisodeRange returns only entries after the persisted cursor", () =>
     assert.equal(range.messageEntries.length, 2);
     assert.equal(range.startedAt, "2026-08-06T10:02:00.000Z");
     assert.equal(selectEpisodeRange(entries, "missing"), undefined);
+});
+
+test("pending shutdown episodes are durable and isolated from daily records", async () => {
+    const root = await temporaryDirectory("work-log-pending-");
+    try {
+        const pending: PendingWorkEpisode = {
+            version: 1,
+            id: "episode-queued",
+            queuedAt: "2026-08-06T10:31:00.000Z",
+            startedAt: "2026-08-06T10:00:00.000Z",
+            endedAt: "2026-08-06T10:30:00.000Z",
+            sessionId: "session-queued",
+            cwd: "/work/deleted-later",
+            fromEntryId: "a",
+            toEntryId: "z",
+            transcript: "redacted transcript",
+        };
+        const file = await queuePendingWorkEpisode(root, pending);
+        const files = await listPendingWorkFiles(root);
+        const stored = JSON.parse(await readFile(file, "utf8"));
+
+        assert.deepEqual(files, [file]);
+        assert.equal(stored.id, pending.id);
+        assert.equal(stored.cwd, "/work/deleted-later");
+        assert.match(file, /_pending/);
+        assert.ok(!file.includes("2026/08"));
+
+        const claimed = `${file}.123.working`;
+        await rename(file, claimed);
+        const stale = new Date(Date.now() - 10 * 60_000);
+        await utimes(claimed, stale, stale);
+        assert.deepEqual(await listPendingWorkFiles(root), [file]);
+    } finally {
+        await rm(root, { recursive: true, force: true });
+    }
 });
 
 test("daily episode append and session cursor persistence use separate paths", async () => {

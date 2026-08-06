@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { appendFile, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
@@ -32,6 +32,20 @@ export interface WorkEpisode extends Omit<WorkSummary, "decision"> {
 export interface WorkLogState {
     lastEntryId?: string;
     updatedAt: string;
+}
+
+export interface PendingWorkEpisode {
+    version: 1;
+    id: string;
+    queuedAt: string;
+    startedAt: string;
+    endedAt: string;
+    sessionId: string;
+    cwd: string;
+    agentModel?: string;
+    fromEntryId: string;
+    toEntryId: string;
+    transcript: string;
 }
 
 export interface BranchEntry {
@@ -179,6 +193,49 @@ export function workEpisodeId(sessionId: string, fromEntryId: string, toEntryId:
         .update(`${sessionId}\0${fromEntryId}\0${toEntryId}`)
         .digest("hex")
         .slice(0, 20);
+}
+
+export function pendingWorkFile(rootDir: string, episodeId: string): string {
+    return join(rootDir, "_pending", `${safeSessionId(episodeId)}.json`);
+}
+
+export async function queuePendingWorkEpisode(rootDir: string, episode: PendingWorkEpisode): Promise<string> {
+    const file = pendingWorkFile(rootDir, episode.id);
+    const temporary = `${file}.${process.pid}.${Date.now()}.tmp`;
+    await mkdir(dirname(file), { recursive: true, mode: 0o700 });
+    await writeFile(temporary, `${JSON.stringify(episode)}\n`, { encoding: "utf8", mode: 0o600 });
+    await rename(temporary, file);
+    return file;
+}
+
+export async function listPendingWorkFiles(rootDir: string): Promise<string[]> {
+    const directory = join(rootDir, "_pending");
+    try {
+        const names = await readdir(directory);
+        const staleBefore = Date.now() - 5 * 60_000;
+        for (const name of names.filter((candidate) => /\.json\.\d+\.working$/.test(candidate))) {
+            const claimed = join(directory, name);
+            try {
+                if ((await stat(claimed)).mtimeMs >= staleBefore) continue;
+                const original = claimed.replace(/\.\d+\.working$/, "");
+                await rename(claimed, original);
+            } catch {
+                // Another worker recovered or completed the item.
+            }
+        }
+        return (await readdir(directory))
+            .filter((name) => name.endsWith(".json"))
+            .sort()
+            .map((name) => join(directory, name));
+    } catch {
+        return [];
+    }
+}
+
+export async function removePendingWorkFile(file: string): Promise<void> {
+    await unlink(file).catch((error: NodeJS.ErrnoException) => {
+        if (error.code !== "ENOENT") throw error;
+    });
 }
 
 export async function appendWorkEpisode(rootDir: string, episode: WorkEpisode): Promise<string> {
