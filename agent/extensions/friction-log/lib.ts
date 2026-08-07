@@ -232,7 +232,9 @@ export function normalizeWorkaround(workaround: string | undefined): string | un
 }
 
 export function frictionFingerprint(message: string): string {
-    return normalizeMessage(message)
+    return message
+        .replace(/\0/g, "")
+        .trim()
         .normalize("NFKC")
         .toLowerCase()
         .replace(/[\p{P}\p{S}]+/gu, " ")
