@@ -12,6 +12,7 @@ import {
     readFrictions,
     resolveFrictionScope,
     searchFrictions,
+    updateFriction,
 } from "./lib.ts";
 
 const projectRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
@@ -275,6 +276,93 @@ test("search, lookup, and summaries progressively disclose known friction", asyn
         assert.equal(found?.id, vitest.entry.id);
         assert.match(summary, /apps\/web-relative paths/);
         assert.match(summary, /search_friction/);
+    } finally {
+        await rm(parent, { recursive: true, force: true });
+    }
+});
+
+test("revision events replace folded fields without rewriting history", async () => {
+    const parent = await temporaryDirectory("friction-revise-");
+    try {
+        const repo = join(parent, "repo");
+        const logs = join(parent, "logs");
+        await mkdir(repo);
+        git(repo, "init");
+
+        const original = await appendFriction({
+            cwd: repo,
+            source: "agent",
+            message: "The original friction message.",
+            workaround: "The obsolete workaround.",
+            rootDir: logs,
+        });
+        const revised = await updateFriction({
+            cwd: repo,
+            source: "agent",
+            id: original.entry.id,
+            operation: "revise",
+            message: "The corrected friction message.",
+            workarounds: ["The supported workaround.", "the supported workaround"],
+            rootDir: logs,
+        });
+        const lines = (await readFile(original.file, "utf8")).trim().split("\n");
+
+        assert.equal(lines.length, 2);
+        assert.equal(JSON.parse(lines[0]).message, "The original friction message.");
+        assert.equal(JSON.parse(lines[1]).type, "update");
+        assert.equal(revised.entry.message, "The corrected friction message.");
+        assert.deepEqual(revised.entry.workarounds, ["The supported workaround."]);
+        assert.equal(revised.entry.status, "active");
+    } finally {
+        await rm(parent, { recursive: true, force: true });
+    }
+});
+
+test("resolved and superseded frictions remain retrievable but leave search results", async () => {
+    const parent = await temporaryDirectory("friction-lifecycle-");
+    try {
+        const repo = join(parent, "repo");
+        const logs = join(parent, "logs");
+        await mkdir(repo);
+        git(repo, "init");
+
+        const canonical = await appendFriction({
+            cwd: repo,
+            source: "agent",
+            message: "The canonical startup friction.",
+            rootDir: logs,
+        });
+        const duplicate = await appendFriction({
+            cwd: repo,
+            source: "agent",
+            message: "A related startup failure with different wording.",
+            rootDir: logs,
+        });
+        await updateFriction({
+            cwd: repo,
+            source: "agent",
+            id: duplicate.entry.id.slice(0, 8),
+            operation: "supersede",
+            supersededBy: canonical.entry.id.slice(0, 8),
+            rootDir: logs,
+        });
+        await updateFriction({
+            cwd: repo,
+            source: "agent",
+            id: canonical.entry.id,
+            operation: "resolve",
+            rootDir: logs,
+        });
+
+        const search = await searchFrictions({ cwd: repo, rootDir: logs });
+        const resolved = await getFriction({ cwd: repo, rootDir: logs }, canonical.entry.id);
+        const superseded = await getFriction({ cwd: repo, rootDir: logs }, duplicate.entry.id);
+
+        assert.equal(search.total, 0);
+        assert.deepEqual(search.entries, []);
+        assert.equal(resolved?.status, "resolved");
+        assert.equal(superseded?.status, "superseded");
+        assert.equal(superseded?.supersededBy, canonical.entry.id);
     } finally {
         await rm(parent, { recursive: true, force: true });
     }
