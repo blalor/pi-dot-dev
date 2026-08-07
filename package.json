@@ -1,6 +1,11 @@
 {
+  "scripts": {
+    "check:extensions": "tsc -p tsconfig.extensions.json"
+  },
   "dependencies": {
+    "@earendil-works/pi-ai": ">=0.79",
     "@earendil-works/pi-coding-agent": ">=0.79",
+    "@earendil-works/pi-tui": ">=0.79",
     "typescript": "^6.0.3"
   }
 }
