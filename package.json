@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "check:extensions": "tsc -p tsconfig.extensions.json"
+    "check:extensions": "tsc -p tsconfig.extensions.json",
+    "test:rpc": "node scripts/pi-rpc-smoke.mjs"
   },
   "dependencies": {
     "@earendil-works/pi-ai": ">=0.79",
