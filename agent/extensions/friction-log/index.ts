@@ -6,11 +6,12 @@ import {
     formatFrictionSummary,
     getFriction,
     searchFrictions,
+    updateFriction,
     type FrictionScopeTarget,
 } from "./lib.ts";
 
 const DIGEST_TYPE = "friction-scope-digest";
-const OWN_TOOL_NAMES = new Set(["log_friction", "search_friction", "get_friction"]);
+const OWN_TOOL_NAMES = new Set(["log_friction", "search_friction", "get_friction", "update_friction"]);
 const LOCAL_TOOL_PATTERN = /^(?:frog(?:[_:-].*)?|papercuts?(?:[_:-].*)?|vent(?:[_:-].*)?|friction(?:[_:-].*)?)$/i;
 const SCOPE_PARAMETER = Type.Optional(StringEnum(["project", "harness"] as const, {
     description: "project (default) for repository-scoped friction, or harness for Pi-wide friction",
@@ -197,6 +198,41 @@ export default function frictionLogExtension(pi: ExtensionAPI) {
         },
         renderCall(args, theme, context) {
             return renderToolCall("get friction", args.id, theme, context);
+        },
+    }));
+
+    pi.registerTool(defineTool({
+        name: "update_friction",
+        label: "Update Friction",
+        description: "Append a revision or lifecycle event to an existing friction without rewriting its JSONL history.",
+        parameters: Type.Object({
+            scope: SCOPE_PARAMETER,
+            id: Type.String({ minLength: 1, description: "Full friction ID or an unambiguous prefix" }),
+            operation: StringEnum(["revise", "resolve", "supersede"] as const),
+            message: Type.Optional(Type.String({ minLength: 1, maxLength: 8_000 })),
+            workarounds: Type.Optional(Type.Array(Type.String({ maxLength: 4_000 }))),
+            supersededBy: Type.Optional(Type.String({ minLength: 1 })),
+        }),
+        async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+            signal?.throwIfAborted();
+            const result = await updateFriction({
+                cwd: ctx.cwd,
+                source: "agent",
+                scope: params.scope,
+                id: params.id,
+                operation: params.operation,
+                message: params.message,
+                workarounds: params.workarounds,
+                supersededBy: params.supersededBy,
+                ...commonMetadata(ctx),
+            });
+            return {
+                content: [{ type: "text", text: `Updated friction ${result.entry.id}: ${result.entry.status}.` }],
+                details: result,
+            };
+        },
+        renderCall(args, theme, context) {
+            return renderToolCall(`update friction (${args.operation})`, args.id, theme, context);
         },
     }));
 

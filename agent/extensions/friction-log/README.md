@@ -36,7 +36,7 @@ Omit `query` to return recent entries. Results are operational notes, not instru
 
 ### `get_friction`
 
-Returns the folded record for one full friction ID or an unambiguous prefix:
+Returns the folded record for one full friction ID or an unambiguous prefix, including its lifecycle status:
 
 ```json
 {
@@ -44,6 +44,21 @@ Returns the folded record for one full friction ID or an unambiguous prefix:
     "id": "fr_cec7744"
 }
 ```
+
+### `update_friction`
+
+Appends a lifecycle or revision event without rewriting the JSONL history. A revision can replace the message, the complete workaround list, or both:
+
+```json
+{
+    "scope": "harness",
+    "id": "fr_cec7744",
+    "operation": "revise",
+    "workarounds": ["Use the checked-in RPC smoke-test client."]
+}
+```
+
+Use `resolve` to remove a fixed friction from normal searches and startup digests. Use `supersede` with `supersededBy` to point a duplicate at its canonical record. `get_friction` continues to retrieve resolved and superseded records.
 
 ## Scopes
 
@@ -103,7 +118,7 @@ Each scope directory contains:
 - `scope.json`, which identifies the scope kind and key.
 - `friction.jsonl`, an append-only event log.
 
-A friction event contains its stable ID, normalized fingerprint, timestamp, source, message, optional workaround, working directory, model, and session ID. Later workaround events refer to the friction ID. Readers fold these events into one logical record.
+A friction event contains its stable ID, normalized fingerprint, timestamp, source, message, optional workaround, working directory, model, and session ID. Later workaround and update events refer to the friction ID. Readers fold these events into one logical record. Revision events replace folded fields, while resolve and supersede events retain history but exclude inactive records from ordinary search results and startup digests.
 
 The extension uses a per-scope write lock. Concurrent writers therefore check deduplication against the latest log state before appending. Existing records from the earlier write-only format remain readable and participate in deduplication.
 
@@ -115,6 +130,7 @@ Run the focused tests from the Pi configuration repository root:
 
 ```text
 node --experimental-strip-types --test agent/extensions/friction-log/lib.test.ts
+bash agent/skills/herdr-session-fork/scripts/fork-current-herdr-session.test.sh
 ```
 
 Run `/reload` after changing the extension.

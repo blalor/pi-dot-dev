@@ -14,6 +14,8 @@ const STALE_LOCK_MS = 30_000;
 
 export type FrictionSource = "agent" | "user";
 export type FrictionScopeTarget = "project" | "harness";
+export type FrictionStatus = "active" | "resolved" | "superseded";
+export type FrictionUpdateOperation = "revise" | "resolve" | "supersede";
 
 export interface FrictionScope {
     id: string;
@@ -47,6 +49,20 @@ export interface WorkaroundRecord {
     sessionId?: string;
 }
 
+export interface FrictionUpdateRecord {
+    type: "update";
+    frictionId: string;
+    timestamp: string;
+    source: FrictionSource;
+    operation: FrictionUpdateOperation;
+    message?: string;
+    workarounds?: string[];
+    supersededBy?: string;
+    cwd: string;
+    model?: string;
+    sessionId?: string;
+}
+
 export interface KnownFriction {
     id: string;
     fingerprint: string;
@@ -55,6 +71,8 @@ export interface KnownFriction {
     source: FrictionSource;
     message: string;
     workarounds: string[];
+    status: FrictionStatus;
+    supersededBy?: string;
     cwd: string;
     model?: string;
     sessionId?: string;
@@ -77,6 +95,26 @@ export interface AppendFrictionResult {
     scope: FrictionScope;
     duplicate: boolean;
     workaroundAdded: boolean;
+}
+
+export interface UpdateFrictionOptions {
+    cwd: string;
+    scope?: FrictionScopeTarget;
+    source: FrictionSource;
+    id: string;
+    operation: FrictionUpdateOperation;
+    message?: string;
+    workarounds?: string[];
+    supersededBy?: string;
+    model?: string;
+    sessionId?: string;
+    rootDir?: string;
+}
+
+export interface UpdateFrictionResult {
+    entry: KnownFriction;
+    file: string;
+    scope: FrictionScope;
 }
 
 export interface ReadFrictionOptions {
@@ -231,6 +269,18 @@ export function normalizeWorkaround(workaround: string | undefined): string | un
     return normalized;
 }
 
+function normalizeWorkarounds(workarounds: string[]): string[] {
+    const normalized: string[] = [];
+    for (const value of workarounds) {
+        const workaround = normalizeWorkaround(value);
+        if (!workaround) continue;
+        if (!normalized.some((known) => frictionFingerprint(known) === frictionFingerprint(workaround))) {
+            normalized.push(workaround);
+        }
+    }
+    return normalized;
+}
+
 export function frictionFingerprint(message: string): string {
     return message
         .replace(/\0/g, "")
@@ -344,6 +394,41 @@ function foldRecords(records: unknown[]): KnownFriction[] {
             continue;
         }
 
+        if (record.type === "update") {
+            const frictionId = stringValue(record.frictionId);
+            const operation = stringValue(record.operation);
+            if (!frictionId || !operation) continue;
+            const existing = byId.get(frictionId);
+            if (!existing) continue;
+
+            if (operation === "revise") {
+                const revisedMessage = stringValue(record.message);
+                if (revisedMessage) {
+                    byFingerprint.delete(existing.fingerprint);
+                    existing.message = revisedMessage;
+                    existing.fingerprint = frictionFingerprint(revisedMessage);
+                    byFingerprint.set(existing.fingerprint, existing);
+                }
+                if (Array.isArray(record.workarounds)) {
+                    existing.workarounds = record.workarounds
+                        .map((value) => stringValue(value))
+                        .filter((value): value is string => Boolean(value));
+                }
+            } else if (operation === "resolve") {
+                existing.status = "resolved";
+                delete existing.supersededBy;
+            } else if (operation === "supersede") {
+                const supersededBy = stringValue(record.supersededBy);
+                if (!supersededBy) continue;
+                existing.status = "superseded";
+                existing.supersededBy = supersededBy;
+            } else {
+                continue;
+            }
+            existing.updatedAt = stringValue(record.timestamp) ?? existing.updatedAt;
+            continue;
+        }
+
         const message = stringValue(record.message);
         if (!message) continue;
         const fingerprint = stringValue(record.fingerprint) ?? frictionFingerprint(message);
@@ -369,6 +454,7 @@ function foldRecords(records: unknown[]): KnownFriction[] {
             source: record.source === "user" ? "user" : "agent",
             message,
             workarounds: workaround ? [workaround] : [],
+            status: "active",
             cwd: stringValue(record.cwd) ?? "",
             ...(stringValue(record.model) ? { model: stringValue(record.model) } : {}),
             ...(stringValue(record.sessionId) ? { sessionId: stringValue(record.sessionId) } : {}),
@@ -409,13 +495,14 @@ export async function searchFrictions(options: SearchFrictionOptions): Promise<F
     const collection = await readFrictions(options);
     const query = options.query?.trim() ?? "";
     const limit = Math.max(1, Math.min(options.limit ?? 5, 20));
-    const entries = collection.entries
+    const activeEntries = collection.entries.filter((entry) => entry.status === "active");
+    const entries = activeEntries
         .map((entry) => ({ entry, score: relevance(entry, query) }))
         .filter(({ score }) => !query || score > 0)
         .sort((left, right) => right.score - left.score || right.entry.updatedAt.localeCompare(left.entry.updatedAt))
         .slice(0, limit)
         .map(({ entry }) => entry);
-    return { ...collection, entries, total: collection.total };
+    return { ...collection, entries, total: activeEntries.length };
 }
 
 export async function getFriction(options: ReadFrictionOptions, id: string): Promise<KnownFriction | undefined> {
@@ -519,6 +606,7 @@ export async function appendFriction(options: AppendFrictionOptions): Promise<Ap
                 source: record.source,
                 message,
                 workarounds: workaround ? [workaround] : [],
+                status: "active",
                 cwd: record.cwd,
                 ...(record.model ? { model: record.model } : {}),
                 ...(record.sessionId ? { sessionId: record.sessionId } : {}),
@@ -528,6 +616,65 @@ export async function appendFriction(options: AppendFrictionOptions): Promise<Ap
             duplicate: false,
             workaroundAdded: Boolean(workaround),
         };
+    } finally {
+        await release();
+    }
+}
+
+export async function updateFriction(options: UpdateFrictionOptions): Promise<UpdateFrictionResult> {
+    const scope = await resolveFrictionScope(options.cwd, options.scope);
+    const paths = await ensureScope(scope, options.rootDir);
+    const release = await acquireLock(paths.lockFile);
+
+    try {
+        const entries = foldRecords(await readRecords(paths.logFile));
+        const entry = entries.find((candidate) => candidate.id === options.id)
+            ?? entries.filter((candidate) => candidate.id.startsWith(options.id)).at(0);
+        if (!entry || entries.filter((candidate) => candidate.id.startsWith(options.id)).length > 1) {
+            throw new Error(`No unambiguous friction record matches ${options.id}`);
+        }
+
+        const update: FrictionUpdateRecord = {
+            type: "update",
+            frictionId: entry.id,
+            timestamp: new Date().toISOString(),
+            source: options.source,
+            operation: options.operation,
+            cwd: scope.cwd,
+            ...(options.model ? { model: options.model } : {}),
+            ...(options.sessionId ? { sessionId: options.sessionId } : {}),
+        };
+
+        if (options.operation === "revise") {
+            if (options.message === undefined && options.workarounds === undefined) {
+                throw new Error("A revision requires a message or workaround list");
+            }
+            if (options.message !== undefined) {
+                const message = normalizeMessage(options.message);
+                const fingerprint = frictionFingerprint(message);
+                const collision = entries.find((candidate) => candidate.id !== entry.id && candidate.fingerprint === fingerprint);
+                if (collision) throw new Error(`Revised message duplicates ${collision.id}`);
+                update.message = message;
+            }
+            if (options.workarounds !== undefined) {
+                update.workarounds = normalizeWorkarounds(options.workarounds);
+            }
+        } else if (options.operation === "supersede") {
+            if (!options.supersededBy) throw new Error("A superseding friction ID is required");
+            const target = entries.find((candidate) => candidate.id === options.supersededBy)
+                ?? entries.filter((candidate) => candidate.id.startsWith(options.supersededBy!)).at(0);
+            if (!target || entries.filter((candidate) => candidate.id.startsWith(options.supersededBy!)).length > 1) {
+                throw new Error(`No unambiguous superseding friction matches ${options.supersededBy}`);
+            }
+            if (target.id === entry.id) throw new Error("A friction cannot supersede itself");
+            update.supersededBy = target.id;
+        }
+
+        await appendFile(paths.logFile, `${JSON.stringify(update)}\n`, { encoding: "utf8", mode: 0o600 });
+        const updatedEntries = foldRecords(await readRecords(paths.logFile));
+        const updated = updatedEntries.find((candidate) => candidate.id === entry.id);
+        if (!updated) throw new Error(`Updated friction ${entry.id} could not be read`);
+        return { entry: updated, file: paths.logFile, scope };
     } finally {
         await release();
     }
