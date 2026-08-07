@@ -335,3 +335,31 @@ test("normalizeMessage rejects empty and oversized messages", () => {
     assert.throws(() => normalizeMessage(" \0 "), /cannot be empty/);
     assert.throws(() => normalizeMessage("x".repeat(8_001)), /exceeds 8000/);
 });
+
+test("search accepts queries longer than the stored message limit", async () => {
+    const parent = await temporaryDirectory("friction-long-query-");
+    const logs = join(parent, "logs");
+    const repository = join(parent, "repository");
+    await mkdir(repository);
+    git(repository, "init");
+    git(repository, "remote", "add", "origin", "git@github.com:example/long-query.git");
+
+    try {
+        await appendFriction({
+            cwd: repository,
+            source: "agent",
+            message: "Startup prompt search should not use storage validation.",
+            rootDir: logs,
+        });
+
+        const result = await searchFrictions({
+            cwd: repository,
+            query: `${"context ".repeat(1_100)}startup prompt`,
+            rootDir: logs,
+        });
+
+        assert.equal(result.entries.length, 1);
+    } finally {
+        await rm(parent, { recursive: true, force: true });
+    }
+});
