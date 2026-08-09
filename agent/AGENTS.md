@@ -13,13 +13,29 @@ Treat Jira as a selective export target for local Beads unless the user explicit
 
 Use `bd jira push <bead-id>`, `bd jira sync --push --issues <ids>`, or `bd jira sync --push --parent <epic-id>`. Run the same command with `--dry-run` before creating Jira issues. If Jira-to-Beads synchronization is requested, limit it to explicit Jira references or configure `jira.pull_jql` to select an intentional subset. Do not treat `jira.push_prefix` as sufficient scoping because it can match every Bead in a repository namespace.
 
+## general guidance
+
+Give priority to `kagi_search` over other web searching tools.
+
+### Subagent review policy
+
+Do not launch review subagents by default after implementation. Prefer direct
+inspection and focused validation by the parent.
+
+Use review subagents only when:
+- the user requests independent or adversarial review;
+- the change is security-sensitive, destructive, or unusually broad;
+- a task-specific skill explicitly requires independent review; or
+- concrete uncertainty remains after tests and parent inspection.
+
+Unless requested otherwise, use at most one reviewer. Do not run iterative
+review loops for routine changes.
+  
 ## philosophy
 
 For non-trivial tasks, create and present a plan describing the implementation BEFORE doing the implementation.
 
-Don't overengineer solutions: avoid unnecessary complexity and abstraction.
-
-When you finish implementing non-trivial code changes, run a reviewer subagent before summarizing.
+Don't overengineer solutions: avoid unnecessary complexity and abstraction. Prefer the simplest thing that could possibly work.
 
 ## writing style guide
 
