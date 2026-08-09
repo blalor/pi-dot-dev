@@ -26,7 +26,8 @@
           "max": "max"
         },
         "compat": {
-          "forceAdaptiveThinking": true
+          "forceAdaptiveThinking": true,
+          "supportsStrictTools": true
         }
       },
       {
@@ -47,7 +48,10 @@
           "cacheWrite": 1.25
         },
         "contextWindow": 200000,
-        "maxTokens": 64000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-haiku-4-5-20251001",
@@ -67,47 +71,10 @@
           "cacheWrite": 1.25
         },
         "contextWindow": 200000,
-        "maxTokens": 64000
-      },
-      {
-        "id": "claude-opus-4-1",
-        "name": "Claude Opus 4.1 (latest)",
-        "api": "anthropic-messages",
-        "provider": "anthropic",
-        "baseUrl": "https://api.anthropic.com",
-        "reasoning": true,
-        "input": [
-          "text",
-          "image"
-        ],
-        "cost": {
-          "input": 15,
-          "output": 75,
-          "cacheRead": 1.5,
-          "cacheWrite": 18.75
-        },
-        "contextWindow": 200000,
-        "maxTokens": 32000
-      },
-      {
-        "id": "claude-opus-4-1-20250805",
-        "name": "Claude Opus 4.1",
-        "api": "anthropic-messages",
-        "provider": "anthropic",
-        "baseUrl": "https://api.anthropic.com",
-        "reasoning": true,
-        "input": [
-          "text",
-          "image"
-        ],
-        "cost": {
-          "input": 15,
-          "output": 75,
-          "cacheRead": 1.5,
-          "cacheWrite": 18.75
-        },
-        "contextWindow": 200000,
-        "maxTokens": 32000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-opus-4-5",
@@ -127,7 +94,10 @@
           "cacheWrite": 6.25
         },
         "contextWindow": 200000,
-        "maxTokens": 64000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-opus-4-5-20251101",
@@ -147,7 +117,10 @@
           "cacheWrite": 6.25
         },
         "contextWindow": 200000,
-        "maxTokens": 64000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-opus-4-6",
@@ -172,7 +145,8 @@
           "max": "max"
         },
         "compat": {
-          "forceAdaptiveThinking": true
+          "forceAdaptiveThinking": true,
+          "supportsStrictTools": true
         }
       },
       {
@@ -200,7 +174,8 @@
         },
         "compat": {
           "forceAdaptiveThinking": true,
-          "supportsTemperature": false
+          "supportsTemperature": false,
+          "supportsStrictTools": true
         }
       },
       {
@@ -228,7 +203,37 @@
         },
         "compat": {
           "forceAdaptiveThinking": true,
-          "supportsTemperature": false
+          "supportsTemperature": false,
+          "supportsStrictTools": true
+        }
+      },
+      {
+        "id": "claude-opus-5",
+        "name": "Claude Opus 5",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://api.anthropic.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "cost": {
+          "input": 5,
+          "output": 25,
+          "cacheRead": 0.5,
+          "cacheWrite": 6.25
+        },
+        "contextWindow": 1000000,
+        "maxTokens": 128000,
+        "thinkingLevelMap": {
+          "xhigh": "xhigh",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsTemperature": false,
+          "supportsStrictTools": true
         }
       },
       {
@@ -249,7 +254,10 @@
           "cacheWrite": 3.75
         },
         "contextWindow": 1000000,
-        "maxTokens": 64000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-sonnet-4-5-20250929",
@@ -269,7 +277,10 @@
           "cacheWrite": 3.75
         },
         "contextWindow": 1000000,
-        "maxTokens": 64000
+        "maxTokens": 64000,
+        "compat": {
+          "supportsStrictTools": true
+        }
       },
       {
         "id": "claude-sonnet-4-6",
@@ -294,7 +305,8 @@
           "max": "max"
         },
         "compat": {
-          "forceAdaptiveThinking": true
+          "forceAdaptiveThinking": true,
+          "supportsStrictTools": true
         }
       },
       {
@@ -321,11 +333,14 @@
           "max": "max"
         },
         "compat": {
-          "forceAdaptiveThinking": true
+          "forceAdaptiveThinking": true,
+          "supportsStrictTools": true
         }
       }
     ],
-    "checkedAt": 1784571181746
+    "checkedAt": 1786233795046,
+    "lastModified": 1786021090000,
+    "etag": "W/\"2174ed7392c0d5376beba2c4ee0b170f\""
   },
   "openai-codex": {
     "models": [
@@ -350,6 +365,9 @@
         "thinkingLevelMap": {
           "xhigh": "xhigh",
           "minimal": "low"
+        },
+        "compat": {
+          "supportsOpenAIGrammarTools": true
         }
       },
       {
@@ -385,6 +403,7 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       },
@@ -412,6 +431,7 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       },
@@ -448,6 +468,7 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       },
@@ -463,17 +484,17 @@
           "image"
         ],
         "cost": {
-          "input": 1,
-          "output": 6,
-          "cacheRead": 0.1,
-          "cacheWrite": 1.25,
+          "input": 0.2,
+          "output": 1.2,
+          "cacheRead": 0.02,
+          "cacheWrite": 0.25,
           "tiers": [
             {
               "inputTokensAbove": 272000,
-              "input": 2,
-              "output": 9,
-              "cacheRead": 0.2,
-              "cacheWrite": 2.5
+              "input": 0.4,
+              "output": 1.8,
+              "cacheRead": 0.04,
+              "cacheWrite": 0.5
             }
           ]
         },
@@ -485,6 +506,7 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       },
@@ -522,6 +544,7 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       },
@@ -537,17 +560,17 @@
           "image"
         ],
         "cost": {
-          "input": 2.5,
-          "output": 15,
-          "cacheRead": 0.25,
-          "cacheWrite": 3.125,
+          "input": 2,
+          "output": 12,
+          "cacheRead": 0.2,
+          "cacheWrite": 2.5,
           "tiers": [
             {
               "inputTokensAbove": 272000,
-              "input": 5,
-              "output": 22.5,
-              "cacheRead": 0.5,
-              "cacheWrite": 6.25
+              "input": 4,
+              "output": 18,
+              "cacheRead": 0.4,
+              "cacheWrite": 5
             }
           ]
         },
@@ -559,11 +582,13 @@
           "minimal": "low"
         },
         "compat": {
+          "supportsOpenAIGrammarTools": true,
           "supportsToolSearch": true
         }
       }
     ],
-    "checkedAt": 1784815728075,
-    "lastModified": 1784811032000
+    "checkedAt": 1786233794755,
+    "lastModified": 1785495292000,
+    "etag": "W/\"400cac2d73673d9fff4c7d0ed22691b0\""
   }
 }

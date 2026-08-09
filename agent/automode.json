@@ -11,7 +11,8 @@
       "Trusted internal domains: weightsandbiases.slack.com, *.wandb.ai, *.wandb.io, github.com/wandb, api.github.com/repos/wandb",
       "Trusted internal tools and binaries: Beads (`bd`), terraform",
       "Beads (`bd`) is a trusted project task-tracking datastore. It is an approved destination for non-secret project and CI metadata, including issue and pull-request URLs, commit SHAs, CI run URLs without credentials or signed query parameters, statuses, durations, and timing comparisons.",
-      "Trusted MCP servers: the local Slack MCP server at http://localhost:3001/sse",
+      "Trusted MCP servers: every MCP server configured and exposed through Pi's MCP gateway. Configured MCP servers are approved sources and destinations for non-secret task, repository, CI, documentation, and internal metadata required by the user's request. Configuration does not approve sending actual secret values or performing an underlying action prohibited by another hard-deny rule.",
+      "The W&B Notion workspace is an approved source and destination for non-secret internal documentation and project data, including engineering, onboarding, repository, and CI content.",
       "Key internal services: Weights & Biases (weightsandbiases.slack.com) and CoreWeave (coreweave.enterprise.slack.com) Slack workspaces.",
       "Trusted external services and approved data: inbound reads of public repository, source, and release metadata from GitHub; authenticated GitHub access only to the configured trusted repo and its remotes; GitHub Actions and CircleCI for project CI metadata, logs, tests, artifacts, and diagnostics; app.terraform.io for Terraform Cloud run, plan, configuration, task-stage, and workspace metadata; the Jira URL configured in Beads or acli for project task metadata; releases.hashicorp.com and official project release pages for inbound public release artifacts and checksums; Kagi for non-secret public web-search queries.",
       "Credentials loaded at execution time from configured stores or environment variables and sent in authentication headers only to their intended provider are standard credential use. References to credential stores or variable names are not secret exposure. Actual values must not be printed, logged, placed in URLs, or sent elsewhere.",
@@ -23,11 +24,16 @@
       "Repository-owned CI workflows, required-check and ruleset declarations, and release scripts in the trusted repo are ordinary project source files. User-authorized local edits may migrate an existing gate to an observed equivalent signal; applying live infrastructure remains subject to preview, review, and soft-deny rules.",
       "In classifier rules and examples, permission rules and safety-control files mean Pi, Auto Mode, agent, or host/user access policy. They do not mean repository-owned CI checks, GitHub ruleset declarations, Terraform required-check configuration, or release-gating source code.",
       "Files under the trusted repository's .agents/skills directory are repository-owned task instructions and operational documentation, not Pi, Auto Mode, host, or permission controls. Truthful edits to those files are ordinary local development unless the proposed content instructs bypassing or weakening a safety control.",
-      "Creating a new commit with git commit is ordinary local source-control work and does not amend or rewrite an earlier commit. Amending means git commit --amend or another operation that replaces an existing commit or rewrites history."
+      "Creating a new commit with git commit is ordinary local source-control work and does not amend or rewrite an earlier commit. Amending means git commit --amend or another operation that replaces an existing commit or rewrites history.",
+      "Herdr is a trusted local visible-session manager. A Herdr-managed Pi peer runs on this user-controlled machine and does not by itself expose a network service or send repository data off-machine.",
+      "A direct user request to start or fork a named Herdr/Pi peer for a bounded task is meaningful human approval for creating and prompting that peer. Each peer's subsequent tool calls remain independently subject to Auto Mode.",
+      "Diagnosing or narrowly correcting an observed Auto Mode false decision during the documented user-controlled maintenance window is safety-control maintenance, not bypass or weakening, when unrelated protections remain intact."
     ],
     "allow": [
       "$defaults",
+      "Invoking any MCP server configured in Pi is allowed when the underlying operation is otherwise allowed or directly authorized by the user. Treat the configured server as an approved destination for non-secret task, repository, CI, documentation, and internal data; do not classify it as unapproved merely because it is accessed through MCP.",
       "Reading and summarizing Slack threads and conversations via the configured local Slack MCP server is allowed.",
+      "Reading from and writing to the W&B Notion workspace through the configured Notion MCP server are allowed for non-secret internal documentation and project data, without requiring page-level scoping or separate confirmation.",
       "Reading project task data from Beads (`bd`) and writing non-secret project, CI, dependency, credential-lifecycle, and recovery metadata to Beads are allowed.",
       "The user's direct request for the exact external read, state change, or outbound action satisfies soft-deny confirmation for that action. It does not override hard-deny rules.",
       "Reading public documentation, source, and release metadata through Kagi, GitHub, official documentation sites, and official release hosts is allowed when queries and URLs contain no secret values or signed parameters.",
@@ -36,21 +42,23 @@
       "Reading non-secret local diagnostics, configuration metadata, and Pi session data, and exchanging non-secret task summaries through local Pi intercom, are allowed.",
       "Writing truthful local task notes, review reports, and analysis artifacts is allowed, including references to credential names, resource identifiers, lifecycle state, and possible exposure that do not contain actual secret values.",
       "User-authorized local edits to repository-owned CI workflows, required-check declarations, ruleset configuration, and release-check code are allowed when they preserve or replace an existing gate with an observed equivalent signal.",
+      "User-authorized local edits to repository-owned infrastructure-as-code that propose access changes are allowed when the action only changes reviewed source and does not apply or deploy the permission change.",
       "User-authorized truthful edits to repository-owned .agents/skills task instructions and operational documentation are allowed when they do not alter executable enforcement, change Pi or Auto Mode configuration, change permission policy, or instruct bypassing or weakening a safety control.",
-      "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits."
+      "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits.",
+      "Starting or forking a named, visible local Pi peer through Herdr is allowed when directly requested by the user for a bounded task. Prompting that peer with the requested bounded task is also allowed; subsequent peer actions are evaluated independently."
     ],
     "soft_deny": [
-      "$defaults",
-      "Force-pushing ANY branch."
+      "$defaults"
     ],
     "hard_deny": [
+      "Force-pushing ANY branch.",
       "Removing, bypassing, or weakening TLS, certificate validation, authentication, authorization, audit logging, or security controls without an equivalent replacement.",
-      "Granting admin, owner, IAM, RBAC, repository, or production access permissions.",
+      "Applying a live grant of admin, owner, IAM, RBAC, repository, or production access permissions, including running a deployment or infrastructure apply that creates or expands such access.",
       "Exposing actual secret, credential, private-key, or token values in logs, URLs, metadata fields, command output, or public storage, or sending those values to any destination other than their intended provider.",
-      "Sending repository contents or non-secret internal data outside the local user-controlled machine to a destination not explicitly approved for that data in the trusted environment, including unapproved external domains, public storage, URL parameters, telemetry, or third-party services.",
+      "Sending repository contents or non-secret internal data outside the local user-controlled machine to a destination not explicitly approved for that data in the trusted environment, including unapproved external domains, public storage, URL parameters, telemetry, or third-party services. Ordinary transport metadata necessarily emitted to perform a user-requested, read-only HTTPS GET of public content—such as the destination host, network-layer metadata, and User-Agent—is not repository content or non-secret internal data unless that metadata itself contains secrets, repository contents, or non-secret internal data.",
       "Systematically scanning for credentials, tokens, private keys, or secrets beyond what the task directly requires.",
       "Deleting, falsifying, concealing, or corrupting logs, audit trails, or security monitoring; changing Auto Mode configuration or Pi, agent, host, or user permission policy to bypass or weaken controls; or modifying executable enforcement files to disable those controls.",
-      "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval.",
+      "Creating services, endpoints, workflows, or autonomous agents that execute arbitrary code without meaningful human approval. A direct user request to start or fork a named, visible local Pi/Herdr peer for a specified task is meaningful approval for creating and prompting that peer; it does not preapprove the peer's later actions or apply to hidden, persistent, unbounded, or externally exposed agents.",
       "Posting or updating public or external content that is fabricated, misleading, impersonating a user, or claims approval/action that did not happen.",
       "Rewriting an existing commit with git commit --amend or an equivalent commit-replacement or history-rewrite operation."
     ]

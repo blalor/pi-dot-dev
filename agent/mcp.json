@@ -3,6 +3,33 @@
         "slack": {
             "type": "http",
             "url": "http://localhost:3001/sse"
+        },
+        "notion": {
+            "url": "https://mcp.notion.com/mcp",
+            "auth": "oauth"
+        },
+        "currents": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@currents/mcp"
+            ],
+            "env": {
+                "CURRENTS_API_KEY": "***REMOVED***"
+            }
+        },
+        "devin": {
+            "url": "https://mcp.devin.ai/mcp",
+            "auth": "bearer",
+            "bearerToken": "!security find-generic-password -a \"$USER\" -s pi-devin-mcp -w",
+            "lifecycle": "lazy",
+            "requestTimeoutMs": 300000,
+            "approveTools": [
+                "devin_session_create",
+                "devin_playbook_manage",
+                "devin_knowledge_manage",
+                "devin_schedule_manage"
+            ]
         }
     }
 }

@@ -138,6 +138,14 @@
                     "maxTokens": 16384
                 },
                 {
+                    "id": "MiniMaxAI/MiniMax-M3",
+                    "name": "MiniMax M3 (W&B)",
+                    "reasoning": false,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
                     "id": "moonshotai/Kimi-K2.7-Code",
                     "name": "Moonshot AI Kimi K2.7 Code (W&B)",
                     "reasoning": true,
@@ -287,6 +295,162 @@
                     "reasoning": false,
                     "input": ["text"],
                     "contextWindow": 262000,
+                    "maxTokens": 16384
+                }
+            ]
+        },
+        "wandb-qa": {
+            "name": "W&B Inference QA",
+            "baseUrl": "https://api.qa.inference.wandb.ai/v1",
+            "api": "openai-completions",
+            "authHeader": true,
+            "compat": {
+                "supportsDeveloperRole": false,
+                "supportsReasoningEffort": false
+            },
+            "models": [
+                {
+                    "id": "moonshotai/Kimi-K2.7-Code",
+                    "name": "Moonshot AI Kimi K2.7 Code (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "deepseek-ai/DeepSeek-V3.1",
+                    "name": "DeepSeek V3.1 (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 161000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "Qwen/Qwen3.6-35B-A3B",
+                    "name": "Qwen3.6 35B A3B (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "MiniMaxAI/MiniMax-M2.5",
+                    "name": "MiniMax M2.5 (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 197000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "JetBrains/Mellum2-12B-A2.5B-Instruct",
+                    "name": "JetBrains Mellum2 12B A2.5B (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "openai/gpt-oss-20b",
+                    "name": "OpenAI GPT OSS 20B (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "moonshotai/Kimi-K2.6",
+                    "name": "Moonshot AI Kimi K2.6 (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "ibm-granite/granite-40-micro",
+                    "name": "IBM Granite 4.0 Micro (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
+                    "name": "NVIDIA Nemotron 3 Ultra (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "google/gemma-4-31B-it",
+                    "name": "Google Gemma 4 31B (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "meta-llama/Llama-3.1-8B-Instruct",
+                    "name": "Meta Llama 3.1 8B (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "MiniMaxAI/MiniMax-M3",
+                    "name": "MiniMax M3 (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text", "image"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "OpenPipe/Qwen3-14B-Instruct",
+                    "name": "OpenPipe Qwen3 14B Instruct (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 32800,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8",
+                    "name": "NVIDIA Nemotron 3 Super 120B (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "openai/gpt-oss-120b",
+                    "name": "OpenAI GPT OSS 120B (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 131000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "zai-org/GLM-5.1",
+                    "name": "Z.AI GLM 5.1 (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 203000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "zai-org/GLM-5.2",
+                    "name": "Z.AI GLM 5.2 (W&B QA)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 262000,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "meta-llama/Llama-3.1-70B-Instruct",
+                    "name": "Meta Llama 3.1 70B (W&B QA)",
+                    "reasoning": false,
+                    "input": ["text"],
+                    "contextWindow": 128000,
                     "maxTokens": 16384
                 }
             ]
