@@ -5,13 +5,14 @@ import {
     appendFriction,
     formatFrictionSummary,
     getFriction,
+    migrateFrictions,
     searchFrictions,
     updateFriction,
     type FrictionScopeTarget,
 } from "./lib.ts";
 
 const DIGEST_TYPE = "friction-scope-digest";
-const OWN_TOOL_NAMES = new Set(["log_friction", "search_friction", "get_friction", "update_friction"]);
+const OWN_TOOL_NAMES = new Set(["log_friction", "search_friction", "get_friction", "update_friction", "migrate_frictions"]);
 const LOCAL_TOOL_PATTERN = /^(?:frog(?:[_:-].*)?|papercuts?(?:[_:-].*)?|vent(?:[_:-].*)?|friction(?:[_:-].*)?)$/i;
 const SCOPE_PARAMETER = Type.Optional(StringEnum(["project", "harness"] as const, {
     description: "project (default) for repository-scoped friction, or harness for Pi-wide friction",
@@ -233,6 +234,29 @@ export default function frictionLogExtension(pi: ExtensionAPI) {
         },
         renderCall(args, theme, context) {
             return renderToolCall(`update friction (${args.operation})`, args.id, theme, context);
+        },
+    }));
+
+    pi.registerTool(defineTool({
+        name: "migrate_frictions",
+        label: "Migrate Frictions",
+        description: "Move all remaining legacy JSONL frictions in one scope into per-friction directories.",
+        parameters: Type.Object({ scope: SCOPE_PARAMETER }),
+        async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+            signal?.throwIfAborted();
+            const result = await migrateFrictions({
+                cwd: ctx.cwd,
+                source: "agent",
+                scope: params.scope,
+                ...commonMetadata(ctx),
+            });
+            return {
+                content: [{ type: "text", text: `Migrated ${result.migrated} friction record(s).` }],
+                details: result,
+            };
+        },
+        renderCall(_args, theme, context) {
+            return renderToolCall("migrate frictions", undefined, theme, context);
         },
     }));
 

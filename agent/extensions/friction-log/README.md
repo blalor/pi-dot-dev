@@ -18,7 +18,7 @@ Records one friction with an optional workaround:
 }
 ```
 
-The tool normalizes the message before writing. Case, whitespace, and punctuation-only differences map to the same fingerprint. A duplicate report is not appended. If the duplicate supplies a new workaround, the log appends a workaround event to the existing friction ID.
+The tool normalizes the message before writing. Case, whitespace, and punctuation-only differences map to the same fingerprint. A duplicate report does not create another directory. If it supplies a new workaround, the existing `friction.json` is updated.
 
 ### `search_friction`
 
@@ -47,7 +47,7 @@ Returns the folded record for one full friction ID or an unambiguous prefix, inc
 
 ### `update_friction`
 
-Appends a lifecycle or revision event without rewriting the JSONL history. A revision can replace the message, the complete workaround list, or both:
+Updates a friction's stored details. A revision can replace the message, the complete workaround list, or both:
 
 ```json
 {
@@ -58,7 +58,19 @@ Appends a lifecycle or revision event without rewriting the JSONL history. A rev
 }
 ```
 
-Use `resolve` to remove a fixed friction from normal searches and startup digests. Use `supersede` with `supersededBy` to point a duplicate at its canonical record. `get_friction` continues to retrieve resolved and superseded records.
+Use `resolve` to remove a fixed friction from normal searches and startup digests. Use `supersede` with `supersededBy` to point a duplicate at its canonical record. `get_friction` continues to retrieve resolved and superseded records. Updating a legacy JSONL entry writes its directory and removes its events from the legacy file.
+
+### `migrate_frictions`
+
+Moves every remaining legacy JSONL entry in one scope into the directory layout:
+
+```json
+{
+    "scope": "harness"
+}
+```
+
+Malformed or unrecognized JSONL lines are retained rather than discarded.
 
 ## Scopes
 
@@ -67,7 +79,7 @@ Every tool accepts one of these scopes:
 - `project` is the default. It groups checkouts by canonical Git remote. A Git repository without a remote uses its root directory. A non-Git directory uses the current directory.
 - `harness` stores Pi-specific friction in a shared `harness--pi` scope, independent of the current repository.
 
-Use `harness` for Pi RPC behavior, extension loading, provider behavior, session handling, or other problems that follow the agent harness across repositories. The selected scope controls deduplication and retrieval. The JSONL record still includes the working directory and Pi session ID where the friction occurred.
+Use `harness` for Pi RPC behavior, extension loading, provider behavior, session handling, or other problems that follow the agent harness across repositories. The selected scope controls deduplication and retrieval. Each friction record includes the working directory and Pi session ID where it occurred.
 
 ## Progressive disclosure
 
@@ -116,11 +128,15 @@ Logs live under:
 Each scope directory contains:
 
 - `scope.json`, which identifies the scope kind and key.
-- `friction.jsonl`, an append-only event log.
+- one `<friction-id>/` directory per friction;
+- `<friction-id>/friction.json`, which stores the current details;
+- optional supporting artifacts beside `friction.json` in the future.
 
-A friction event contains its stable ID, normalized fingerprint, timestamp, source, message, optional workaround, working directory, model, and session ID. Later workaround and update events refer to the friction ID. Readers fold these events into one logical record. Revision events replace folded fields, while resolve and supersede events retain history but exclude inactive records from ordinary search results and startup digests.
+A details file contains the stable ID, normalized fingerprint, creation and update timestamps, source, message, workarounds, lifecycle status, working directory, model, and session ID. Resolve and supersede operations retain the details but exclude inactive records from ordinary search results and startup digests.
 
-The extension uses a per-scope write lock. Concurrent writers therefore check deduplication against the latest log state before appending. Existing records from the earlier write-only format remain readable and participate in deduplication.
+The extension still reads the legacy `friction.jsonl` event log. New frictions use the directory layout. Modifying a legacy friction writes `friction.json` and removes that friction's events from JSONL. `migrate_frictions` performs the same move for every recognized legacy entry in a scope.
+
+The extension uses a per-scope write lock and atomic file replacement. Concurrent writers check deduplication against both storage formats before writing.
 
 The runtime log directory is ignored by this repository's `.gitignore`.
 

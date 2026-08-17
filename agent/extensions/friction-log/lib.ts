@@ -1,9 +1,9 @@
 import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants } from "node:fs";
-import { appendFile, mkdir, open, readFile, realpath, stat, unlink, writeFile } from "node:fs/promises";
+import { mkdir, open, readFile, readdir, realpath, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
@@ -114,6 +114,19 @@ export interface UpdateFrictionOptions {
 export interface UpdateFrictionResult {
     entry: KnownFriction;
     file: string;
+    scope: FrictionScope;
+}
+
+export interface MigrateFrictionsOptions extends ReadFrictionOptions {
+    source: FrictionSource;
+    model?: string;
+    sessionId?: string;
+}
+
+export interface MigrateFrictionsResult {
+    migrated: number;
+    files: string[];
+    legacyFile: string;
     scope: FrictionScope;
 }
 
@@ -306,6 +319,33 @@ function pathsForScope(scope: FrictionScope, rootDir = defaultLogRoot()) {
     };
 }
 
+function frictionFile(scopeDir: string, id: string): string {
+    return join(scopeDir, id, "friction.json");
+}
+
+async function storedFrictionExists(scopeDir: string, id: string): Promise<boolean> {
+    try {
+        await stat(frictionFile(scopeDir, id));
+        return true;
+    } catch (error) {
+        if (error instanceof Error && "code" in error && error.code === "ENOENT") return false;
+        throw error;
+    }
+}
+
+async function writeStoredFriction(scopeDir: string, entry: KnownFriction): Promise<string> {
+    const file = frictionFile(scopeDir, entry.id);
+    await mkdir(dirname(file), { recursive: true, mode: 0o700 });
+    const temporary = join(dirname(file), `.friction.json.${process.pid}.${randomUUID()}.tmp`);
+    await writeFile(temporary, `${JSON.stringify({ version: 1, ...entry }, null, 4)}\n`, {
+        encoding: "utf8",
+        mode: 0o600,
+        flag: constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY,
+    });
+    await rename(temporary, file);
+    return file;
+}
+
 async function ensureScope(scope: FrictionScope, rootDir?: string) {
     const paths = pathsForScope(scope, rootDir);
     await mkdir(paths.scopeDir, { recursive: true, mode: 0o700 });
@@ -466,10 +506,122 @@ function foldRecords(records: unknown[]): KnownFriction[] {
     return [...new Set(byFingerprint.values())];
 }
 
+function storedFriction(raw: unknown): KnownFriction | undefined {
+    if (!raw || typeof raw !== "object") return undefined;
+    const record = raw as Record<string, unknown>;
+    const id = stringValue(record.id);
+    const message = stringValue(record.message);
+    const createdAt = stringValue(record.createdAt);
+    const updatedAt = stringValue(record.updatedAt);
+    if (!id || !message || !createdAt || !updatedAt) return undefined;
+    const status = record.status === "resolved" || record.status === "superseded" ? record.status : "active";
+    const workarounds = Array.isArray(record.workarounds)
+        ? record.workarounds.map((value) => stringValue(value)).filter((value): value is string => Boolean(value))
+        : [];
+    return {
+        id,
+        fingerprint: stringValue(record.fingerprint) ?? frictionFingerprint(message),
+        createdAt,
+        updatedAt,
+        source: record.source === "user" ? "user" : "agent",
+        message,
+        workarounds,
+        status,
+        ...(status === "superseded" && stringValue(record.supersededBy)
+            ? { supersededBy: stringValue(record.supersededBy) }
+            : {}),
+        cwd: stringValue(record.cwd) ?? "",
+        ...(stringValue(record.model) ? { model: stringValue(record.model) } : {}),
+        ...(stringValue(record.sessionId) ? { sessionId: stringValue(record.sessionId) } : {}),
+    };
+}
+
+async function readStoredFrictions(scopeDir: string): Promise<KnownFriction[]> {
+    let children;
+    try {
+        children = await readdir(scopeDir, { withFileTypes: true });
+    } catch (error) {
+        if (error instanceof Error && "code" in error && error.code === "ENOENT") return [];
+        throw error;
+    }
+
+    const entries: KnownFriction[] = [];
+    for (const child of children) {
+        if (!child.isDirectory() || !child.name.startsWith("fr_")) continue;
+        try {
+            const parsed = JSON.parse(await readFile(frictionFile(scopeDir, child.name), "utf8"));
+            const entry = storedFriction(parsed);
+            if (entry && entry.id === child.name) entries.push(entry);
+        } catch {
+            // Keep other frictions readable when one stored file is missing or malformed.
+        }
+    }
+    return entries;
+}
+
+async function combinedFrictions(paths: ReturnType<typeof pathsForScope>): Promise<KnownFriction[]> {
+    const legacy = foldRecords(await readRecords(paths.logFile));
+    const stored = await readStoredFrictions(paths.scopeDir);
+    const byId = new Map(legacy.map((entry) => [entry.id, entry]));
+    for (const entry of stored) {
+        for (const [id, candidate] of byId) {
+            if (id === entry.id || candidate.fingerprint === entry.fingerprint) byId.delete(id);
+        }
+        byId.set(entry.id, entry);
+    }
+    return [...byId.values()];
+}
+
+async function removeLegacyEntry(logFile: string, entry: KnownFriction): Promise<void> {
+    let contents: string;
+    try {
+        contents = await readFile(logFile, "utf8");
+    } catch (error) {
+        if (error instanceof Error && "code" in error && error.code === "ENOENT") return;
+        throw error;
+    }
+
+    const aliases = new Set([entry.id]);
+    const parsed = contents.split("\n").map((line) => {
+        if (!line.trim()) return { line, record: undefined };
+        try {
+            return { line, record: JSON.parse(line) as Record<string, unknown> };
+        } catch {
+            return { line, record: undefined };
+        }
+    });
+    for (const { record } of parsed) {
+        if (!record || record.type === "workaround" || record.type === "update") continue;
+        const message = stringValue(record.message);
+        if (!message) continue;
+        const fingerprint = stringValue(record.fingerprint) ?? frictionFingerprint(message);
+        if (fingerprint === entry.fingerprint) {
+            aliases.add(stringValue(record.id) ?? `fr_${hash(fingerprint)}`);
+        }
+    }
+
+    const kept = parsed.filter(({ line, record }) => {
+        if (!line.trim()) return false;
+        if (!record) return true;
+        if (record.type === "workaround" || record.type === "update") {
+            return !aliases.has(stringValue(record.frictionId) ?? "");
+        }
+        const message = stringValue(record.message);
+        if (!message) return true;
+        const fingerprint = stringValue(record.fingerprint) ?? frictionFingerprint(message);
+        const id = stringValue(record.id) ?? `fr_${hash(fingerprint)}`;
+        return !aliases.has(id) && fingerprint !== entry.fingerprint;
+    });
+    await writeFile(logFile, kept.length > 0 ? `${kept.map(({ line }) => line).join("\n")}\n` : "", {
+        encoding: "utf8",
+        mode: 0o600,
+    });
+}
+
 export async function readFrictions(options: ReadFrictionOptions): Promise<FrictionCollection> {
     const scope = await resolveFrictionScope(options.cwd, options.scope);
     const paths = pathsForScope(scope, options.rootDir);
-    const entries = foldRecords(await readRecords(paths.logFile));
+    const entries = await combinedFrictions(paths);
     return { entries, total: entries.length, file: paths.logFile, scope };
 }
 
@@ -552,7 +704,7 @@ export async function appendFriction(options: AppendFrictionOptions): Promise<Ap
         const message = normalizeMessage(options.message);
         const workaround = normalizeWorkaround(options.workaround);
         const fingerprint = frictionFingerprint(message);
-        const entries = foldRecords(await readRecords(paths.logFile));
+        const entries = await combinedFrictions(paths);
         const existing = entries.find((entry) => entry.fingerprint === fingerprint);
 
         if (existing) {
@@ -560,62 +712,39 @@ export async function appendFriction(options: AppendFrictionOptions): Promise<Ap
                 ? existing.workarounds.some((value) => frictionFingerprint(value) === frictionFingerprint(workaround))
                 : false;
             if (workaround && !workaroundAlreadyKnown) {
-                const update: WorkaroundRecord = {
-                    type: "workaround",
-                    frictionId: existing.id,
-                    timestamp: new Date().toISOString(),
-                    source: options.source,
-                    workaround,
-                    cwd: scope.cwd,
-                    ...(options.model ? { model: options.model } : {}),
-                    ...(options.sessionId ? { sessionId: options.sessionId } : {}),
-                };
-                await appendFile(paths.logFile, `${JSON.stringify(update)}\n`, { encoding: "utf8", mode: 0o600 });
                 existing.workarounds.push(workaround);
-                existing.updatedAt = update.timestamp;
+                existing.updatedAt = new Date().toISOString();
+                const file = await writeStoredFriction(paths.scopeDir, existing);
+                await removeLegacyEntry(paths.logFile, existing);
+                return { entry: existing, file, scope, duplicate: true, workaroundAdded: true };
             }
             return {
                 entry: existing,
-                file: paths.logFile,
+                file: await storedFrictionExists(paths.scopeDir, existing.id)
+                    ? frictionFile(paths.scopeDir, existing.id)
+                    : paths.logFile,
                 scope,
                 duplicate: true,
-                workaroundAdded: Boolean(workaround && !workaroundAlreadyKnown),
+                workaroundAdded: false,
             };
         }
 
-        const record: FrictionRecord = {
-            type: "friction",
+        const timestamp = new Date().toISOString();
+        const entry: KnownFriction = {
             id: `fr_${hash(fingerprint)}`,
             fingerprint,
-            timestamp: new Date().toISOString(),
+            createdAt: timestamp,
+            updatedAt: timestamp,
             source: options.source,
             message,
-            ...(workaround ? { workaround } : {}),
+            workarounds: workaround ? [workaround] : [],
+            status: "active",
             cwd: scope.cwd,
             ...(options.model ? { model: options.model } : {}),
             ...(options.sessionId ? { sessionId: options.sessionId } : {}),
         };
-        await appendFile(paths.logFile, `${JSON.stringify(record)}\n`, { encoding: "utf8", mode: 0o600 });
-
-        return {
-            entry: {
-                id: record.id,
-                fingerprint,
-                createdAt: record.timestamp,
-                updatedAt: record.timestamp,
-                source: record.source,
-                message,
-                workarounds: workaround ? [workaround] : [],
-                status: "active",
-                cwd: record.cwd,
-                ...(record.model ? { model: record.model } : {}),
-                ...(record.sessionId ? { sessionId: record.sessionId } : {}),
-            },
-            file: paths.logFile,
-            scope,
-            duplicate: false,
-            workaroundAdded: Boolean(workaround),
-        };
+        const file = await writeStoredFriction(paths.scopeDir, entry);
+        return { entry, file, scope, duplicate: false, workaroundAdded: Boolean(workaround) };
     } finally {
         await release();
     }
@@ -627,23 +756,13 @@ export async function updateFriction(options: UpdateFrictionOptions): Promise<Up
     const release = await acquireLock(paths.lockFile);
 
     try {
-        const entries = foldRecords(await readRecords(paths.logFile));
+        const entries = await combinedFrictions(paths);
         const entry = entries.find((candidate) => candidate.id === options.id)
             ?? entries.filter((candidate) => candidate.id.startsWith(options.id)).at(0);
         if (!entry || entries.filter((candidate) => candidate.id.startsWith(options.id)).length > 1) {
             throw new Error(`No unambiguous friction record matches ${options.id}`);
         }
-
-        const update: FrictionUpdateRecord = {
-            type: "update",
-            frictionId: entry.id,
-            timestamp: new Date().toISOString(),
-            source: options.source,
-            operation: options.operation,
-            cwd: scope.cwd,
-            ...(options.model ? { model: options.model } : {}),
-            ...(options.sessionId ? { sessionId: options.sessionId } : {}),
-        };
+        const legacyIdentity = { ...entry };
 
         if (options.operation === "revise") {
             if (options.message === undefined && options.workarounds === undefined) {
@@ -654,27 +773,49 @@ export async function updateFriction(options: UpdateFrictionOptions): Promise<Up
                 const fingerprint = frictionFingerprint(message);
                 const collision = entries.find((candidate) => candidate.id !== entry.id && candidate.fingerprint === fingerprint);
                 if (collision) throw new Error(`Revised message duplicates ${collision.id}`);
-                update.message = message;
+                entry.message = message;
+                entry.fingerprint = fingerprint;
             }
-            if (options.workarounds !== undefined) {
-                update.workarounds = normalizeWorkarounds(options.workarounds);
-            }
+            if (options.workarounds !== undefined) entry.workarounds = normalizeWorkarounds(options.workarounds);
+        } else if (options.operation === "resolve") {
+            entry.status = "resolved";
+            delete entry.supersededBy;
         } else if (options.operation === "supersede") {
             if (!options.supersededBy) throw new Error("A superseding friction ID is required");
-            const target = entries.find((candidate) => candidate.id === options.supersededBy)
-                ?? entries.filter((candidate) => candidate.id.startsWith(options.supersededBy!)).at(0);
-            if (!target || entries.filter((candidate) => candidate.id.startsWith(options.supersededBy!)).length > 1) {
+            const matches = entries.filter((candidate) => candidate.id.startsWith(options.supersededBy!));
+            const target = entries.find((candidate) => candidate.id === options.supersededBy) ?? matches.at(0);
+            if (!target || matches.length > 1) {
                 throw new Error(`No unambiguous superseding friction matches ${options.supersededBy}`);
             }
             if (target.id === entry.id) throw new Error("A friction cannot supersede itself");
-            update.supersededBy = target.id;
+            entry.status = "superseded";
+            entry.supersededBy = target.id;
         }
 
-        await appendFile(paths.logFile, `${JSON.stringify(update)}\n`, { encoding: "utf8", mode: 0o600 });
-        const updatedEntries = foldRecords(await readRecords(paths.logFile));
-        const updated = updatedEntries.find((candidate) => candidate.id === entry.id);
-        if (!updated) throw new Error(`Updated friction ${entry.id} could not be read`);
-        return { entry: updated, file: paths.logFile, scope };
+        entry.updatedAt = new Date().toISOString();
+        const file = await writeStoredFriction(paths.scopeDir, entry);
+        await removeLegacyEntry(paths.logFile, legacyIdentity);
+        return { entry, file, scope };
+    } finally {
+        await release();
+    }
+}
+
+export async function migrateFrictions(options: MigrateFrictionsOptions): Promise<MigrateFrictionsResult> {
+    const scope = await resolveFrictionScope(options.cwd, options.scope);
+    const paths = await ensureScope(scope, options.rootDir);
+    const release = await acquireLock(paths.lockFile);
+
+    try {
+        const legacy = foldRecords(await readRecords(paths.logFile));
+        const stored = await readStoredFrictions(paths.scopeDir);
+        const storedIds = new Set(stored.map((entry) => entry.id));
+        const files: string[] = [];
+        for (const entry of legacy) {
+            if (!storedIds.has(entry.id)) files.push(await writeStoredFriction(paths.scopeDir, entry));
+            await removeLegacyEntry(paths.logFile, entry);
+        }
+        return { migrated: files.length, files, legacyFile: paths.logFile, scope };
     } finally {
         await release();
     }

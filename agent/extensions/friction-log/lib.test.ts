@@ -8,6 +8,7 @@ import {
     canonicalizeRemote,
     formatFrictionSummary,
     getFriction,
+    migrateFrictions,
     normalizeMessage,
     readFrictions,
     resolveFrictionScope,
@@ -120,7 +121,7 @@ test("harness scope is shared across repositories and isolated from project fric
     }
 });
 
-test("appendFriction writes one JSONL record under the scope directory", async () => {
+test("appendFriction writes one per-friction JSON file under the scope directory", async () => {
     const parent = await temporaryDirectory("friction-append-");
     try {
         const repo = join(parent, "repo");
@@ -136,20 +137,18 @@ test("appendFriction writes one JSONL record under the scope directory", async (
             sessionId: "session-123",
             rootDir: logs,
         });
-        const lines = (await readFile(result.file, "utf8")).trim().split("\n");
-        const record = JSON.parse(lines[0]);
-        const scope = JSON.parse(await readFile(join(dirname(result.file), "scope.json"), "utf8"));
+        const record = JSON.parse(await readFile(result.file, "utf8"));
+        const scopeDirectory = dirname(dirname(result.file));
+        const scope = JSON.parse(await readFile(join(scopeDirectory, "scope.json"), "utf8"));
 
-        assert.equal(lines.length, 1);
-        assert.equal(record.type, "friction");
+        assert.equal(record.version, 1);
         assert.match(record.id, /^fr_[a-f0-9]{12}$/);
         assert.equal(record.message, "A confusing command needed a retry.");
         assert.equal(record.source, "user");
         assert.equal(record.cwd, repo);
         assert.equal(record.sessionId, "session-123");
-        assert.equal(record.scope, undefined);
         assert.equal(scope.key, "github.com/example/project");
-        assert.ok(result.file.startsWith(logs));
+        assert.equal(result.file, join(scopeDirectory, record.id, "friction.json"));
     } finally {
         await rm(parent, { recursive: true, force: true });
     }
@@ -189,7 +188,7 @@ test("duplicate writes reuse a friction and append only a new workaround", async
             workaround: "pass the path relative to apps web",
             rootDir: logs,
         });
-        const lines = (await readFile(first.file, "utf8")).trim().split("\n");
+        const stored = JSON.parse(await readFile(first.file, "utf8"));
         const collection = await readFrictions({ cwd: repo, rootDir: logs });
 
         assert.equal(first.duplicate, false);
@@ -198,7 +197,7 @@ test("duplicate writes reuse a friction and append only a new workaround", async
         assert.equal(updated.duplicate, true);
         assert.equal(updated.workaroundAdded, true);
         assert.equal(repeatedWorkaround.workaroundAdded, false);
-        assert.equal(lines.length, 2);
+        assert.equal(stored.version, 1);
         assert.equal(collection.total, 1);
         assert.deepEqual(collection.entries[0].workarounds, ["Pass the path relative to apps/web."]);
     } finally {
@@ -213,13 +212,11 @@ test("legacy friction records participate in deduplication and retrieval", async
         const logs = join(parent, "logs");
         await mkdir(repo);
         git(repo, "init");
-        const initial = await appendFriction({
-            cwd: repo,
-            source: "agent",
-            message: "placeholder",
-            rootDir: logs,
-        });
-        await writeFile(initial.file, `${JSON.stringify({
+        const scope = await resolveFrictionScope(repo);
+        const scopeDirectory = join(logs, scope.id);
+        const legacyFile = join(scopeDirectory, "friction.jsonl");
+        await mkdir(scopeDirectory, { recursive: true });
+        await writeFile(legacyFile, `${JSON.stringify({
             timestamp: "2026-01-01T00:00:00.000Z",
             source: "agent",
             message: "Legacy friction has no ID.",
@@ -239,6 +236,8 @@ test("legacy friction records participate in deduplication and retrieval", async
         assert.equal(collection.total, 1);
         assert.match(collection.entries[0].id, /^fr_/);
         assert.deepEqual(collection.entries[0].workarounds, ["Use the migrated reader."]);
+        assert.equal(await readFile(legacyFile, "utf8"), "");
+        assert.equal(JSON.parse(await readFile(duplicate.file, "utf8")).version, 1);
     } finally {
         await rm(parent, { recursive: true, force: true });
     }
@@ -281,7 +280,7 @@ test("search, lookup, and summaries progressively disclose known friction", asyn
     }
 });
 
-test("revision events replace folded fields without rewriting history", async () => {
+test("revisions replace fields in the per-friction JSON file", async () => {
     const parent = await temporaryDirectory("friction-revise-");
     try {
         const repo = join(parent, "repo");
@@ -305,11 +304,10 @@ test("revision events replace folded fields without rewriting history", async ()
             workarounds: ["The supported workaround.", "the supported workaround"],
             rootDir: logs,
         });
-        const lines = (await readFile(original.file, "utf8")).trim().split("\n");
+        const stored = JSON.parse(await readFile(original.file, "utf8"));
 
-        assert.equal(lines.length, 2);
-        assert.equal(JSON.parse(lines[0]).message, "The original friction message.");
-        assert.equal(JSON.parse(lines[1]).type, "update");
+        assert.equal(stored.version, 1);
+        assert.equal(stored.message, "The corrected friction message.");
         assert.equal(revised.entry.message, "The corrected friction message.");
         assert.deepEqual(revised.entry.workarounds, ["The supported workaround."]);
         assert.equal(revised.entry.status, "active");
@@ -368,7 +366,76 @@ test("resolved and superseded frictions remain retrievable but leave search resu
     }
 });
 
-test("concurrent appends preserve JSONL records", async () => {
+test("imperative migration moves legacy entries and preserves malformed lines", async () => {
+    const parent = await temporaryDirectory("friction-migrate-");
+    try {
+        const repo = join(parent, "repo");
+        const logs = join(parent, "logs");
+        await mkdir(repo);
+        git(repo, "init");
+        const scope = await resolveFrictionScope(repo);
+        const scopeDirectory = join(logs, scope.id);
+        const legacyFile = join(scopeDirectory, "friction.jsonl");
+        await mkdir(scopeDirectory, { recursive: true });
+        await writeFile(legacyFile, [
+            JSON.stringify({ timestamp: "2026-01-01T00:00:00.000Z", source: "agent", message: "First legacy friction.", cwd: repo }),
+            "not-json",
+            JSON.stringify({ timestamp: "2026-01-02T00:00:00.000Z", source: "user", message: "Second legacy friction.", cwd: repo }),
+            "",
+        ].join("\n"));
+
+        const before = await readFrictions({ cwd: repo, rootDir: logs });
+        const migration = await migrateFrictions({ cwd: repo, source: "agent", rootDir: logs });
+        const after = await readFrictions({ cwd: repo, rootDir: logs });
+
+        assert.equal(before.total, 2);
+        assert.equal(migration.migrated, 2);
+        assert.equal(after.total, 2);
+        assert.equal(await readFile(legacyFile, "utf8"), "not-json\n");
+        for (const file of migration.files) assert.equal(JSON.parse(await readFile(file, "utf8")).version, 1);
+    } finally {
+        await rm(parent, { recursive: true, force: true });
+    }
+});
+
+test("updating one legacy friction migrates only that entry", async () => {
+    const parent = await temporaryDirectory("friction-update-migrate-");
+    try {
+        const repo = join(parent, "repo");
+        const logs = join(parent, "logs");
+        await mkdir(repo);
+        git(repo, "init");
+        const scope = await resolveFrictionScope(repo);
+        const scopeDirectory = join(logs, scope.id);
+        const legacyFile = join(scopeDirectory, "friction.jsonl");
+        await mkdir(scopeDirectory, { recursive: true });
+        await writeFile(legacyFile, [
+            JSON.stringify({ timestamp: "2026-01-01T00:00:00.000Z", source: "agent", message: "Resolve this legacy friction.", cwd: repo }),
+            JSON.stringify({ timestamp: "2026-01-02T00:00:00.000Z", source: "agent", message: "Keep this legacy friction.", cwd: repo }),
+            "",
+        ].join("\n"));
+        const before = await readFrictions({ cwd: repo, rootDir: logs });
+        const target = before.entries.find((entry) => entry.message.startsWith("Resolve"));
+        assert.ok(target);
+
+        const result = await updateFriction({
+            cwd: repo,
+            source: "agent",
+            id: target.id,
+            operation: "resolve",
+            rootDir: logs,
+        });
+        const legacyContents = await readFile(legacyFile, "utf8");
+
+        assert.equal(result.entry.status, "resolved");
+        assert.match(legacyContents, /Keep this legacy friction/);
+        assert.doesNotMatch(legacyContents, /Resolve this legacy friction/);
+    } finally {
+        await rm(parent, { recursive: true, force: true });
+    }
+});
+
+test("concurrent appends preserve per-friction JSON files", async () => {
     const parent = await temporaryDirectory("friction-concurrent-");
     try {
         const repo = join(parent, "repo");
@@ -384,10 +451,10 @@ test("concurrent appends preserve JSONL records", async () => {
                 rootDir: logs,
             })),
         );
-        const lines = (await readFile(results[0].file, "utf8")).trim().split("\n");
-        const messages = lines.map((line) => JSON.parse(line).message).sort();
+        const files = new Set(results.map((result) => result.file));
+        const messages = await Promise.all([...files].map(async (file) => JSON.parse(await readFile(file, "utf8")).message));
 
-        assert.equal(lines.length, 20);
+        assert.equal(files.size, 20);
         assert.equal(new Set(messages).size, 20);
     } finally {
         await rm(parent, { recursive: true, force: true });
@@ -410,9 +477,10 @@ test("concurrent duplicate writes produce one logical and physical friction reco
                 rootDir: logs,
             })),
         );
-        const lines = (await readFile(results[0].file, "utf8")).trim().split("\n");
+        const files = new Set(results.map((result) => result.file));
 
-        assert.equal(lines.length, 1);
+        assert.equal(files.size, 1);
+        assert.equal(JSON.parse(await readFile(results[0].file, "utf8")).message, "The same concurrent friction occurred.");
         assert.equal(results.filter((result) => !result.duplicate).length, 1);
     } finally {
         await rm(parent, { recursive: true, force: true });
