@@ -83,9 +83,9 @@ Use `harness` for Pi RPC behavior, extension loading, provider behavior, session
 
 ## Progressive disclosure
 
-Before the first agent turn in a session, the extension searches both project and harness scopes using the user's request. It injects a bounded digest of matching entries. When no entry matches, it uses recent entries. The digest is stored in the Pi session so resumed sessions do not receive it again.
+Before the first agent turn in a session, the extension injects visible guidance to capture expensive operational learning: reusable findings and verified workarounds discovered through non-trivial investigation of undocumented, misleading, or model-unknown tool and environment behavior. The guidance excludes ordinary implementation details, bugs, and failed attempts without a verified reusable lesson.
 
-The digest lists only messages, IDs, and a small number of workarounds. Agents can call `search_friction` for more candidates and `get_friction` for full metadata.
+The extension also searches project and harness scopes using the user's request and adds a bounded digest of matching entries when available. The custom message is stored in the Pi session so resumed sessions do not receive it again. It lists only messages, IDs, and a small number of workarounds. Agents can call `search_friction` for more candidates and `get_friction` for full metadata.
 
 ## Slash commands
 
