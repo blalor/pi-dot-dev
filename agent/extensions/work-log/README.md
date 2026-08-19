@@ -14,6 +14,8 @@ The extension summarizes a work episode at these boundaries:
 - During normal session shutdown
 - When the user runs `/work-log`
 
+Run `/work-log show` to read episodes already persisted for the active session. This query reads local daily JSONL files directly and does not wait for or call the summary model. It does not include work since the most recent checkpoint.
+
 A new agent request cancels the pending idle checkpoint. Related requests completed within the idle window are summarized as one episode. Shutdown capture is best effort because a killed process cannot finish a model request.
 
 The summarizer returns `SKIP` when the episode contains no meaningful outcome. Skipped ranges still advance the session cursor, so they are not reconsidered later.
@@ -108,9 +110,11 @@ Before sending evidence to the summary model, the extension redacts common crede
 
 Pattern-based redaction is not a complete secret scanner. Episode records may contain repository paths, commit subjects, issue references, and short descriptions of private work. Pending shutdown transcripts are redacted, clipped to the same size limit as foreground summaries, stored with owner-only permissions, and deleted after successful processing. Model credentials are passed to the detached worker through a pipe and are not written to the pending file. The `agent/work-log/` runtime directory is excluded from this repository through `.gitignore`.
 
-## Manual checkpoint
+## Session commands
 
 `/work-log` waits for active agent work to settle, then forces a checkpoint. Normal operation does not require this command.
+
+`/work-log show` immediately displays every persisted episode whose session ID matches the active session. It does not force a checkpoint, so unsummarized work in the current episode is not shown.
 
 Run `/reload` after installing or changing the extension.
 

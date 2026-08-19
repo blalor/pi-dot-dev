@@ -9,8 +9,10 @@ import {
     listPendingWorkFiles,
     parseWorkSummary,
     queuePendingWorkEpisode,
+    readSessionWorkEpisodes,
     readWorkLogState,
     redactSensitiveText,
+    renderSessionWorkLog,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
@@ -111,6 +113,52 @@ test("pending shutdown episodes are durable and isolated from daily records", as
     } finally {
         await rm(root, { recursive: true, force: true });
     }
+});
+
+test("current-session queries read and render only matching persisted episodes", async () => {
+    const root = await temporaryDirectory("work-log-session-query-");
+    try {
+        const first = {
+            id: "episode-1",
+            startedAt: "2026-08-06T10:00:00.000Z",
+            endedAt: "2026-08-06T10:30:00.000Z",
+            generatedAt: "2026-08-06T10:31:00.000Z",
+            sessionId: "session-current",
+            cwd: "/work/project",
+            remote: "github.com/example/project",
+            fromEntryId: "a",
+            toEntryId: "b",
+            accomplished: ["Implemented session queries."],
+            decisions: [],
+            artifacts: [],
+            validation: ["Focused tests passed."],
+            blockers: [],
+            next: [],
+        } satisfies WorkEpisode;
+        await appendWorkEpisode(root, first);
+        await appendWorkEpisode(root, { ...first, id: "episode-other", sessionId: "session-other" });
+        await appendWorkEpisode(root, {
+            ...first,
+            id: "episode-2",
+            startedAt: "2026-08-07T09:00:00.000Z",
+            endedAt: "2026-08-07T09:15:00.000Z",
+            accomplished: ["Documented the command."],
+        });
+
+        const episodes = await readSessionWorkEpisodes(root, "session-current");
+        assert.deepEqual(episodes.map((episode) => episode.id), ["episode-1", "episode-2"]);
+        const report = renderSessionWorkLog("session-current", episodes);
+        assert.match(report, /Persisted episodes: 2/);
+        assert.match(report, /Implemented session queries\./);
+        assert.match(report, /Documented the command\./);
+        assert.doesNotMatch(report, /session-other/);
+    } finally {
+        await rm(root, { recursive: true, force: true });
+    }
+});
+
+test("current-session rendering explains when no episodes are persisted", () => {
+    assert.match(renderSessionWorkLog("session-empty", []), /No work episodes have been recorded/);
 });
 
 test("daily episode append and session cursor persistence use separate paths", async () => {

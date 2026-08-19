@@ -250,3 +250,83 @@ export async function appendWorkEpisode(rootDir: string, episode: WorkEpisode): 
     await appendFile(file, `${JSON.stringify(episode)}\n`, { encoding: "utf8", mode: 0o600 });
     return file;
 }
+
+async function dailyWorkLogFiles(rootDir: string): Promise<string[]> {
+    const files: string[] = [];
+    let years;
+    try {
+        years = await readdir(rootDir, { withFileTypes: true });
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return files;
+        throw error;
+    }
+    for (const year of years.filter((entry) => entry.isDirectory() && /^\d{4}$/.test(entry.name))) {
+        const yearDir = join(rootDir, year.name);
+        const months = await readdir(yearDir, { withFileTypes: true });
+        for (const month of months.filter((entry) => entry.isDirectory() && /^\d{2}$/.test(entry.name))) {
+            const monthDir = join(yearDir, month.name);
+            const names = await readdir(monthDir, { withFileTypes: true });
+            for (const entry of names) {
+                if (entry.isFile() && /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(entry.name)) {
+                    files.push(join(monthDir, entry.name));
+                }
+            }
+        }
+    }
+    return files.sort();
+}
+
+export async function readSessionWorkEpisodes(rootDir: string, sessionId: string): Promise<WorkEpisode[]> {
+    const episodes: WorkEpisode[] = [];
+    const seen = new Set<string>();
+    for (const file of await dailyWorkLogFiles(rootDir)) {
+        const content = await readFile(file, "utf8");
+        for (const [index, line] of content.split("\n").entries()) {
+            if (!line.trim()) continue;
+            let episode: WorkEpisode;
+            try {
+                episode = JSON.parse(line) as WorkEpisode;
+            } catch (error) {
+                const reason = error instanceof Error ? error.message : String(error);
+                throw new Error(`${file}:${index + 1}: invalid JSON: ${reason}`);
+            }
+            if (episode.sessionId !== sessionId || seen.has(episode.id)) continue;
+            seen.add(episode.id);
+            episodes.push(episode);
+        }
+    }
+    return episodes.sort((left, right) => left.startedAt.localeCompare(right.startedAt));
+}
+
+function displayTimestamp(timestamp: string): string {
+    const value = new Date(timestamp);
+    const date = `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+    const time = `${String(value.getHours()).padStart(2, "0")}:${String(value.getMinutes()).padStart(2, "0")}`;
+    return `${date} ${time}`;
+}
+
+export function renderSessionWorkLog(sessionId: string, episodes: WorkEpisode[]): string {
+    const lines = ["# Work log for current session", "", `Session: \`${sessionId}\``, `Persisted episodes: ${episodes.length}`, ""];
+    if (episodes.length === 0) {
+        lines.push("No work episodes have been recorded for this session yet.");
+        return lines.join("\n");
+    }
+    const categories: Array<[Exclude<keyof WorkSummary, "decision">, string]> = [
+        ["accomplished", "Accomplished"],
+        ["decisions", "Decisions"],
+        ["artifacts", "Artifacts"],
+        ["validation", "Validation"],
+        ["blockers", "Blockers"],
+        ["next", "Next"],
+    ];
+    for (const episode of episodes) {
+        lines.push(`## ${displayTimestamp(episode.startedAt)} to ${displayTimestamp(episode.endedAt)}`, "");
+        lines.push(`Project: ${episode.remote ?? episode.cwd}`, "");
+        for (const [field, heading] of categories) {
+            const items = episode[field];
+            if (!Array.isArray(items) || items.length === 0) continue;
+            lines.push(`### ${heading}`, ...items.map((item) => `- ${item}`), "");
+        }
+    }
+    return lines.join("\n").trimEnd();
+}

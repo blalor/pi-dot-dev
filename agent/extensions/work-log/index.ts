@@ -5,18 +5,22 @@ import { type Api, type Model } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
 import {
     convertToLlm,
+    getMarkdownTheme,
     serializeConversation,
     type ExtensionAPI,
     type ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
+import { Markdown } from "@earendil-works/pi-tui";
 import {
     appendWorkEpisode,
     defaultWorkLogRoot,
     listPendingWorkFiles,
     parseWorkSummary,
     queuePendingWorkEpisode,
+    readSessionWorkEpisodes,
     readWorkLogState,
     redactSensitiveText,
+    renderSessionWorkLog,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
@@ -27,6 +31,7 @@ import {
 } from "./lib.ts";
 
 const DEFAULT_MODEL = "openai-codex/gpt-5.4-mini";
+const SESSION_LOG_ENTRY = "work-log-session-query";
 const SUMMARY_MODEL = process.env.PI_WORK_LOG_MODEL ?? DEFAULT_MODEL;
 const IDLE_MINUTES = parsePositiveNumber(process.env.PI_WORK_LOG_IDLE_MINUTES, 20);
 const IDLE_MS = IDLE_MINUTES * 60_000;
@@ -181,6 +186,11 @@ async function summarizeEpisode(
 
 export default function workLogExtension(pi: ExtensionAPI) {
     const rootDir = defaultWorkLogRoot();
+    pi.registerEntryRenderer(SESSION_LOG_ENTRY, (entry) => {
+        const data = entry.data as { markdown?: unknown };
+        const markdown = typeof data.markdown === "string" ? data.markdown : "Work-log query output is unavailable.";
+        return new Markdown(markdown, 1, 1, getMarkdownTheme());
+    });
     let state: WorkLogState = { updatedAt: new Date(0).toISOString() };
     let sessionId = "";
     let generation = 0;
@@ -419,8 +429,30 @@ export default function workLogExtension(pi: ExtensionAPI) {
     });
 
     pi.registerCommand("work-log", {
-        description: "Force a work-episode checkpoint now",
-        handler: async (_args, ctx) => {
+        description: "Checkpoint work or show the current session's persisted log",
+        getArgumentCompletions: (prefix) => "show".startsWith(prefix.trim())
+            ? [{ value: "show", label: "show", description: "Show persisted episodes for this session" }]
+            : null,
+        handler: async (args, ctx) => {
+            const action = args.trim();
+            if (action === "show") {
+                try {
+                    const episodes = await readSessionWorkEpisodes(rootDir, sessionId);
+                    pi.appendEntry(SESSION_LOG_ENTRY, {
+                        markdown: renderSessionWorkLog(sessionId, episodes),
+                    });
+                    ctx.ui.notify(`Found ${episodes.length} persisted work-log episode${episodes.length === 1 ? "" : "s"} for this session.`, "info");
+                } catch (error) {
+                    const reason = error instanceof Error ? error.message : String(error);
+                    ctx.ui.notify(`Could not read the current session's work log: ${reason}`, "error");
+                }
+                return;
+            }
+            if (action) {
+                ctx.ui.notify("Usage: /work-log [show]", "warning");
+                return;
+            }
+
             clearIdleTimer();
             if (!ctx.isIdle()) await ctx.waitForIdle();
             ctx.ui.notify("Creating work-log checkpoint...", "info");
