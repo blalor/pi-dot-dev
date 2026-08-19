@@ -306,26 +306,64 @@ function displayTimestamp(timestamp: string): string {
     return `${date} ${time}`;
 }
 
+type SummaryCategory = Exclude<keyof WorkSummary, "decision">;
+
+const SUMMARY_CATEGORIES: Array<[SummaryCategory, string]> = [
+    ["accomplished", "Accomplished"],
+    ["decisions", "Decisions"],
+    ["artifacts", "Artifacts"],
+    ["validation", "Validation"],
+    ["blockers", "Blockers"],
+    ["next", "Next"],
+];
+
+function sessionProjects(episodes: WorkEpisode[]): string[] {
+    return [...new Set(episodes.map((episode) => episode.remote ?? episode.cwd))];
+}
+
+function sessionHeader(title: string, sessionId: string, episodes: WorkEpisode[]): string[] {
+    const lines = [title, "", `Session: \`${sessionId}\``, `Persisted episodes: ${episodes.length}`];
+    if (episodes.length === 0) return lines;
+    lines.push(`Period: ${displayTimestamp(episodes[0].startedAt)} to ${displayTimestamp(episodes.at(-1)!.endedAt)}`);
+    const projects = sessionProjects(episodes);
+    if (projects.length === 1) lines.push(`Project: ${projects[0]}`);
+    else lines.push("Projects:", ...projects.map((project) => `- ${project}`));
+    lines.push("");
+    return lines;
+}
+
+function uniqueSummaryItems(episodes: WorkEpisode[], field: SummaryCategory): string[] {
+    const items = episodes.flatMap((episode) => episode[field]);
+    return [...new Set(items)];
+}
+
 export function renderSessionWorkLog(sessionId: string, episodes: WorkEpisode[]): string {
-    const lines = ["# Work log for current session", "", `Session: \`${sessionId}\``, `Persisted episodes: ${episodes.length}`, ""];
+    const lines = sessionHeader("# Work log for current session", sessionId, episodes);
     if (episodes.length === 0) {
-        lines.push("No work episodes have been recorded for this session yet.");
+        lines.push("", "No work episodes have been recorded for this session yet.");
         return lines.join("\n");
     }
-    const categories: Array<[Exclude<keyof WorkSummary, "decision">, string]> = [
-        ["accomplished", "Accomplished"],
-        ["decisions", "Decisions"],
-        ["artifacts", "Artifacts"],
-        ["validation", "Validation"],
-        ["blockers", "Blockers"],
-        ["next", "Next"],
-    ];
+    for (const [field, heading] of SUMMARY_CATEGORIES) {
+        const items = uniqueSummaryItems(episodes, field);
+        if (items.length === 0) continue;
+        lines.push(`## ${heading}`, ...items.map((item) => `- ${item}`), "");
+    }
+    return lines.join("\n").trimEnd();
+}
+
+export function renderSessionWorkLogEpisodes(sessionId: string, episodes: WorkEpisode[]): string {
+    const lines = sessionHeader("# Work-log episodes for current session", sessionId, episodes);
+    if (episodes.length === 0) {
+        lines.push("", "No work episodes have been recorded for this session yet.");
+        return lines.join("\n");
+    }
+    const includeProject = sessionProjects(episodes).length > 1;
     for (const episode of episodes) {
         lines.push(`## ${displayTimestamp(episode.startedAt)} to ${displayTimestamp(episode.endedAt)}`, "");
-        lines.push(`Project: ${episode.remote ?? episode.cwd}`, "");
-        for (const [field, heading] of categories) {
+        if (includeProject) lines.push(`Project: ${episode.remote ?? episode.cwd}`, "");
+        for (const [field, heading] of SUMMARY_CATEGORIES) {
             const items = episode[field];
-            if (!Array.isArray(items) || items.length === 0) continue;
+            if (items.length === 0) continue;
             lines.push(`### ${heading}`, ...items.map((item) => `- ${item}`), "");
         }
     }

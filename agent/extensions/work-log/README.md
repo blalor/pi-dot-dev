@@ -14,7 +14,7 @@ The extension summarizes a work episode at these boundaries:
 - During normal session shutdown
 - When the user runs `/work-log`
 
-Run `/work-log show` to read episodes already persisted for the active session. This query reads local daily JSONL files directly and does not wait for or call the summary model. It does not include work since the most recent checkpoint.
+Run `/work-log show` to read a roll-up of work already persisted for the active session. Use `/work-log episodes` for the chronological episode details. These queries read local daily JSONL files directly and do not wait for or call the summary model. They do not include work since the most recent checkpoint.
 
 A new agent request cancels the pending idle checkpoint. Related requests completed within the idle window are summarized as one episode. Shutdown capture is best effort because a killed process cannot finish a model request.
 
@@ -114,7 +114,11 @@ Pattern-based redaction is not a complete secret scanner. Episode records may co
 
 `/work-log` waits for active agent work to settle, then forces a checkpoint. Normal operation does not require this command.
 
-`/work-log show` immediately displays every persisted episode whose session ID matches the active session. It does not force a checkpoint, so unsummarized work in the current episode is not shown.
+`/work-log show` immediately displays a deduplicated roll-up of every persisted episode whose session ID matches the active session. Project metadata appears once when the session has one project; sessions containing multiple projects list all projects.
+
+`/work-log episodes` displays the same records chronologically, preserving episode boundaries. It includes per-episode project metadata only when the session spans multiple projects.
+
+Query output is shown in a temporary Markdown widget and is not written to the session history or sent to the model. The widget clears when the next agent request starts. Neither query forces a checkpoint, so unsummarized work in the current episode is not shown.
 
 Run `/reload` after installing or changing the extension.
 

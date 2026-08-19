@@ -13,6 +13,7 @@ import {
     readWorkLogState,
     redactSensitiveText,
     renderSessionWorkLog,
+    renderSessionWorkLogEpisodes,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
@@ -151,7 +152,15 @@ test("current-session queries read and render only matching persisted episodes",
         assert.match(report, /Persisted episodes: 2/);
         assert.match(report, /Implemented session queries\./);
         assert.match(report, /Documented the command\./);
+        assert.equal(report.match(/Project: github\.com\/example\/project/g)?.length, 1);
+        assert.equal(report.match(/Focused tests passed\./g)?.length, 1);
+        assert.doesNotMatch(report, /^## 2026-/m);
         assert.doesNotMatch(report, /session-other/);
+
+        const details = renderSessionWorkLogEpisodes("session-current", episodes);
+        assert.match(details, /^## 2026-08-06 .* to 2026-08-06 .*$/m);
+        assert.match(details, /^## 2026-08-07 .* to 2026-08-07 .*$/m);
+        assert.equal(details.match(/Project: github\.com\/example\/project/g)?.length, 1);
     } finally {
         await rm(root, { recursive: true, force: true });
     }
