@@ -340,6 +340,10 @@ export async function forgetMemory(options: {
     return memory;
 }
 
+function hasExplicitDurabilitySignal(evidence: string): boolean {
+    return /\b(?:i|we)\s+(?:strongly\s+)?prefer\b|\b(?:i|we)\s+(?:do not|don't|never)\s+want\b|\b(?:always|never)\b|\b(?:from now on|going forward|in the future|across (?:all )?(?:repositories|projects)|for all (?:repositories|projects)|user-wide|standing (?:rule|preference)|please remember|remember that|keep in mind)\b/i.test(evidence);
+}
+
 export function parseCandidateExtraction(text: string, sources: ExtractionSource[]): ExtractedCandidate[] {
     const candidate = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
     let parsed: unknown;
@@ -357,12 +361,11 @@ export function parseCandidateExtraction(text: string, sources: ExtractionSource
         if (!raw || typeof raw !== "object") continue;
         const value = raw as Record<string, unknown>;
         if (value.scope !== "user" && value.scope !== "project") continue;
-        if (value.kind !== "preference" && value.kind !== "workflow" && value.kind !== "decision" && value.kind !== "fact") continue;
+        if (value.kind !== "preference" && value.kind !== "workflow") continue;
         if (typeof value.statement !== "string" || typeof value.sourceEntryId !== "string" || typeof value.evidence !== "string" || typeof value.rationale !== "string") continue;
         const source = byId.get(value.sourceEntryId);
-        if (!source || !source.text.includes(value.evidence)) continue;
-        if (value.scope === "user" && source.role !== "user") continue;
-        if (value.kind === "preference" && source.role !== "user") continue;
+        if (!source || source.role !== "user" || !source.text.includes(value.evidence)) continue;
+        if (!hasExplicitDurabilitySignal(value.evidence)) continue;
         result.push({
             scope: value.scope,
             kind: value.kind,
