@@ -27,6 +27,12 @@ export interface ReminderSearchResult extends ReminderRecord {
     relevance: number;
 }
 
+export interface ParsedTodoInput {
+    title: string;
+    dueAt?: string;
+    datePhrase?: string;
+}
+
 export interface ProcessResult {
     stdout: string;
     stderr: string;
@@ -73,7 +79,9 @@ function run(argv) {
 
     if (action === "add") {
         const list = ensureList(app, listName);
-        const reminder = app.Reminder({ name: payload.title, body: payload.notes });
+        const properties = { name: payload.title, body: payload.notes };
+        if (payload.dueAt) properties.dueDate = new Date(payload.dueAt);
+        const reminder = app.Reminder(properties);
         list.reminders.push(reminder);
         return JSON.stringify({ listCreatedOrFound: true, reminder: reminderRecord(reminder) });
     }
@@ -122,6 +130,85 @@ export function parseReminderContext(notes: string): PiTodoContext | undefined {
     } catch {
         return undefined;
     }
+}
+
+const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
+const DATE_SUFFIX = new RegExp(
+    String.raw`\s+(?:on\s+)?(?:(today|tomorrow|tonight)|(?:(this|next)\s+)?(${WEEKDAYS.join("|")})|(\d{4}-\d{2}-\d{2}))(?:\s+(?:(?:at\s+)?(morning|afternoon|evening|night|noon|midnight)|(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?))?\s*$`,
+    "i",
+);
+
+function namedTime(value: string | undefined): { hour: number; minute: number } | undefined {
+    switch (value?.toLocaleLowerCase()) {
+        case "morning": return { hour: 9, minute: 0 };
+        case "afternoon": return { hour: 13, minute: 0 };
+        case "evening": return { hour: 18, minute: 0 };
+        case "night": return { hour: 20, minute: 0 };
+        case "noon": return { hour: 12, minute: 0 };
+        case "midnight": return { hour: 0, minute: 0 };
+        default: return undefined;
+    }
+}
+
+function clockTime(hourText: string | undefined, minuteText: string | undefined, meridiem: string | undefined): {
+    hour: number;
+    minute: number;
+} | undefined {
+    if (!hourText) return undefined;
+    let hour = Number(hourText);
+    const minute = minuteText ? Number(minuteText) : 0;
+    if (!Number.isInteger(hour) || !Number.isInteger(minute) || minute > 59) return undefined;
+    if (meridiem) {
+        if (hour < 1 || hour > 12) return undefined;
+        if (meridiem.toLocaleLowerCase() === "pm" && hour !== 12) hour += 12;
+        if (meridiem.toLocaleLowerCase() === "am" && hour === 12) hour = 0;
+    } else if (minuteText === undefined || hour > 23) {
+        return undefined;
+    }
+    return { hour, minute };
+}
+
+export function parseTodoInput(input: string, now = new Date()): ParsedTodoInput {
+    const original = input.trim();
+    const match = DATE_SUFFIX.exec(original);
+    if (!match) return { title: original };
+
+    const title = original.slice(0, match.index).trim();
+    if (!title) return { title: original };
+
+    const [phrase, relativeDay, weekdayModifier, weekday, isoDate, timeName, hourText, minuteText, meridiem] = match;
+    const parsedTime = namedTime(timeName) ?? clockTime(hourText, minuteText, meridiem);
+    if ((timeName || hourText) && !parsedTime) return { title: original };
+    const time = parsedTime
+        ?? namedTime(relativeDay?.toLocaleLowerCase() === "tonight" ? "evening" : "morning")!;
+    const due = new Date(now.getTime());
+    due.setSeconds(0, 0);
+
+    if (isoDate) {
+        const [year, month, day] = isoDate.split("-").map(Number);
+        due.setFullYear(year, month - 1, day);
+        if (due.getFullYear() !== year || due.getMonth() !== month - 1 || due.getDate() !== day) {
+            return { title: original };
+        }
+    } else if (weekday) {
+        const target = WEEKDAYS.indexOf(weekday.toLocaleLowerCase() as typeof WEEKDAYS[number]);
+        let daysAhead = (target - now.getDay() + 7) % 7;
+        if (weekdayModifier?.toLocaleLowerCase() === "next") daysAhead += 7;
+        due.setDate(due.getDate() + daysAhead);
+    } else if (relativeDay?.toLocaleLowerCase() === "tomorrow") {
+        due.setDate(due.getDate() + 1);
+    }
+
+    due.setHours(time.hour, time.minute, 0, 0);
+    if (weekday && !weekdayModifier && due.getTime() <= now.getTime()) {
+        due.setDate(due.getDate() + 7);
+    }
+
+    return {
+        title,
+        dueAt: due.toISOString(),
+        datePhrase: phrase.trim(),
+    };
 }
 
 function queryTerms(query: string): string[] {
@@ -187,12 +274,14 @@ export async function addReminder(
     title: string,
     context: PiTodoContext,
     signal?: AbortSignal,
+    dueAt?: string,
 ): Promise<ReminderRecord> {
     const cleanTitle = title.trim();
     if (!cleanTitle) throw new Error("Todo text is required");
     const response = await runJxa(execute, "add", {
         title: cleanTitle,
         notes: formatReminderNotes(context),
+        ...(dueAt ? { dueAt } : {}),
     }, signal) as { reminder?: ReminderRecord };
     if (!response.reminder) throw new Error("Reminders did not return the created todo");
     return response.reminder;
