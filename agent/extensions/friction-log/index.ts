@@ -12,6 +12,7 @@ import {
 } from "./lib.ts";
 
 const DIGEST_TYPE = "friction-scope-digest";
+export const CAPTURE_GUIDANCE = "Capture expensive operational learning: when work requires non-trivial investigation into undocumented, misleading, or model-unknown tool or environment behavior, log the reusable finding and verified workaround with the preferred project friction tool or log_friction. Use project scope for repository-specific behavior and harness scope for Pi, provider, or runtime behavior. Do not log ordinary implementation details, bugs, or failed attempts without a verified reusable lesson.";
 const OWN_TOOL_NAMES = new Set(["log_friction", "search_friction", "get_friction", "update_friction", "migrate_frictions"]);
 const LOCAL_TOOL_PATTERN = /^(?:frog(?:[_:-].*)?|papercuts?(?:[_:-].*)?|vent(?:[_:-].*)?|friction(?:[_:-].*)?)$/i;
 const SCOPE_PARAMETER = Type.Optional(StringEnum(["project", "harness"] as const, {
@@ -55,6 +56,11 @@ function splitCommandArgs(args: string): { scope: FrictionScopeTarget; message: 
         message: rest.slice(0, separator).trim(),
         workaround: rest.slice(separator + 4).trim() || undefined,
     };
+}
+
+export function buildFrictionContext(summaries: string[], maxChars = 1_200): string {
+    const combined = [CAPTURE_GUIDANCE, ...summaries].join("\n\n");
+    return combined.length <= maxChars ? combined : `${combined.slice(0, maxChars - 1).trimEnd()}…`;
 }
 
 function digestAlreadyPresent(ctx: ExtensionContext): boolean {
@@ -280,13 +286,10 @@ export default function frictionLogExtension(pi: ExtensionAPI) {
             summaries.push(formatFrictionSummary(result.scope, entries, { total: result.total, maxChars: 700 }));
             scopeIds.push(result.scope.id);
         }
-        if (summaries.length === 0) return;
-
-        const combined = summaries.join("\n\n");
         return {
             message: {
                 customType: DIGEST_TYPE,
-                content: combined.length <= 1_200 ? combined : `${combined.slice(0, 1_199).trimEnd()}…`,
+                content: buildFrictionContext(summaries),
                 display: true,
                 details: { scopeIds },
             },
