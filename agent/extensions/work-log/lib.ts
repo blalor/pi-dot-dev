@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { readFileSync, readdirSync } from "node:fs";
 import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -251,21 +252,21 @@ export async function appendWorkEpisode(rootDir: string, episode: WorkEpisode): 
     return file;
 }
 
-async function dailyWorkLogFiles(rootDir: string): Promise<string[]> {
+function dailyWorkLogFiles(rootDir: string): string[] {
     const files: string[] = [];
     let years;
     try {
-        years = await readdir(rootDir, { withFileTypes: true });
+        years = readdirSync(rootDir, { withFileTypes: true });
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === "ENOENT") return files;
         throw error;
     }
     for (const year of years.filter((entry) => entry.isDirectory() && /^\d{4}$/.test(entry.name))) {
         const yearDir = join(rootDir, year.name);
-        const months = await readdir(yearDir, { withFileTypes: true });
+        const months = readdirSync(yearDir, { withFileTypes: true });
         for (const month of months.filter((entry) => entry.isDirectory() && /^\d{2}$/.test(entry.name))) {
             const monthDir = join(yearDir, month.name);
-            const names = await readdir(monthDir, { withFileTypes: true });
+            const names = readdirSync(monthDir, { withFileTypes: true });
             for (const entry of names) {
                 if (entry.isFile() && /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(entry.name)) {
                     files.push(join(monthDir, entry.name));
@@ -276,11 +277,11 @@ async function dailyWorkLogFiles(rootDir: string): Promise<string[]> {
     return files.sort();
 }
 
-export async function readSessionWorkEpisodes(rootDir: string, sessionId: string): Promise<WorkEpisode[]> {
+export function readSessionWorkEpisodes(rootDir: string, sessionId: string): WorkEpisode[] {
     const episodes: WorkEpisode[] = [];
     const seen = new Set<string>();
-    for (const file of await dailyWorkLogFiles(rootDir)) {
-        const content = await readFile(file, "utf8");
+    for (const file of dailyWorkLogFiles(rootDir)) {
+        const content = readFileSync(file, "utf8");
         for (const [index, line] of content.split("\n").entries()) {
             if (!line.trim()) continue;
             let episode: WorkEpisode;
