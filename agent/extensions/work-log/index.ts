@@ -437,11 +437,11 @@ export default function workLogExtension(pi: ExtensionAPI) {
             const action = args.trim();
             if (action === "show") {
                 try {
-                    const episodes = await readSessionWorkEpisodes(rootDir, sessionId);
+                    const currentSessionId = ctx.sessionManager.getSessionId();
+                    const episodes = readSessionWorkEpisodes(rootDir, currentSessionId);
                     pi.appendEntry(SESSION_LOG_ENTRY, {
-                        markdown: renderSessionWorkLog(sessionId, episodes),
+                        markdown: renderSessionWorkLog(currentSessionId, episodes),
                     });
-                    ctx.ui.notify(`Found ${episodes.length} persisted work-log episode${episodes.length === 1 ? "" : "s"} for this session.`, "info");
                 } catch (error) {
                     const reason = error instanceof Error ? error.message : String(error);
                     ctx.ui.notify(`Could not read the current session's work log: ${reason}`, "error");

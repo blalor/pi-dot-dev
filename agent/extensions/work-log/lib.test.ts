@@ -145,7 +145,7 @@ test("current-session queries read and render only matching persisted episodes",
             accomplished: ["Documented the command."],
         });
 
-        const episodes = await readSessionWorkEpisodes(root, "session-current");
+        const episodes = readSessionWorkEpisodes(root, "session-current");
         assert.deepEqual(episodes.map((episode) => episode.id), ["episode-1", "episode-2"]);
         const report = renderSessionWorkLog("session-current", episodes);
         assert.match(report, /Persisted episodes: 2/);
