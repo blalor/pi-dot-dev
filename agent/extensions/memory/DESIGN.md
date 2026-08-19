@@ -61,6 +61,9 @@ Implemented under this extension:
 - extraction after settled agent runs;
 - per-session cursors so only new messages are considered;
 - user and assistant text only, excluding tool results and fetched content;
+- assistant text as context only, never as candidate evidence;
+- autonomous capture limited to explicit standing preferences and workflows with a durability signal in the quoted user evidence;
+- feature requirements, implementation decisions, capability lists, project facts, and project decisions excluded from autonomous capture;
 - exact evidence verification against source entries;
 - redaction before model calls and persistence;
 - pending candidate storage;

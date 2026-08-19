@@ -21,7 +21,9 @@ Operational quirks, command surprises, workarounds, and expensive environment di
 
 ## Autonomous extraction
 
-After each settled agent run, the extension sends only new user and assistant text messages to a configured helper model. Tool results and fetched external content are excluded. Candidate writes require an exact evidence quote from an identified source entry. User-scoped memories and preferences must cite a user message.
+After each settled agent run, the extension sends only new user and assistant text messages to a configured helper model. Tool results and fetched external content are excluded. Assistant messages provide context but cannot be candidate evidence.
+
+Autonomous candidates are deliberately limited to explicit standing preferences and stable workflows from user messages. The evidence must itself contain a durability signal such as “I prefer,” “always,” “going forward,” or “remember that.” Feature requirements, implementation decisions, capability lists, and repository facts are rejected; exceptional project facts or decisions can still be saved explicitly with `remember_memory`.
 
 Extraction produces pending candidates, never active memories. Review them with:
 

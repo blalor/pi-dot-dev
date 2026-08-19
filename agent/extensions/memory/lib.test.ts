@@ -146,6 +146,70 @@ test("candidate parsing requires exact evidence and user authority for user scop
     assert.equal(parsed[0].sourceEntryId, "user-1");
 });
 
+test("candidate extraction rejects feature-specific implementation records", () => {
+    const sources: ExtractionSource[] = [
+        {
+            entryId: "assistant-decision",
+            role: "assistant",
+            text: "The parsed phrase will be removed from the reminder title and stored as its due date; ambiguous phrases will remain part of the title rather than guessing.",
+        },
+        {
+            entryId: "assistant-fact",
+            role: "assistant",
+            text: "Supported: today, tomorrow, tonight, weekdays, ISO dates, and named times of day.",
+        },
+        {
+            entryId: "user-feature",
+            role: "user",
+            text: "For this reminder parser, ambiguous phrases should remain in the title.",
+        },
+    ];
+    const parsed = parseCandidateExtraction(JSON.stringify({ candidates: [
+        {
+            scope: "project",
+            kind: "decision",
+            statement: "The reminders parser should leave ambiguous expressions in the title.",
+            sourceEntryId: "assistant-decision",
+            evidence: sources[0].text,
+            rationale: "This could matter when changing this feature later.",
+        },
+        {
+            scope: "project",
+            kind: "fact",
+            statement: "The reminders parser supports several date and time forms.",
+            sourceEntryId: "assistant-fact",
+            evidence: sources[1].text,
+            rationale: "This describes the implemented capability.",
+        },
+        {
+            scope: "project",
+            kind: "workflow",
+            statement: "Leave ambiguous reminder phrases in the title.",
+            sourceEntryId: "user-feature",
+            evidence: sources[2].text,
+            rationale: "This is a feature-specific request, not an explicit standing workflow.",
+        },
+    ] }), sources);
+    assert.deepEqual(parsed, []);
+});
+
+test("candidate extraction requires an explicit durability signal", () => {
+    const sources: ExtractionSource[] = [{
+        entryId: "user-1",
+        role: "user",
+        text: "Use the existing command helper for this change.",
+    }];
+    const parsed = parseCandidateExtraction(JSON.stringify({ candidates: [{
+        scope: "project",
+        kind: "workflow",
+        statement: "Use the existing command helper.",
+        sourceEntryId: "user-1",
+        evidence: sources[0].text,
+        rationale: "It might be useful later.",
+    }] }), sources);
+    assert.deepEqual(parsed, []);
+});
+
 test("autonomous candidates remain pending until approved", async () => {
     const { root, cwd } = await fixture();
     const storage = join(root, "store");
