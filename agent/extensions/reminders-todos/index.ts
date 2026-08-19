@@ -4,6 +4,7 @@ import { resolveProjectScope, type ProjectScope } from "../shared/project-scope.
 import {
     REMINDERS_LIST_NAME,
     addReminder,
+    parseTodoInput,
     readReminders,
     searchReminderRecords,
     type PiTodoContext,
@@ -58,7 +59,8 @@ export default function remindersTodosExtension(pi: ExtensionAPI) {
     const enqueueAdd = async (title: string, ctx: ExtensionContext, signal?: AbortSignal): Promise<ReminderRecord> => {
         let reminder: ReminderRecord | undefined;
         const operation = addTail.then(async () => {
-            reminder = await addReminder(execute, title, await currentContext(ctx), signal);
+            const parsed = parseTodoInput(title);
+            reminder = await addReminder(execute, parsed.title, await currentContext(ctx), signal, parsed.dueAt);
         });
         addTail = operation.catch(() => undefined);
         await operation;
@@ -80,7 +82,8 @@ export default function remindersTodosExtension(pi: ExtensionAPI) {
 
             try {
                 const reminder = await enqueueAdd(text, ctx);
-                ctx.ui.notify(`Added todo to ${REMINDERS_LIST_NAME}: ${reminder.title}`, "info");
+                const due = reminder.dueAt ? ` (due ${reminder.dueAt})` : "";
+                ctx.ui.notify(`Added todo to ${REMINDERS_LIST_NAME}: ${reminder.title}${due}`, "info");
             } catch (error) {
                 const reason = error instanceof Error ? error.message : String(error);
                 ctx.ui.notify(`Could not add todo: ${reason}`, "error");
@@ -91,7 +94,7 @@ export default function remindersTodosExtension(pi: ExtensionAPI) {
     pi.registerTool(defineTool({
         name: "reminders_todos",
         label: "Reminders Todos",
-        description: `Add or search Pi-linked todos in the macOS Reminders list named “${REMINDERS_LIST_NAME}”. Search defaults to incomplete todos linked to the current canonical Git project.`,
+        description: `Add or search Pi-linked todos in the macOS Reminders list named “${REMINDERS_LIST_NAME}”. Add recognizes trailing dates such as “friday morning” or “tomorrow at 3pm”. Search defaults to incomplete todos linked to the current canonical Git project.`,
         promptSnippet: "Add or search project-linked todos in macOS Reminders",
         promptGuidelines: [
             "Use reminders_todos when the user asks to add a todo or search reminders associated with current or prior Pi work.",
@@ -111,8 +114,9 @@ export default function remindersTodosExtension(pi: ExtensionAPI) {
             if (params.action === "add") {
                 if (!params.text?.trim()) throw new Error("text is required when action is add");
                 const reminder = await enqueueAdd(params.text, ctx, signal);
+                const due = reminder.dueAt ? ` (due ${reminder.dueAt})` : "";
                 return {
-                    content: [{ type: "text", text: `Added to ${REMINDERS_LIST_NAME}: ${reminder.title}` }],
+                    content: [{ type: "text", text: `Added to ${REMINDERS_LIST_NAME}: ${reminder.title}${due}` }],
                     details: { reminder },
                 };
             }

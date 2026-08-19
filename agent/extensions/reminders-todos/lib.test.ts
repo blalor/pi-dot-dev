@@ -6,6 +6,7 @@ import {
     addReminder,
     formatReminderNotes,
     parseReminderContext,
+    parseTodoInput,
     readReminders,
     searchReminderRecords,
     type PiTodoContext,
@@ -50,6 +51,38 @@ test("reminder notes preserve human-readable and machine-readable Pi context", (
     assert.deepEqual(parseReminderContext(notes), value);
     assert.equal(parseReminderContext("ordinary reminder notes"), undefined);
     assert.equal(parseReminderContext(`${CONTEXT_PREFIX}{bad json`), undefined);
+});
+
+test("todo input parses trailing natural-language dates in local time", () => {
+    const mondayAfternoon = new Date(2026, 7, 3, 14, 0, 0, 0);
+    const fridayMorning = parseTodoInput("Ship the release friday morning", mondayAfternoon);
+    const fridayAtThree = parseTodoInput("Check deployment Friday at 3pm", mondayAfternoon);
+    const nextFriday = parseTodoInput("Review metrics next friday", mondayAfternoon);
+    const tomorrowEvening = parseTodoInput("Prepare slides tomorrow evening", mondayAfternoon);
+
+    assert.equal(fridayMorning.title, "Ship the release");
+    assert.equal(fridayMorning.datePhrase?.toLocaleLowerCase(), "friday morning");
+    assert.deepEqual(
+        [new Date(fridayMorning.dueAt!).getDay(), new Date(fridayMorning.dueAt!).getHours(), new Date(fridayMorning.dueAt!).getMinutes()],
+        [5, 9, 0],
+    );
+    assert.deepEqual(
+        [new Date(fridayAtThree.dueAt!).getDay(), new Date(fridayAtThree.dueAt!).getHours()],
+        [5, 15],
+    );
+    assert.equal(new Date(nextFriday.dueAt!).getDate(), 14);
+    assert.deepEqual(
+        [new Date(tomorrowEvening.dueAt!).getDate(), new Date(tomorrowEvening.dueAt!).getHours()],
+        [4, 18],
+    );
+});
+
+test("todo input leaves ambiguous or invalid trailing text unchanged", () => {
+    const now = new Date(2026, 7, 3, 14, 0, 0, 0);
+    assert.deepEqual(parseTodoInput("Prepare the friday report", now), { title: "Prepare the friday report" });
+    assert.deepEqual(parseTodoInput("Call support friday at 3", now), { title: "Call support friday at 3" });
+    assert.deepEqual(parseTodoInput("Schedule release 2026-02-30", now), { title: "Schedule release 2026-02-30" });
+    assert.deepEqual(parseTodoInput("friday morning", now), { title: "friday morning" });
 });
 
 test("search prioritizes the current session, then the current project", () => {
@@ -114,12 +147,14 @@ test("Reminders bridge passes values as argv rather than interpolating them into
         };
     };
 
-    const created = await addReminder(execute, `Quote ' and \"double\"`, context());
+    const dueAt = "2026-08-14T13:00:00.000Z";
+    const created = await addReminder(execute, `Quote ' and \"double\"`, context(), undefined, dueAt);
     assert.equal(created.title, `Quote ' and \"double\"`);
     assert.equal(calls[0][4], "add");
     assert.equal(calls[0][5], REMINDERS_LIST_NAME);
     const payload = JSON.parse(calls[0][6]);
     assert.equal(payload.title, `Quote ' and \"double\"`);
+    assert.equal(payload.dueAt, dueAt);
     assert.match(payload.notes, /session-current/);
     assert.doesNotMatch(calls[0][3], /session-current|Quote/);
 });
