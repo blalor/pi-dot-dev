@@ -11,12 +11,15 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const defaultOutput = resolve(projectRoot, ".pi_tmp", "rpc-smoke.jsonl");
 
 function usage() {
-    console.error("Usage: pi-rpc-smoke.mjs [--command <slash-command>] [--output <path>] [--timeout <ms>]");
+    console.error(
+        "Usage: pi-rpc-smoke.mjs [--extension <path>] [--command <slash-command>] [--output <path>] [--timeout <ms>]",
+    );
 }
 
 function parseArgs(argv) {
     const options = {
         command: "/frictions --scope harness",
+        extensions: [],
         output: defaultOutput,
         timeoutMs: 15_000,
     };
@@ -24,7 +27,10 @@ function parseArgs(argv) {
     for (let index = 0; index < argv.length; index += 1) {
         const argument = argv[index];
         const value = argv[index + 1];
-        if (argument === "--command" && value) {
+        if (argument === "--extension" && value) {
+            options.extensions.push(resolve(value));
+            index += 1;
+        } else if (argument === "--command" && value) {
             options.command = value;
             index += 1;
         } else if (argument === "--output" && value) {
@@ -44,6 +50,9 @@ function parseArgs(argv) {
 
     if (!options.command.startsWith("/")) {
         throw new Error("--command must be a slash command");
+    }
+    if (options.extensions.length === 0) {
+        options.extensions.push(resolve(projectRoot, "agent/extensions/friction-log/index.ts"));
     }
     return options;
 }
@@ -74,11 +83,16 @@ async function main() {
     const options = parseArgs(process.argv.slice(2));
     const requestId = `rpc-smoke-${randomUUID()}`;
     const executable = process.env.PI_RPC_BIN ?? resolve(projectRoot, "bin", "pi");
-    const child = spawn(executable, ["--mode", "rpc", "--no-session", "--no-approve"], {
-        cwd: projectRoot,
-        env: process.env,
-        stdio: ["pipe", "pipe", "pipe"],
-    });
+    const extensionArgs = options.extensions.flatMap((extension) => ["--extension", extension]);
+    const child = spawn(
+        executable,
+        ["--mode", "rpc", "--no-session", "--no-approve", "--no-extensions", ...extensionArgs],
+        {
+            cwd: projectRoot,
+            env: process.env,
+            stdio: ["pipe", "pipe", "pipe"],
+        },
+    );
 
     const stdoutLines = [];
     const stderrChunks = [];
