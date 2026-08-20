@@ -17,6 +17,8 @@ cat > "$fake_bin/herdr" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
+printf '%s\n' "$*" >> "$FAKE_INVOCATIONS_FILE"
+
 case "$1 $2" in
     "pane current")
         jq -n \
@@ -43,6 +45,11 @@ case "$1 $2" in
         fi
         printf '%s\n' 'agent started'
         ;;
+    "agent get")
+        jq -n \
+            --arg session "$FAKE_FORK_SESSION_FILE" \
+            '{result:{agent:{agent_status:"idle",agent_session:{value:$session}}}}'
+        ;;
     *)
         printf 'Unexpected fake herdr invocation: %s\n' "$*" >&2
         exit 1
@@ -67,18 +74,34 @@ export FAKE_CWD="$project_root"
 export FAKE_SESSION_FILE="$session_file"
 export FAKE_ATTEMPTS_FILE="$test_directory/attempts"
 export FAKE_SLEEPS_FILE="$test_directory/sleeps"
+export FAKE_INVOCATIONS_FILE="$test_directory/invocations"
+export FAKE_FORK_SESSION_FILE="$test_directory/fork-session.jsonl"
 export FAKE_READY_ATTEMPT=7
+: > "$FAKE_FORK_SESSION_FILE"
 
 output=$("$(dirname "$0")/fork-current-herdr-session.sh" test-fork)
 
 [[ $(<"$FAKE_ATTEMPTS_FILE") == 7 ]]
 [[ $(<"$FAKE_SLEEPS_FILE") == $'0.25\n0.5\n1\n2\n2\n2' ]]
+grep -Fxq 'pane current --current' "$FAKE_INVOCATIONS_FILE"
+grep -Fq -- '-- --fork' "$FAKE_INVOCATIONS_FILE"
+grep -Fq -- '--exclude-tools intercom' "$FAKE_INVOCATIONS_FILE"
 jq -e '
     .label == "test-fork" and
     .workspace == "workspace-1" and
     .tab == "tab-1" and
     .pane == "pane-1" and
-    .checkoutShared == true
-' <<< "$(tail -n 9 <<< "$output")" >/dev/null
+    .checkoutShared == true and
+    .intercomToolEnabled == false
+' <<< "$output" >/dev/null
 
-printf '%s\n' 'herdr session fork retry test passed'
+: > "$FAKE_INVOCATIONS_FILE"
+output=$("$(dirname "$0")/fork-current-herdr-session.sh" --allow-intercom test-fork-with-intercom)
+
+if grep -Fq -- '--exclude-tools intercom' "$FAKE_INVOCATIONS_FILE"; then
+    printf '%s\n' 'intercom exclusion was passed despite --allow-intercom' >&2
+    exit 1
+fi
+jq -e '.label == "test-fork-with-intercom" and .intercomToolEnabled == true' <<< "$output" >/dev/null
+
+printf '%s\n' 'herdr session fork tests passed'
