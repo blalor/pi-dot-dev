@@ -258,40 +258,32 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "microsoft/Phi-4-mini-instruct",
-                    "name": "Microsoft Phi 4 Mini 3.8B (W&B)",
+                    "id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+                    "name": "Qwen3 235B A22B Instruct-2507 (W&B)",
                     "reasoning": false,
                     "input": ["text"],
-                    "contextWindow": 128000,
+                    "contextWindow": 262144,
                     "maxTokens": 16384
                 },
                 {
-                    "id": "moonshotai/Kimi-K2.5",
-                    "name": "Moonshot AI Kimi K2.5 (W&B)",
-                    "reasoning": true,
+                    "id": "Qwen/Qwen3.8-27B",
+                    "name": "Qwen3.8 27B (W&B)",
+                    "reasoning": false,
                     "input": ["text", "image"],
                     "contextWindow": 262000,
                     "maxTokens": 16384
                 },
                 {
-                    "id": "Qwen/Qwen3.5-27B",
-                    "name": "Qwen3.5 27B (W&B)",
-                    "reasoning": true,
-                    "input": ["text", "image"],
-                    "contextWindow": 262000,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
-                    "name": "Qwen3 235B A22B Thinking-2507 (W&B)",
+                    "id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+                    "name": "DeepSeek V4-Flash-0731 (W&B)",
                     "reasoning": true,
                     "input": ["text"],
                     "contextWindow": 262000,
                     "maxTokens": 16384
                 },
                 {
-                    "id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
-                    "name": "Qwen3 235B A22B-2507 (W&B)",
+                    "id": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B",
+                    "name": "NVIDIA Nemotron 3.5 Lightning (W&B)",
                     "reasoning": false,
                     "input": ["text"],
                     "contextWindow": 262000,
