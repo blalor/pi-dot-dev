@@ -1,6 +1,7 @@
-import { type Api, type Model, StringEnum, Type } from "@earendil-works/pi-ai";
+import { StringEnum, Type } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
 import { defineTool, type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { resolveHelperModelRuntime, type HelperModelRuntime } from "../shared/helper-models.ts";
 import {
     appendCandidates,
     defaultMemoryRoot,
@@ -23,8 +24,6 @@ import {
     type MemoryState,
 } from "./lib.ts";
 
-const DEFAULT_MODEL = "openai-codex/gpt-5.4-mini";
-const EXTRACTION_MODEL = process.env.PI_MEMORY_MODEL ?? DEFAULT_MODEL;
 const MAX_EXTRACTION_CHARS = 40_000;
 const MEMORY_KINDS = ["preference", "workflow", "decision", "fact"] as const;
 const MEMORY_SCOPES = ["user", "project"] as const;
@@ -61,25 +60,12 @@ interface BranchEntry {
     message?: unknown;
 }
 
-interface ExtractionRuntime {
-    model: Model<Api>;
-    apiKey: string;
-    headers?: Record<string, string | null>;
-}
-
-function parseModelSpec(spec: string): { provider: string; id: string } | undefined {
-    const slash = spec.indexOf("/");
-    if (slash <= 0 || slash === spec.length - 1) return undefined;
-    return { provider: spec.slice(0, slash), id: spec.slice(slash + 1) };
-}
-
-async function resolveExtractionRuntime(ctx: ExtensionContext): Promise<ExtractionRuntime> {
-    const configured = parseModelSpec(EXTRACTION_MODEL);
-    const model = configured ? ctx.modelRegistry.find(configured.provider, configured.id) : undefined;
-    if (!model) throw new Error(`Memory extraction model ${EXTRACTION_MODEL} is unavailable`);
-    const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
-    if (!auth.ok || !auth.apiKey) throw new Error(auth.ok ? `No API key for ${model.provider}` : auth.error);
-    return { model, apiKey: auth.apiKey, headers: auth.headers };
+function resolveExtractionRuntime(ctx: ExtensionContext): Promise<HelperModelRuntime> {
+    return resolveHelperModelRuntime(ctx, {
+        task: "memory",
+        label: "Memory extraction",
+        environmentValue: process.env.PI_MEMORY_MODEL,
+    });
 }
 
 function responseText(response: Awaited<ReturnType<typeof complete>>): string {
@@ -155,7 +141,7 @@ export default function memoryExtension(pi: ExtensionAPI) {
     let generation = 0;
     let state: MemoryState = { updatedAt: new Date(0).toISOString() };
     let extractionTail: Promise<void> = Promise.resolve();
-    let runtimePromise: Promise<ExtractionRuntime> | undefined;
+    let runtimePromise: Promise<HelperModelRuntime> | undefined;
 
     const extractCandidates = async (ctx: ExtensionContext, expectedGeneration: number): Promise<number> => {
         const branch = ctx.sessionManager.getBranch() as BranchEntry[];

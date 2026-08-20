@@ -33,7 +33,7 @@ Extraction produces pending candidates, never active memories. Review them with:
 /memory reject <candidate-id>
 ```
 
-Use `PI_MEMORY_MODEL=provider/model-id` to override the default `openai-codex/gpt-5.4-mini` extractor.
+The persistent `memory` route in `~/.pi/agent/helper-models.json` selects the extraction model. `PI_MEMORY_MODEL=provider/model-id` temporarily overrides it. The route must name an available, authenticated model; configuration errors do not fall back to the active model. See [`../../helper-models.md`](../../helper-models.md).
 
 ## Storage
 

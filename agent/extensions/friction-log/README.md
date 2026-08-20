@@ -4,6 +4,8 @@ This global Pi extension records small workflow problems and the workarounds tha
 
 Use a repository's own friction system, such as `frog`, when its instructions or tools provide one. This extension is the fallback for repositories without one and for friction caused by Pi itself.
 
+The friction-log extension does not make model calls. Its startup digest uses local lexical search over stored records.
+
 ## Agent tools
 
 ### `log_friction`

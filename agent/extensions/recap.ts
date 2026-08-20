@@ -1,13 +1,10 @@
-import type { Api, Model } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { convertToLlm, serializeConversation } from "@earendil-works/pi-coding-agent";
+import { resolveHelperModelRuntime, type HelperModelRuntime } from "./shared/helper-models.ts";
 
 const CUSTOM_TYPE = "recap";
 const MAX_CONVERSATION_CHARS = 120_000;
-const DEFAULT_RECAP_MODEL = "openai-codex/gpt-5.4-mini";
-const RECAP_MODEL = process.env.PI_RECAP_MODEL ?? DEFAULT_RECAP_MODEL;
-
 const SYSTEM_PROMPT = `You generate Claude Code-style session recaps.
 Return exactly one concise sentence, no more than 40 words.
 Mention what the user is working on and the most useful next step.
@@ -51,28 +48,17 @@ const extractText = (response: Awaited<ReturnType<typeof complete>>): string =>
 		.replace(/\s+/g, " ")
 		.trim();
 
-const parseModelSpec = (spec: string): { provider: string; id: string } | undefined => {
-	const slash = spec.indexOf("/");
-	if (slash <= 0 || slash === spec.length - 1) return undefined;
-	return { provider: spec.slice(0, slash), id: spec.slice(slash + 1) };
-};
-
-const getRecapModel = (ctx: ExtensionCommandContext): Model<Api> | undefined => {
-	const parsed = parseModelSpec(RECAP_MODEL);
-	if (!parsed) return ctx.model;
-	return ctx.modelRegistry.find(parsed.provider, parsed.id) ?? ctx.model;
-};
+const getRecapRuntime = (ctx: ExtensionCommandContext): Promise<HelperModelRuntime> =>
+	resolveHelperModelRuntime(ctx, {
+		task: "recap",
+		label: "Recap",
+		environmentValue: process.env.PI_RECAP_MODEL,
+	});
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("recap", {
 		description: "Generate a Claude-style one-line recap of the current session",
 		handler: async (args, ctx) => {
-			const recapModel = getRecapModel(ctx);
-			if (!recapModel) {
-				ctx.ui.notify("No recap model available", "error");
-				return;
-			}
-
 			if (!ctx.isIdle()) {
 				ctx.ui.notify("Waiting for current turn before generating recap...", "info");
 				await ctx.waitForIdle();
@@ -84,12 +70,15 @@ export default function (pi: ExtensionAPI) {
 				return;
 			}
 
-			const auth = await ctx.modelRegistry.getApiKeyAndHeaders(recapModel);
-			if (!auth.ok || !auth.apiKey) {
-				ctx.ui.notify(auth.ok ? `No API key for ${recapModel.provider}` : auth.error, "error");
+			let runtime: HelperModelRuntime;
+			try {
+				runtime = await getRecapRuntime(ctx);
+			} catch (error) {
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
 				return;
 			}
 
+			const recapModel = runtime.model;
 			const conversation = truncateConversation(rawConversation);
 			const extraInstructions = args.trim() ? `\nAdditional user instruction: ${args.trim()}` : "";
 
@@ -114,8 +103,8 @@ export default function (pi: ExtensionAPI) {
 						],
 					},
 					{
-						apiKey: auth.apiKey,
-						headers: auth.headers,
+						apiKey: runtime.apiKey,
+						headers: runtime.headers,
 						maxTokens: 96,
 						reasoningEffort: "minimal",
 					},

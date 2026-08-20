@@ -88,13 +88,13 @@ The report groups episodes by their recorded Git remote or working directory, de
 
 ## Model configuration
 
-The default summary model is `openai-codex/gpt-5.4-mini`. Override it with a fully qualified model ID:
+The persistent `workLog` route in `~/.pi/agent/helper-models.json` selects the summary model. `PI_WORK_LOG_MODEL` temporarily overrides it:
 
 ```bash
 export PI_WORK_LOG_MODEL="provider/model-id"
 ```
 
-The extension does not fall back to the active agent model when the configured model is unavailable. This prevents an invalid configuration from silently using a more expensive model.
+The route must name an available, authenticated model. Configuration errors do not fall back to the active model. See [`../../helper-models.md`](../../helper-models.md).
 
 Change the idle interval with:
 

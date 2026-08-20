@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type Api, type Model } from "@earendil-works/pi-ai";
 import { complete } from "@earendil-works/pi-ai/compat";
 import {
     convertToLlm,
@@ -11,6 +10,7 @@ import {
     type ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Markdown } from "@earendil-works/pi-tui";
+import { resolveHelperModelRuntime, type HelperModelRuntime } from "../shared/helper-models.ts";
 import {
     appendWorkEpisode,
     defaultWorkLogRoot,
@@ -31,9 +31,7 @@ import {
     type WorkLogState,
 } from "./lib.ts";
 
-const DEFAULT_MODEL = "openai-codex/gpt-5.4-mini";
 const SESSION_LOG_WIDGET = "work-log-session-query";
-const SUMMARY_MODEL = process.env.PI_WORK_LOG_MODEL ?? DEFAULT_MODEL;
 const IDLE_MINUTES = parsePositiveNumber(process.env.PI_WORK_LOG_IDLE_MINUTES, 20);
 const IDLE_MS = IDLE_MINUTES * 60_000;
 const MAX_EPISODE_MS = 2 * 60 * 60_000;
@@ -66,31 +64,12 @@ function parsePositiveNumber(value: string | undefined, fallback: number): numbe
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-function parseModelSpec(spec: string): { provider: string; id: string } | undefined {
-    const slash = spec.indexOf("/");
-    if (slash <= 0 || slash === spec.length - 1) return undefined;
-    return { provider: spec.slice(0, slash), id: spec.slice(slash + 1) };
-}
-
-function preferredSummaryModel(ctx: ExtensionContext): Model<Api> | undefined {
-    const configured = parseModelSpec(SUMMARY_MODEL);
-    return configured ? ctx.modelRegistry.find(configured.provider, configured.id) : undefined;
-}
-
-interface SummaryRuntime {
-    model: Model<Api>;
-    apiKey: string;
-    headers?: Record<string, string | null>;
-}
-
-async function resolveSummaryRuntime(ctx: ExtensionContext): Promise<SummaryRuntime> {
-    const model = preferredSummaryModel(ctx);
-    if (!model) throw new Error("No work-log summary model is available");
-    const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
-    if (!auth.ok || !auth.apiKey) {
-        throw new Error(auth.ok ? `No API key for ${model.provider}` : auth.error);
-    }
-    return { model, apiKey: auth.apiKey, headers: auth.headers };
+function resolveSummaryRuntime(ctx: ExtensionContext): Promise<HelperModelRuntime> {
+    return resolveHelperModelRuntime(ctx, {
+        task: "workLog",
+        label: "Work-log summary",
+        environmentValue: process.env.PI_WORK_LOG_MODEL,
+    });
 }
 
 function responseText(response: Awaited<ReturnType<typeof complete>>): string {
@@ -193,10 +172,10 @@ export default function workLogExtension(pi: ExtensionAPI) {
     let activityVersion = 0;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let checkpointTail: Promise<void> = Promise.resolve();
-    let summaryRuntime: SummaryRuntime | undefined;
-    let summaryRuntimePromise: Promise<SummaryRuntime> | undefined;
+    let summaryRuntime: HelperModelRuntime | undefined;
+    let summaryRuntimePromise: Promise<HelperModelRuntime> | undefined;
 
-    const dispatchPendingWork = async (file: string, availableRuntime?: SummaryRuntime): Promise<void> => {
+    const dispatchPendingWork = async (file: string, availableRuntime?: HelperModelRuntime): Promise<void> => {
         const runtime = availableRuntime ?? await summaryRuntimePromise;
         if (!runtime) throw new Error("No work-log summary runtime is available");
         const child = spawn(process.execPath, ["--experimental-strip-types", SHUTDOWN_WORKER], {
