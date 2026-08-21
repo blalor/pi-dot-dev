@@ -8,7 +8,7 @@ compatibility: Requires a Herdr-managed Pi pane plus the herdr, pi, and jq execu
 
 Fork the current Pi session into a separate session file running in a new Herdr tab. This copies Pi's session history directly. It does not build a handoff summary, create a worktree, assign a task, or establish supervisor/worker coordination.
 
-Before running the helper, read [`../herdr/SKILL.md`](../herdr/SKILL.md), load the live `herdr --skill` guide, and inspect help for the commands used here. The local caller-identification rules in the sibling skill override conflicting generated guidance.
+The bundled helper is the default compatibility boundary. Invoke it directly without loading the general Herdr skill, printing `herdr --skill`, or inspecting help for the commands it wraps. Read [`../herdr/SKILL.md`](../herdr/SKILL.md) and inspect live command help only when the helper fails, recovery requires a manual Herdr command, or the user requests behavior the helper does not expose.
 
 ## Safety and ownership
 
@@ -31,9 +31,9 @@ A fork is an independent continuation, not a delegated child or intercom peer.
 
 ## Run
 
-Choose a short, unique label. Use the user's requested label when provided. Otherwise use `pi-fork-YYYYMMDD-HHMMSS`.
+Choose a short, unique label. Use the user's requested label when provided. Otherwise let the helper generate `pi-fork-YYYYMMDD-HHMMSS`.
 
-Run the bundled helper from the skill directory:
+Run the bundled helper from the skill directory as the first operational command. Do not reproduce its discovery or startup checks beforehand:
 
 ```bash
 ./scripts/fork-current-herdr-session.sh [--focus] [--allow-intercom] [label]
@@ -49,6 +49,10 @@ The helper:
 6. Prints the agent state, new workspace, tab, pane, checkout, fork session, label, source session, and intercom tool policy as JSON.
 
 The source session is copied at invocation time. Later turns in the original session are not synchronized into the fork.
+
+## Failure recovery
+
+If the helper fails, preserve any tab it created and use the recovery command it prints. Only then load the general Herdr skill, run `herdr --skill`, and inspect help for the specific recovery command. Do not perform broad Herdr discovery for an error that the helper already diagnosed.
 
 ## After launch
 
