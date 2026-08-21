@@ -27,7 +27,29 @@
         },
         "compat": {
           "forceAdaptiveThinking": true,
-          "supportsStrictTools": true
+          "supportsStrictTools": true,
+          "allowedFallbackModels": [
+            {
+              "provider": "anthropic",
+              "model": "claude-opus-4-8",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cacheRead": 0.5,
+                "cacheWrite": 6.25
+              }
+            },
+            {
+              "provider": "anthropic",
+              "model": "claude-opus-5",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cacheRead": 0.5,
+                "cacheWrite": 6.25
+              }
+            }
+          ]
         }
       },
       {
@@ -233,7 +255,19 @@
         "compat": {
           "forceAdaptiveThinking": true,
           "supportsTemperature": false,
-          "supportsStrictTools": true
+          "supportsStrictTools": true,
+          "allowedFallbackModels": [
+            {
+              "provider": "anthropic",
+              "model": "claude-opus-4-8",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cacheRead": 0.5,
+                "cacheWrite": 6.25
+              }
+            }
+          ]
         }
       },
       {
@@ -338,9 +372,9 @@
         }
       }
     ],
-    "checkedAt": 1786233795046,
-    "lastModified": 1786021090000,
-    "etag": "W/\"2174ed7392c0d5376beba2c4ee0b170f\""
+    "checkedAt": 1787241025663,
+    "lastModified": 1787141921000,
+    "etag": "W/\"f6c149c048a0e6e85e35ce0a72c1d4ec\""
   },
   "openai-codex": {
     "models": [
@@ -507,6 +541,7 @@
         },
         "compat": {
           "supportsOpenAIGrammarTools": true,
+          "supportsAdditionalTools": true,
           "supportsToolSearch": true
         }
       },
@@ -545,6 +580,7 @@
         },
         "compat": {
           "supportsOpenAIGrammarTools": true,
+          "supportsAdditionalTools": true,
           "supportsToolSearch": true
         }
       },
@@ -583,12 +619,13 @@
         },
         "compat": {
           "supportsOpenAIGrammarTools": true,
+          "supportsAdditionalTools": true,
           "supportsToolSearch": true
         }
       }
     ],
-    "checkedAt": 1786233794755,
-    "lastModified": 1785495292000,
-    "etag": "W/\"400cac2d73673d9fff4c7d0ed22691b0\""
+    "checkedAt": 1787241025367,
+    "lastModified": 1786962037000,
+    "etag": "W/\"7572a78e60b78526600ed2a9b74b579d\""
   }
 }
