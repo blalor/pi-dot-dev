@@ -1,7 +1,14 @@
 schema-version = "1.10.0"
 
 [install]
-nodejs.pkg-path = "nodejs"
+nodejs.pkg-path = "nodejs_24"
+nodejs.version = "24.19.0"
+nodejs.systems = ["aarch64-darwin", "aarch64-linux", "x86_64-linux"]
+nodejs.pkg-group = "nodejs-modern"
+
+nodejs-x86-darwin.pkg-path = "nodejs"
+nodejs-x86-darwin.systems = ["x86_64-darwin"]
+nodejs-x86-darwin.pkg-group = "nodejs-x86-darwin"
 
 jq.pkg-path = "jq"
 
@@ -11,6 +18,7 @@ beads.pkg-path = "beads"
 
 [hook]
 on-activate = '''
+    # set -x
     _PI_ROOT="${FLOX_ENV_PROJECT:?flox not activated!}"
 
     # pi supports PI_CODING_AGENT_DIR but few extensions do, and the docs are
@@ -33,7 +41,6 @@ on-activate = '''
     # checks, package update checks, and install/update telemetry.
     # export PI_OFFLINE=1
 
-    export PATH="${FLOX_ENV_PROJECT}/bin:${PATH}"
 '''
 
 [options]

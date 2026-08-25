@@ -16,17 +16,148 @@
         "pkg-path": "jq"
       },
       "nodejs": {
-        "pkg-path": "nodejs"
+        "pkg-path": "nodejs_24",
+        "pkg-group": "nodejs-modern",
+        "version": "24.19.0",
+        "systems": [
+          "aarch64-darwin",
+          "aarch64-linux",
+          "x86_64-linux"
+        ]
+      },
+      "nodejs-x86-darwin": {
+        "pkg-path": "nodejs",
+        "pkg-group": "nodejs-x86-darwin",
+        "systems": [
+          "x86_64-darwin"
+        ]
       }
     },
     "hook": {
-      "on-activate": "    _PI_ROOT=\"${FLOX_ENV_PROJECT:?flox not activated!}\"\n\n    # pi supports PI_CODING_AGENT_DIR but few extensions do, and the docs are\n    # hard-coded. I'm just tired of fighting it.\n    if [ \"${_PI_ROOT}\" != \"${HOME}/.pi\" ]; then\n        echo \"‼️ The project is checked out to ${_PI_ROOT}, it should be at ~/.pi\"\n        exit 1\n    fi\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # do after setting any PI_CODING_* vars but before PI_OFFLINE\n    if [ ! -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        ${_PI_ROOT}/node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    # export PI_OFFLINE=1\n\n    export PATH=\"${FLOX_ENV_PROJECT}/bin:${PATH}\"\n"
+      "on-activate": "    # set -x\n    _PI_ROOT=\"${FLOX_ENV_PROJECT:?flox not activated!}\"\n\n    # pi supports PI_CODING_AGENT_DIR but few extensions do, and the docs are\n    # hard-coded. I'm just tired of fighting it.\n    if [ \"${_PI_ROOT}\" != \"${HOME}/.pi\" ]; then\n        echo \"‼️ The project is checked out to ${_PI_ROOT}, it should be at ~/.pi\"\n        exit 1\n    fi\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # do after setting any PI_CODING_* vars but before PI_OFFLINE\n    if [ ! -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        ${_PI_ROOT}/node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    # export PI_OFFLINE=1\n\n"
     },
     "options": {
       "cuda-detection": false
     }
   },
   "packages": [
+    {
+      "attr_path": "nodejs_24",
+      "broken": false,
+      "derivation": "/nix/store/qfiblm3mivfpj9ip34lp74hii5vga2cs-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs_24",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T04:57:01.623175Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/7cvylnf8wf3r89hb983binvjb142sgkd-nodejs-24.19.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "nodejs-modern",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_24",
+      "broken": false,
+      "derivation": "/nix/store/w6c4ky2sn4v19hss0kn9snkq5wkvp2jb-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs_24",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T05:28:00.248829Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/d76wsd4rm85sdv1xawqp404l2bm2k4l1-nodejs-24.19.0"
+      },
+      "system": "aarch64-linux",
+      "group": "nodejs-modern",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_24",
+      "broken": false,
+      "derivation": "/nix/store/px8hj7awj6ffpcamsaf95ywrmnn8n6aq-nodejs-24.19.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "nodejs-24.19.0",
+      "pname": "nodejs_24",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T06:01:18.032405Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.19.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/glcp73hgagq2b24i80jlgbvj28vdb6kk-nodejs-24.19.0"
+      },
+      "system": "x86_64-linux",
+      "group": "nodejs-modern",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs",
+      "broken": false,
+      "derivation": "/nix/store/yc1bpd21mkkawwxkq2zskmkqjmzwgv54-nodejs-24.16.0.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs-x86-darwin",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=d407951447dcd00442e97087bf374aad70c04cea",
+      "name": "nodejs-24.16.0",
+      "pname": "nodejs",
+      "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+      "rev_count": 1027867,
+      "rev_date": "2026-07-05T04:06:12Z",
+      "scrape_date": "2026-07-06T04:09:32.244433Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "24.16.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/v04l0kjhdvbzkzrnw6ryf43dp8v0qapv-nodejs-24.16.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "nodejs-x86-darwin",
+      "priority": 5
+    },
     {
       "attr_path": "beads",
       "broken": false,
@@ -511,122 +642,6 @@
         "doc": "/nix/store/nzhykmz9qn2vrb9ki6ddrpipic7rfpfb-jq-1.8.1-doc",
         "man": "/nix/store/d21dmfzxkgpa7jkn5ggr0balzfg0j269-jq-1.8.1-man",
         "out": "/nix/store/bzm6nb8fx5p005bygrarn48i6qy1ir3a-jq-1.8.1"
-      },
-      "system": "x86_64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "nodejs",
-      "broken": false,
-      "derivation": "/nix/store/1a0cn85p1mwixhwy16db7v2652pz7l8g-nodejs-24.16.0.drv",
-      "description": "Event-driven I/O framework for the V8 JavaScript engine",
-      "install_id": "nodejs",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "name": "nodejs-24.16.0",
-      "pname": "nodejs",
-      "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "rev_count": 1022855,
-      "rev_date": "2026-06-26T09:58:34Z",
-      "scrape_date": "2026-06-27T03:17:08.197943Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "24.16.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/1zm1xb652wk1kscxbcvbryq8y45b0gy5-nodejs-24.16.0"
-      },
-      "system": "aarch64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "nodejs",
-      "broken": false,
-      "derivation": "/nix/store/aay2n9r5ljwfvlva807p9f0p1vpwg7mb-nodejs-24.16.0.drv",
-      "description": "Event-driven I/O framework for the V8 JavaScript engine",
-      "install_id": "nodejs",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "name": "nodejs-24.16.0",
-      "pname": "nodejs",
-      "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "rev_count": 1022855,
-      "rev_date": "2026-06-26T09:58:34Z",
-      "scrape_date": "2026-06-27T03:50:00.922428Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "24.16.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/60vys190zxlx4k1jz0kyvk4vydzr7qml-nodejs-24.16.0"
-      },
-      "system": "aarch64-linux",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "nodejs",
-      "broken": false,
-      "derivation": "/nix/store/yc1bpd21mkkawwxkq2zskmkqjmzwgv54-nodejs-24.16.0.drv",
-      "description": "Event-driven I/O framework for the V8 JavaScript engine",
-      "install_id": "nodejs",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "name": "nodejs-24.16.0",
-      "pname": "nodejs",
-      "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "rev_count": 1022855,
-      "rev_date": "2026-06-26T09:58:34Z",
-      "scrape_date": "2026-06-27T04:21:29.941494Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "24.16.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/v04l0kjhdvbzkzrnw6ryf43dp8v0qapv-nodejs-24.16.0"
-      },
-      "system": "x86_64-darwin",
-      "group": "toplevel",
-      "priority": 5
-    },
-    {
-      "attr_path": "nodejs",
-      "broken": false,
-      "derivation": "/nix/store/k9jn43g1p70zs7l9vgxh57aarg2s2jkv-nodejs-24.16.0.drv",
-      "description": "Event-driven I/O framework for the V8 JavaScript engine",
-      "install_id": "nodejs",
-      "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "name": "nodejs-24.16.0",
-      "pname": "nodejs",
-      "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
-      "rev_count": 1022855,
-      "rev_date": "2026-06-26T09:58:34Z",
-      "scrape_date": "2026-06-27T04:56:26.345327Z",
-      "stabilities": [
-        "unstable"
-      ],
-      "unfree": false,
-      "version": "24.16.0",
-      "outputs_to_install": [
-        "out"
-      ],
-      "outputs": {
-        "out": "/nix/store/zvj0hl7rhh0ccr5vkcg3ijs3xm3sgyac-nodejs-24.16.0"
       },
       "system": "x86_64-linux",
       "group": "toplevel",

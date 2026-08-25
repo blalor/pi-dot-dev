@@ -17,6 +17,11 @@ then
     exec flox activate -d "${basedir}" -- "${script_path}" "$@"
 fi
 
+# Do this outside on-activate: Flox captures variables changed by the first
+# concurrent hook run and replays them in later activations. Building PATH from
+# the hook's caller would therefore leak that caller's project environment.
+export PATH="${basedir}/bin:${PATH}"
+
 is_agent_command=true
 case "${1:-}" in
     config | install | list | remove | uninstall | update)
