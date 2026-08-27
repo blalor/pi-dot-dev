@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://www.schemastore.org/pre-commit-config.json
+# identifying file types:
+#   uv run --with identify identify-cli <path>
+---
+repos:
+    # https://prek.j178.dev/builtin/#2-explicit-builtin-repository
+    -   repo: builtin
+        hooks:
+            -   id: end-of-file-fixer
+                exclude: "\\.flox/"
+
+            -   id: trailing-whitespace
+                exclude: "\\.flox/"
+
+    -   repo: local
+        hooks:
+            # # https://github.com/koalaman/shellcheck-precommit/blob/master/.pre-commit-hooks.yaml
+            # -   id: shellcheck
+            #     name: ShellCheck
+            #     description: Static analysis tool for shell scripts
+            #     language: system
+            #     entry: "shellcheck -x"
+            #     types: [shell]
+            #     # shellcheck does not support zsh; exclude zsh-specific files
+            #     exclude: "\\.zsh$"
+
+            # # https://github.com/adrienverge/yamllint/blob/master/.pre-commit-hooks.yaml
+            # -   id: yamllint
+            #     name: yamllint
+            #     description: This hook runs yamllint.
+            #     entry: yamllint
+            #     language: system
+            #     types: [file, yaml]
+
+            # https://github.com/gitleaks/gitleaks/blob/master/.pre-commit-hooks.yaml
+            -   id: gitleaks
+                name: Detect hardcoded secrets
+                description: Detect hardcoded secrets using Gitleaks
+                entry: gitleaks git --pre-commit --redact --staged --verbose
+                language: system
+                pass_filenames: false

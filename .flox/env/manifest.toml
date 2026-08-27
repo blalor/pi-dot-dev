@@ -9,6 +9,8 @@ jq.pkg-path = "jq"
 git-crypt.pkg-path = "git-crypt"
 fd.pkg-path = "fd"
 beads.pkg-path = "beads"
+gitleaks.pkg-path = "gitleaks"
+prek.pkg-path = "prek"
 
 [hook]
 on-activate = '''

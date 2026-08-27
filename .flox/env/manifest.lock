@@ -12,12 +12,18 @@
       "git-crypt": {
         "pkg-path": "git-crypt"
       },
+      "gitleaks": {
+        "pkg-path": "gitleaks"
+      },
       "jq": {
         "pkg-path": "jq"
       },
       "nodejs": {
         "pkg-path": "nodejs_24",
         "version": "24.19.0"
+      },
+      "prek": {
+        "pkg-path": "prek"
       }
     },
     "hook": {
@@ -295,6 +301,93 @@
       "priority": 5
     },
     {
+      "attr_path": "gitleaks",
+      "broken": false,
+      "derivation": "/nix/store/kkg3c4vwcrf3jbdicnh8z5mn91qmfm03-gitleaks-8.30.1.drv",
+      "description": "Scan git repos (or files) for secrets",
+      "install_id": "gitleaks",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "gitleaks-8.30.1",
+      "pname": "gitleaks",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T04:56:37.839770Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.30.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0zilxn1s7vskm1b8jxbyic99aql7zzaq-gitleaks-8.30.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gitleaks",
+      "broken": false,
+      "derivation": "/nix/store/ccqv46qcsca6yla7mdic4iwajsag5697-gitleaks-8.30.1.drv",
+      "description": "Scan git repos (or files) for secrets",
+      "install_id": "gitleaks",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "gitleaks-8.30.1",
+      "pname": "gitleaks",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T05:27:23.508580Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.30.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/7fbpgnngix9bnqgflzfybz2i8nrr8cmj-gitleaks-8.30.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "gitleaks",
+      "broken": false,
+      "derivation": "/nix/store/kdfb45k3y1czqn6fc208lhwdpz3smydj-gitleaks-8.30.1.drv",
+      "description": "Scan git repos (or files) for secrets",
+      "install_id": "gitleaks",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "gitleaks-8.30.1",
+      "pname": "gitleaks",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T06:00:37.910948Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.30.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/dmi3zxbmff31nb0j6y24wi2055k7ahsw-gitleaks-8.30.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "jq",
       "broken": false,
       "derivation": "/nix/store/kc5z159qmg1j4cy0fa057kpj3wp4r5l3-jq-1.8.2.drv",
@@ -483,6 +576,93 @@
       ],
       "outputs": {
         "out": "/nix/store/glcp73hgagq2b24i80jlgbvj28vdb6kk-nodejs-24.19.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/r17h7zfiji46kwcpivp3d72apfcy056w-prek-0.4.14.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "prek-0.4.14",
+      "pname": "prek",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T04:57:18.148925Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.4.14",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/7n8mgszynxys8r788k2cqcl5xbbdjka8-prek-0.4.14"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/a41zp8q3sp739rq3ng4xxaf523fds0iq-prek-0.4.14.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "prek-0.4.14",
+      "pname": "prek",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T05:28:21.525366Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.4.14",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/ldnw917aqvyxcxg9mr7fyxbvhyjyz7j7-prek-0.4.14"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "prek",
+      "broken": false,
+      "derivation": "/nix/store/q6z2k2jw3vvd65l2lpaqag103328vv5s-prek-0.4.14.drv",
+      "description": "Better `pre-commit`, re-engineered in Rust ",
+      "install_id": "prek",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "name": "prek-0.4.14",
+      "pname": "prek",
+      "rev": "56c02bc00adcf003215cc4bd996d6efaf4cff188",
+      "rev_count": 1060451,
+      "rev_date": "2026-08-23T15:22:48Z",
+      "scrape_date": "2026-08-25T06:01:39.582339Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.4.14",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/n7cq6kxkq64jgm1bs952ibl64l0181x1-prek-0.4.14"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
