@@ -15,7 +15,7 @@
                 "@currents/mcp"
             ],
             "env": {
-                "CURRENTS_API_KEY": "***REMOVED***"
+                "CURRENTS_API_KEY": "${CURRENTS_API_KEY}"
             }
         },
         "devin": {
