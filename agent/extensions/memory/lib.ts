@@ -428,7 +428,7 @@ export async function listCandidates(options: {
     const candidates: MemoryCandidate[] = [];
     for (const file of await recordFiles(join(rootDir, "_candidates"), "candidate.json")) {
         const candidate = await readJson<MemoryCandidate>(file);
-        if (candidate && (options.status === "all" || !options.status || candidate.status === options.status)) candidates.push(candidate);
+        if (candidate && (options.status === "all" || candidate.status === (options.status ?? "pending"))) candidates.push(candidate);
     }
     return candidates.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }

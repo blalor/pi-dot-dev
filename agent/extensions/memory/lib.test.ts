@@ -235,6 +235,8 @@ test("autonomous candidates remain pending until approved", async () => {
         const approved = await reviewCandidate({ id: candidates[0].id.slice(0, 10), decision: "approve", rootDir: storage });
         assert.equal(approved.candidate.status, "approved");
         assert.equal(approved.memory?.source, "candidate");
+        assert.equal((await listCandidates({ rootDir: storage })).length, 0);
+        assert.equal((await listCandidates({ status: "all", rootDir: storage }))[0].status, "approved");
         assert.equal((await searchMemories({ cwd, scope: "user", rootDir: storage })).length, 1);
     } finally {
         await rm(root, { recursive: true, force: true });
