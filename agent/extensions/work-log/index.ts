@@ -56,7 +56,7 @@ Use only facts supported by the evidence. Omit routine tool activity and impleme
 Do not treat plans as completed work. Do not include secrets, credentials, raw command output,
 or full transcript excerpts. Keep each item to one short sentence. Use empty arrays where needed.`;
 
-type CheckpointTrigger = "idle" | "max-window" | "compaction" | "tree" | "manual";
+type CheckpointTrigger = "idle" | "max-window" | "compaction" | "manual";
 
 function parsePositiveNumber(value: string | undefined, fallback: number): number {
     if (!value) return fallback;
@@ -212,7 +212,7 @@ export default function workLogExtension(pi: ExtensionAPI) {
         }
     };
 
-    const queueShutdownCheckpoint = async (
+    const queueBackgroundCheckpoint = async (
         ctx: ExtensionContext,
     ): Promise<{ queued: boolean; file?: string; reason?: string }> => {
         const branch = ctx.sessionManager.getBranch();
@@ -373,7 +373,14 @@ export default function workLogExtension(pi: ExtensionAPI) {
 
     pi.on("session_before_tree", async (_event, ctx) => {
         clearIdleTimer();
-        await checkpoint("tree", ctx).catch(() => undefined);
+        try {
+            const result = await queueBackgroundCheckpoint(ctx);
+            if (result.queued && result.file && summaryRuntime) {
+                await dispatchPendingWork(result.file, summaryRuntime);
+            }
+        } catch {
+            // Tree navigation must not wait for or fail because of work-log capture.
+        }
     });
 
     pi.on("session_tree", async (_event, ctx) => {
@@ -392,7 +399,7 @@ export default function workLogExtension(pi: ExtensionAPI) {
         generation += 1;
         ctx.ui.setStatus("work-log", "Saving work log for background summary...");
         try {
-            const result = await queueShutdownCheckpoint(ctx);
+            const result = await queueBackgroundCheckpoint(ctx);
             if (!result.queued || !result.file) return;
             if (summaryRuntime) await dispatchPendingWork(result.file, summaryRuntime);
             ctx.ui.notify("Work-log summary queued in the background.", "info");

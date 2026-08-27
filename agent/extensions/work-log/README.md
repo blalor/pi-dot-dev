@@ -10,7 +10,7 @@ The extension summarizes a work episode at these boundaries:
 - The next settled boundary after an episode has lasted two hours
 - Before context compaction
 - When switching or forking a session
-- Before navigating the session tree
+- Before navigating the session tree (captured for background summary)
 - During normal session shutdown
 - When the user runs `/work-log`
 
@@ -20,7 +20,7 @@ A new agent request cancels the pending idle checkpoint. Related requests comple
 
 The summarizer returns `SKIP` when the episode contains no meaningful outcome. Skipped ranges still advance the session cursor, so they are not reconsidered later.
 
-Switch, fork, reload, and quit shutdowns do not wait for the summary model. The extension displays a shutdown status, writes a redacted episode snapshot to `_pending`, advances the session cursor, and starts a detached Node worker. The worker runs from the home directory rather than the session working directory, so deleting a checkout after exit does not prevent the summary. Repository facts are marked unavailable if the recorded directory has disappeared.
+Tree navigation and switch, fork, reload, and quit shutdowns do not wait for the summary model. The extension writes a redacted episode snapshot to `_pending`, advances the session cursor, and starts a detached Node worker when model credentials are ready. Shutdown also displays a brief status. The worker runs from the home directory rather than the session working directory, so deleting a checkout after exit does not prevent the summary. Repository facts are marked unavailable if the recorded directory has disappeared.
 
 A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. If summary-model credentials were not ready when shutdown began, the extension leaves the snapshot for that later retry rather than delaying exit to resolve credentials.
 
@@ -39,7 +39,7 @@ Episode records are appended to daily JSONL files:
     <episode-id>.json
 ```
 
-The `_state` files store the last summarized session entry. Temporary `_pending` files hold shutdown work until a detached worker completes it. Both are separate from the daily records consumed by reporting jobs.
+The `_state` files store the last summarized session entry. Temporary `_pending` files hold background checkpoint work until a detached worker completes it. Both are separate from the daily records consumed by reporting jobs.
 
 Each episode has this shape:
 
