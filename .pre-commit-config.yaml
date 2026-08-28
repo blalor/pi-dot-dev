@@ -36,6 +36,17 @@ repos:
             -   id: gitleaks
                 name: Detect hardcoded secrets
                 description: Detect hardcoded secrets using Gitleaks
-                entry: gitleaks git --pre-commit --redact --staged --verbose
+
+                # env-var equivalent of 'git -c diff.git-crypt.textconv=true':
+                # temporarily replaces git-crypt diff with the true command,
+                # printing nothing, so git supplies no decrypted content to
+                # gitleaks. this effectively keeps gitleaks from seeing
+                # anything in git-crypted files.
+                entry: >-
+                    env
+                    GIT_CONFIG_COUNT=1
+                    GIT_CONFIG_KEY_0=diff.git-crypt.textconv
+                    GIT_CONFIG_VALUE_0=true
+                    gitleaks git --pre-commit --redact --staged --verbose
                 language: system
                 pass_filenames: false

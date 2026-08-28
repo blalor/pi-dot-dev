@@ -13,3 +13,5 @@ agent/mcp-oauth/
 agent/mcp-cache.json
 agent/intercom/
 agent/trust.json
+web-search-cache/
+agent/missions/

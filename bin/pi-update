@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e -u -o pipefail
+
+cd "$( dirname "${0}" )/.."
+
+echo "==> npm update"
+npm update
+
+ext_before=$( npm --prefix agent/npm ls --depth=0 )
+echo "==> extensions update"
+pi update --extensions
+ext_after=$( npm --prefix agent/npm ls --depth=0 )
+
+echo "===> extension changes"
+diff -u <( echo "${ext_before}" ) <( echo "${ext_after}" )
