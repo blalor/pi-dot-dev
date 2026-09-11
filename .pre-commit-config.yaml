@@ -7,7 +7,7 @@ repos:
     -   repo: builtin
         hooks:
             -   id: end-of-file-fixer
-                exclude: "\\.flox/"
+                exclude: "\\.flox/|agent/(auth|models-store)\\.json"
 
             -   id: trailing-whitespace
                 exclude: "\\.flox/"

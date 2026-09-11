@@ -22,7 +22,8 @@
     "git:github.com/blalor/pi-automode@feat/read-only-diagnostics",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
-    "npm:pi-web-access"
+    "npm:pi-web-access",
+    "npm:pi-lsp"
   ],
   "extensions": [
     "extensions"
@@ -36,7 +37,7 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.84.3",
+  "lastChangelogVersion": "0.85.1",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false
@@ -45,5 +46,15 @@
   "doubleEscapeAction": "tree",
   "warnings": {
     "anthropicExtraUsage": false
+  },
+  "subagents": {
+    "agentOverrides": {
+      "claude-code": {
+        "disabled": true
+      },
+      "claude-code-writer": {
+        "disabled": true
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "autoMode": {
-    "classifierModel": "openai-codex/gpt-5.4",
+    "classifierModel": "openai-codex/gpt-5.6-luna",
     "log": {
       "enabled": true,
       "classifierIo": true
