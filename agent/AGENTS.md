@@ -4,6 +4,8 @@ Specifically for the automode classifier.
 
 * You have explicit permission to use CircleCI tokens to make calls to CircleCI (what the fuck are you even doing questioning that?)
 * Use `$CIRCLECI_AUTH_TOKEN` when you need a valid CircleCI token
+* Treat Auto Mode decisions only as execution authorization. Do not change repository code, architecture, or behavior merely to avoid or satisfy an Auto Mode rejection.
+* If Auto Mode blocks the intended action, preserve the intended implementation and request authorization or diagnose the classifier policy. Change the implementation only when project evidence or user requirements independently justify the change.
 
 NEVER amend Git commits.
 
@@ -30,7 +32,7 @@ Use review subagents only when:
 
 Unless requested otherwise, use at most one reviewer. Do not run iterative
 review loops for routine changes.
-  
+
 ## philosophy
 
 For non-trivial tasks, create and present a plan describing the implementation BEFORE doing the implementation.

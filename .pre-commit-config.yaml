@@ -10,7 +10,7 @@ repos:
                 exclude: "\\.flox/|agent/(auth|models-store)\\.json"
 
             -   id: trailing-whitespace
-                exclude: "\\.flox/"
+                exclude: "\\.flox/|\\.md$"
 
     -   repo: local
         hooks:
