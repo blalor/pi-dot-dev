@@ -10,7 +10,11 @@ import {
     type ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
 import { Markdown } from "@earendil-works/pi-tui";
-import { resolveHelperModelRuntime, type HelperModelRuntime } from "../shared/helper-models.ts";
+import {
+    configuredHelperModel,
+    resolveHelperModelRuntime,
+    type HelperModelRuntime,
+} from "../shared/helper-models.ts";
 import {
     appendWorkEpisode,
     defaultWorkLogRoot,
@@ -18,10 +22,12 @@ import {
     parseWorkSummary,
     queuePendingWorkEpisode,
     readSessionWorkEpisodes,
+    readWorkLogHealth,
     readWorkLogState,
     redactSensitiveText,
     renderSessionWorkLog,
     renderSessionWorkLogEpisodes,
+    renderWorkLogStatus,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
@@ -174,8 +180,36 @@ export default function workLogExtension(pi: ExtensionAPI) {
     let checkpointTail: Promise<void> = Promise.resolve();
     let summaryRuntime: HelperModelRuntime | undefined;
     let summaryRuntimePromise: Promise<HelperModelRuntime> | undefined;
+    let retriesActive = false;
+    const warnedFailures = new Set<string>();
 
-    const dispatchPendingWork = async (file: string, availableRuntime?: HelperModelRuntime): Promise<void> => {
+    const showMarkdown = (ctx: ExtensionContext, markdown: string) => {
+        if (ctx.mode === "tui") {
+            ctx.ui.setWidget(SESSION_LOG_WIDGET, () => new Markdown(markdown, 1, 0, getMarkdownTheme()));
+        } else {
+            ctx.ui.setWidget(SESSION_LOG_WIDGET, markdown.split("\n"));
+        }
+    };
+
+    const notifyFailure = (ctx: ExtensionContext, reason: string, pendingCount?: number) => {
+        const normalized = reason.replace(/\s+/g, " ").trim();
+        if (!normalized || warnedFailures.has(normalized)) return;
+        warnedFailures.add(normalized);
+        const backlog = pendingCount === undefined ? "" : ` ${pendingCount} ${pendingCount === 1 ? "summary is" : "summaries are"} pending.`;
+        const statusHint = pendingCount === undefined ? "" : " Run /work-log status for details.";
+        ctx.ui.notify(`Work-log summary failed.${backlog} ${normalized}${statusHint}`, "warning");
+    };
+
+    const notifyPersistedFailures = async (ctx: ExtensionContext) => {
+        const health = await readWorkLogHealth(rootDir);
+        if (health.latestFailure) notifyFailure(ctx, health.latestFailure, health.pendingCount);
+        return health;
+    };
+
+    const dispatchPendingWork = async (
+        file: string,
+        availableRuntime?: HelperModelRuntime,
+    ): Promise<{ completion: Promise<void> }> => {
         const runtime = availableRuntime ?? await summaryRuntimePromise;
         if (!runtime) throw new Error("No work-log summary runtime is available");
         const child = spawn(process.execPath, ["--experimental-strip-types", SHUTDOWN_WORKER], {
@@ -183,7 +217,14 @@ export default function workLogExtension(pi: ExtensionAPI) {
             detached: true,
             stdio: ["pipe", "ignore", "ignore"],
         });
-        child.on("error", () => undefined);
+        const completion = new Promise<void>((resolve, reject) => {
+            child.once("error", reject);
+            child.once("close", (code) => {
+                if (code === 0) resolve();
+                else reject(new Error(`Work-log worker exited with status ${code ?? "unknown"}`));
+            });
+        });
+        void completion.catch(() => undefined);
         const payload = JSON.stringify({
             file,
             rootDir,
@@ -203,12 +244,32 @@ export default function workLogExtension(pi: ExtensionAPI) {
         });
         (child.stdin as NodeJS.WritableStream & { unref?: () => void }).unref?.();
         child.unref();
+        return { completion };
     };
 
-    const drainPendingWork = async (): Promise<void> => {
+    const drainPendingWork = async (ctx: ExtensionContext): Promise<void> => {
+        const expectedGeneration = generation;
         const files = await listPendingWorkFiles(rootDir);
-        for (const file of files) {
-            await dispatchPendingWork(file).catch(() => undefined);
+        if (files.length === 0 || expectedGeneration !== generation) return;
+        retriesActive = true;
+        ctx.ui.setStatus("work-log", `Retrying ${files.length} pending work-log summaries...`);
+        try {
+            const launches = await Promise.allSettled(files.map((file) => dispatchPendingWork(file)));
+            for (const launch of launches) {
+                if (launch.status === "rejected" && expectedGeneration === generation) {
+                    notifyFailure(ctx, launch.reason instanceof Error ? launch.reason.message : String(launch.reason), files.length);
+                }
+            }
+            const completions = launches.flatMap((launch) => launch.status === "fulfilled" ? [launch.value.completion] : []);
+            await Promise.allSettled(completions);
+            if (expectedGeneration === generation) {
+                const health = await notifyPersistedFailures(ctx);
+                if (health.pendingCount === 0) ctx.ui.notify("Work-log summary backlog processed.", "info");
+            }
+        } finally {
+            if (expectedGeneration !== generation) return;
+            retriesActive = false;
+            ctx.ui.setStatus("work-log", undefined);
         }
     };
 
@@ -318,7 +379,9 @@ export default function workLogExtension(pi: ExtensionAPI) {
         idleTimer = setTimeout(() => {
             idleTimer = undefined;
             if (expectedGeneration !== generation) return;
-            void checkpoint("idle", ctx).catch(() => undefined);
+            void checkpoint("idle", ctx).catch((error) => {
+                notifyFailure(ctx, error instanceof Error ? error.message : String(error));
+            });
         }, IDLE_MS);
         idleTimer.unref?.();
     };
@@ -329,11 +392,16 @@ export default function workLogExtension(pi: ExtensionAPI) {
         activityVersion = 0;
         sessionId = ctx.sessionManager.getSessionId();
         summaryRuntime = undefined;
+        const runtimeGeneration = generation;
         summaryRuntimePromise = resolveSummaryRuntime(ctx).then((runtime) => {
             summaryRuntime = runtime;
             return runtime;
         });
-        summaryRuntimePromise.catch(() => undefined);
+        summaryRuntimePromise.catch((error) => {
+            if (runtimeGeneration === generation) {
+                notifyFailure(ctx, error instanceof Error ? error.message : String(error));
+            }
+        });
         const existingState = await readWorkLogState(rootDir, sessionId);
         state = existingState ?? { updatedAt: new Date(0).toISOString() };
 
@@ -344,7 +412,10 @@ export default function workLogExtension(pi: ExtensionAPI) {
                 await writeWorkLogState(rootDir, sessionId, state);
             }
         }
-        void drainPendingWork();
+        await notifyPersistedFailures(ctx).catch((error) => {
+            notifyFailure(ctx, error instanceof Error ? error.message : String(error));
+        });
+        void drainPendingWork(ctx);
     });
 
     pi.on("before_agent_start", (_event, ctx) => {
@@ -356,7 +427,9 @@ export default function workLogExtension(pi: ExtensionAPI) {
     pi.on("agent_settled", async (_event, ctx) => {
         const range = selectEpisodeRange(ctx.sessionManager.getBranch() as BranchEntry[], state.lastEntryId);
         if (range && Date.now() - new Date(range.startedAt).getTime() >= MAX_EPISODE_MS) {
-            await checkpoint("max-window", ctx).catch(() => undefined);
+            await checkpoint("max-window", ctx).catch((error) => {
+                notifyFailure(ctx, error instanceof Error ? error.message : String(error));
+            });
             return;
         }
         scheduleIdleCheckpoint(ctx);
@@ -364,7 +437,9 @@ export default function workLogExtension(pi: ExtensionAPI) {
 
     pi.on("session_before_compact", async (_event, ctx) => {
         clearIdleTimer();
-        await checkpoint("compaction", ctx).catch(() => undefined);
+        await checkpoint("compaction", ctx).catch((error) => {
+            notifyFailure(ctx, error instanceof Error ? error.message : String(error));
+        });
     });
 
     pi.on("session_before_switch", () => {
@@ -378,7 +453,8 @@ export default function workLogExtension(pi: ExtensionAPI) {
             if (result.queued && result.file && summaryRuntime) {
                 await dispatchPendingWork(result.file, summaryRuntime);
             }
-        } catch {
+        } catch (error) {
+            notifyFailure(ctx, error instanceof Error ? error.message : String(error));
             // Tree navigation must not wait for or fail because of work-log capture.
         }
     });
@@ -418,6 +494,7 @@ export default function workLogExtension(pi: ExtensionAPI) {
             const completions = [
                 { value: "show", label: "show", description: "Show a roll-up of this session" },
                 { value: "episodes", label: "episodes", description: "Show chronological episode details" },
+                { value: "status", label: "status", description: "Show summarizer health and backlog" },
             ].filter((completion) => completion.value !== value && completion.value.startsWith(value));
             return completions.length > 0 ? completions : null;
         },
@@ -430,22 +507,29 @@ export default function workLogExtension(pi: ExtensionAPI) {
                     const markdown = action === "show"
                         ? renderSessionWorkLog(currentSessionId, episodes)
                         : renderSessionWorkLogEpisodes(currentSessionId, episodes);
-                    if (ctx.mode === "tui") {
-                        ctx.ui.setWidget(
-                            SESSION_LOG_WIDGET,
-                            () => new Markdown(markdown, 1, 0, getMarkdownTheme()),
-                        );
-                    } else {
-                        ctx.ui.setWidget(SESSION_LOG_WIDGET, markdown.split("\n"));
-                    }
+                    showMarkdown(ctx, markdown);
                 } catch (error) {
                     const reason = error instanceof Error ? error.message : String(error);
                     ctx.ui.notify(`Could not read the current session's work log: ${reason}`, "error");
                 }
                 return;
             }
+            if (action === "status") {
+                try {
+                    const [model, health] = await Promise.all([
+                        configuredHelperModel("workLog", process.env.PI_WORK_LOG_MODEL),
+                        readWorkLogHealth(rootDir),
+                    ]);
+                    showMarkdown(ctx, renderWorkLogStatus(model, health, retriesActive));
+                    ctx.ui.notify("Work-log status displayed.", "info");
+                } catch (error) {
+                    const reason = error instanceof Error ? error.message : String(error);
+                    ctx.ui.notify(`Could not read work-log status: ${reason}`, "error");
+                }
+                return;
+            }
             if (action) {
-                ctx.ui.notify("Usage: /work-log [show|episodes]", "warning");
+                ctx.ui.notify("Usage: /work-log [show|episodes|status]", "warning");
                 return;
             }
 

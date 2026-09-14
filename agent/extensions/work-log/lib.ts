@@ -35,6 +35,15 @@ export interface WorkLogState {
     updatedAt: string;
 }
 
+export interface WorkLogHealth {
+    pendingCount: number;
+    failedCount: number;
+    oldestQueuedAt?: string;
+    latestFailureAt?: string;
+    latestFailure?: string;
+    lastSuccessAt?: string;
+}
+
 export interface PendingWorkEpisode {
     version: 1;
     id: string;
@@ -239,6 +248,67 @@ export async function removePendingWorkFile(file: string): Promise<void> {
     });
 }
 
+export async function readWorkLogHealth(rootDir: string): Promise<WorkLogHealth> {
+    const directory = join(rootDir, "_pending");
+    let names: string[] = [];
+    try {
+        names = await readdir(directory);
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+
+    const pendingNames = names.filter((name) => name.endsWith(".json") || /\.json\.\d+\.working$/.test(name));
+    const queuedTimes = await Promise.all(pendingNames.map(async (name) => {
+        try {
+            const pending = JSON.parse(await readFile(join(directory, name), "utf8")) as { queuedAt?: unknown };
+            return typeof pending.queuedAt === "string" ? pending.queuedAt : undefined;
+        } catch {
+            return undefined;
+        }
+    }));
+
+    const failures = await Promise.all(names.filter((name) => name.endsWith(".json.error")).map(async (name) => {
+        try {
+            const value = (await readFile(join(directory, name), "utf8")).trim();
+            const match = value.match(/^(\S+)\s+([\s\S]*)$/);
+            if (!match) return undefined;
+            return {
+                at: match[1],
+                message: redactSensitiveText(match[2]).replace(/\s+/g, " ").slice(0, MAX_ITEM_LENGTH),
+            };
+        } catch {
+            return undefined;
+        }
+    }));
+    const latestFailure = failures
+        .filter((failure): failure is { at: string; message: string } => Boolean(failure))
+        .sort((left, right) => right.at.localeCompare(left.at))[0];
+
+    let lastSuccessAt: string | undefined;
+    for (const file of dailyWorkLogFiles(rootDir)) {
+        const content = await readFile(file, "utf8");
+        for (const line of content.split("\n")) {
+            if (!line.trim()) continue;
+            try {
+                const episode = JSON.parse(line) as { generatedAt?: unknown };
+                if (typeof episode.generatedAt === "string" && (!lastSuccessAt || episode.generatedAt > lastSuccessAt)) {
+                    lastSuccessAt = episode.generatedAt;
+                }
+            } catch {
+                // Health reporting remains available when a daily record is malformed.
+            }
+        }
+    }
+
+    return {
+        pendingCount: pendingNames.length,
+        failedCount: names.filter((name) => name.endsWith(".json.error")).length,
+        oldestQueuedAt: queuedTimes.filter((value): value is string => Boolean(value)).sort()[0],
+        ...(latestFailure ? { latestFailureAt: latestFailure.at, latestFailure: latestFailure.message } : {}),
+        ...(lastSuccessAt ? { lastSuccessAt } : {}),
+    };
+}
+
 export async function appendWorkEpisode(rootDir: string, episode: WorkEpisode): Promise<string> {
     const file = episodeFile(rootDir, episode.endedAt);
     await mkdir(dirname(file), { recursive: true, mode: 0o700 });
@@ -335,6 +405,24 @@ function sessionHeader(title: string, sessionId: string, episodes: WorkEpisode[]
 function uniqueSummaryItems(episodes: WorkEpisode[], field: SummaryCategory): string[] {
     const items = episodes.flatMap((episode) => episode[field]);
     return [...new Set(items)];
+}
+
+export function renderWorkLogStatus(model: string, health: WorkLogHealth, retrying: boolean): string {
+    const lines = [
+        "# Work log status",
+        "",
+        `Configured model: \`${model}\``,
+        `Pending summaries: ${health.pendingCount}`,
+        `Failed summaries: ${health.failedCount}`,
+        `Retries active: ${retrying ? "yes" : "no"}`,
+        `Oldest pending: ${health.oldestQueuedAt ? displayTimestamp(health.oldestQueuedAt) : "none"}`,
+        `Last successful summary: ${health.lastSuccessAt ? displayTimestamp(health.lastSuccessAt) : "none recorded"}`,
+    ];
+    if (health.latestFailure) {
+        const timestamp = health.latestFailureAt ? displayTimestamp(health.latestFailureAt) : "unknown time";
+        lines.push("", "## Latest failure", "", `${timestamp}: ${health.latestFailure}`);
+    }
+    return lines.join("\n");
 }
 
 export function renderSessionWorkLog(sessionId: string, episodes: WorkEpisode[]): string {

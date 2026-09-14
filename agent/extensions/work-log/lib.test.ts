@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rename, rm, utimes } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rename, rm, utimes, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
 import {
@@ -10,10 +10,12 @@ import {
     parseWorkSummary,
     queuePendingWorkEpisode,
     readSessionWorkEpisodes,
+    readWorkLogHealth,
     readWorkLogState,
     redactSensitiveText,
     renderSessionWorkLog,
     renderSessionWorkLogEpisodes,
+    renderWorkLogStatus,
     selectEpisodeRange,
     workEpisodeId,
     writeWorkLogState,
@@ -111,6 +113,61 @@ test("pending shutdown episodes are durable and isolated from daily records", as
         const stale = new Date(Date.now() - 10 * 60_000);
         await utimes(claimed, stale, stale);
         assert.deepEqual(await listPendingWorkFiles(root), [file]);
+    } finally {
+        await rm(root, { recursive: true, force: true });
+    }
+});
+
+test("work-log health aggregates pending failures and successful summaries", async () => {
+    const root = await temporaryDirectory("work-log-health-");
+    try {
+        const pending: PendingWorkEpisode = {
+            version: 1,
+            id: "episode-failed",
+            queuedAt: "2026-08-07T10:31:00.000Z",
+            startedAt: "2026-08-07T10:00:00.000Z",
+            endedAt: "2026-08-07T10:30:00.000Z",
+            sessionId: "session-failed",
+            cwd: "/work/project",
+            fromEntryId: "a",
+            toEntryId: "b",
+            transcript: "redacted transcript",
+        };
+        const pendingFile = await queuePendingWorkEpisode(root, pending);
+        await writeFile(`${pendingFile}.error`, "2026-08-07T10:32:00.000Z API_KEY=secret model unavailable\n", "utf8");
+        await rename(pendingFile, `${pendingFile}.123.working`);
+        await appendWorkEpisode(root, {
+            id: "episode-success",
+            startedAt: "2026-08-06T10:00:00.000Z",
+            endedAt: "2026-08-06T10:30:00.000Z",
+            generatedAt: "2026-08-06T10:31:00.000Z",
+            sessionId: "session-success",
+            cwd: "/work/project",
+            fromEntryId: "c",
+            toEntryId: "d",
+            accomplished: ["Recorded work."],
+            decisions: [],
+            artifacts: [],
+            validation: [],
+            blockers: [],
+            next: [],
+        });
+
+        const health = await readWorkLogHealth(root);
+        assert.equal(health.pendingCount, 1);
+        assert.equal(health.failedCount, 1);
+        assert.equal(health.oldestQueuedAt, pending.queuedAt);
+        assert.equal(health.latestFailureAt, "2026-08-07T10:32:00.000Z");
+        assert.match(health.latestFailure ?? "", /API_KEY=\[REDACTED\]/);
+        assert.doesNotMatch(health.latestFailure ?? "", /secret/);
+        assert.equal(health.lastSuccessAt, "2026-08-06T10:31:00.000Z");
+
+        const status = renderWorkLogStatus("example/small-model", health, true);
+        assert.match(status, /Configured model: `example\/small-model`/);
+        assert.match(status, /Pending summaries: 1/);
+        assert.match(status, /Failed summaries: 1/);
+        assert.match(status, /Retries active: yes/);
+        assert.match(status, /model unavailable/);
     } finally {
         await rm(root, { recursive: true, force: true });
     }

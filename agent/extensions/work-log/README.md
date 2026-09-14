@@ -22,7 +22,7 @@ The summarizer returns `SKIP` when the episode contains no meaningful outcome. S
 
 Tree navigation and switch, fork, reload, and quit shutdowns do not wait for the summary model. The extension writes a redacted episode snapshot to `_pending`, advances the session cursor, and starts a detached Node worker when model credentials are ready. Shutdown also displays a brief status. The worker runs from the home directory rather than the session working directory, so deleting a checkout after exit does not prevent the summary. Repository facts are marked unavailable if the recorded directory has disappeared.
 
-A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. If summary-model credentials were not ready when shutdown began, the extension leaves the snapshot for that later retry rather than delaying exit to resolve credentials.
+A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. On session start, the extension reports existing failures once and points to `/work-log status`. While retries run, a temporary footer shows the backlog size; the footer clears when retry activity ends. If summary-model credentials were not ready when shutdown began, the extension leaves the snapshot for that later retry rather than delaying exit to resolve credentials.
 
 ## Storage
 
@@ -118,7 +118,9 @@ Pattern-based redaction is not a complete secret scanner. Episode records may co
 
 `/work-log episodes` displays the same records chronologically, preserving episode boundaries. It includes per-episode project metadata only when the session spans multiple projects.
 
-Query output is shown in a temporary Markdown widget and is not written to the session history or sent to the model. The widget clears when the next agent request starts. Neither query forces a checkpoint, so unsummarized work in the current episode is not shown.
+`/work-log status` displays the configured summary model, pending and failed counts, retry activity, the oldest pending item, the latest failure, and the last successful summary. Failure messages are redacted and bounded before display.
+
+Query output is shown in a temporary Markdown widget and is not written to the session history or sent to the model. The widget clears when the next agent request starts. These queries do not force a checkpoint, so unsummarized work in the current episode is not shown.
 
 Run `/reload` after installing or changing the extension.
 
