@@ -12,6 +12,9 @@ beads.pkg-path = "beads"
 gitleaks.pkg-path = "gitleaks"
 prek.pkg-path = "prek"
 
+[vars]
+MCP_UI_VIEWER = "none"
+
 [hook]
 on-activate = '''
     # set -x

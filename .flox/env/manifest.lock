@@ -26,6 +26,9 @@
         "pkg-path": "prek"
       }
     },
+    "vars": {
+      "MCP_UI_VIEWER": "none"
+    },
     "hook": {
       "on-activate": "    # set -x\n    _PI_ROOT=\"${FLOX_ENV_PROJECT:?flox not activated!}\"\n\n    # pi supports PI_CODING_AGENT_DIR but few extensions do, and the docs are\n    # hard-coded. I'm just tired of fighting it.\n    if [ \"${_PI_ROOT}\" != \"${HOME}/.pi\" ]; then\n        echo \"‼️ The project is checked out to ${_PI_ROOT}, it should be at ~/.pi\"\n        exit 1\n    fi\n\n    # do the base install\n    [ -d \"${_PI_ROOT}/node_modules\" ] || ( cd \"${_PI_ROOT}\" && npm install )\n\n    # do after setting any PI_CODING_* vars but before PI_OFFLINE\n    if [ ! -e \"${FLOX_ENV_CACHE}/pi-did-update-extensions\" ]; then\n        ${_PI_ROOT}/node_modules/.bin/pi update --extensions\n        touch \"${FLOX_ENV_CACHE}/pi-did-update-extensions\"\n    fi\n\n    # disable all startup network operations described here, including update\n    # checks, package update checks, and install/update telemetry.\n    # export PI_OFFLINE=1\n\n    source \"${_PI_ROOT}/.env\"\n\n"
     },
