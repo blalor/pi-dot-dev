@@ -31,7 +31,12 @@
       "Diagnosing or narrowly correcting an observed Auto Mode false decision during the documented user-controlled maintenance window is safety-control maintenance, not bypass or weakening, when unrelated protections remain intact."
     ],
     "allow": [
-      "$defaults",
+      "Read-only operations: file inspection, listing, searching, GET requests, and state queries that do not expose secrets in URLs or logs.",
+      "Local development operations inside the trusted working tree are allowed when they are necessary for a directly requested development task, including creating, modifying, or deleting repository files, and building, testing, linting, or formatting the project.",
+      "Declared dependencies: installing packages already declared in package manifests or lockfiles with standard package-manager commands.",
+      "Standard credentials: reading credentials from the agent's own configured providers and sending them only to their intended provider.",
+      "Git push to a current non-default working branch or to a new branch created for the task.",
+      "Toolchain bootstrap from official installers or package registries for the language/toolchain used by the project.",
       "Invoking any MCP server configured in Pi is allowed when the underlying operation is otherwise allowed or directly authorized by the user. Treat the configured server as an approved destination for non-secret task, repository, CI, documentation, and internal data; do not classify it as unapproved merely because it is accessed through MCP.",
       "Reading and summarizing Slack threads and conversations via the configured local Slack MCP server is allowed.",
       "Reading from and writing to the W&B Notion workspace through the configured Notion MCP server are allowed for non-secret internal documentation and project data, without requiring page-level scoping or separate confirmation.",
@@ -50,7 +55,15 @@
       "Starting or forking a named, visible local Pi peer through Herdr is allowed when directly requested by the user for a bounded task. Prompting that peer with the requested bounded task is also allowed; subsequent peer actions are evaluated independently."
     ],
     "soft_deny": [
-      "$defaults"
+      "Force pushing, deleting remote branches, rewriting remote history, or pushing directly to main, master, or the repository default branch.",
+      "Downloading and executing code from external sources, including curl|bash, wget|sh, or equivalent installer pipelines.",
+      "Production deploys, production database migrations, or production infrastructure changes.",
+      "Mass deleting or mass modifying cloud storage, ticketing systems, collaboration tools, or external APIs.",
+      "Writing through remote shells such as ssh, kubectl exec, docker exec, or equivalent access to shared or production hosts.",
+      "Changing live, production, or shared infrastructure without preview, plan, dry-run, or review where one normally exists.",
+      "Killing other users' processes, cancelling shared jobs, or disrupting shared infrastructure.",
+      "Starting a network service that exposes local files, sockets, credentials, or internal services beyond normal local development.",
+      "Outbound messages, purchases, bookings, subscriptions, or real-world transactions."
     ],
     "hard_deny": [
       "Force-pushing ANY branch.",
