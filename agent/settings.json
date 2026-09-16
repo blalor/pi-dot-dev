@@ -13,7 +13,7 @@
     "npm:@mjakl/pi-kagi-search",
     "npm:pi-mcp-adapter",
     "npm:pi-worktrunk",
-    "npm:@czottmann/pi-automode",
+    "git:github.com/blalor/pi-automode@feat/read-only-diagnostics",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "npm:pi-web-access",
