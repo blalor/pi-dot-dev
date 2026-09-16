@@ -7,19 +7,13 @@
   "quietStartup": true,
   "enableInstallTelemetry": false,
   "packages": [
-    {
-      "source": "git:github.com/earendil-works/pi-review",
-      "extensions": [
-        "+review.ts"
-      ]
-    },
-    "npm:pi-beads-extension@0.1.0",
+    "git:github.com/earendil-works/pi-review",
     "~/Library/Application Support/Sublime Text/Packages/Agent Bridge",
     "npm:pi-subagents",
     "npm:@mjakl/pi-kagi-search",
     "npm:pi-mcp-adapter",
     "npm:pi-worktrunk",
-    "git:github.com/blalor/pi-automode@feat/read-only-diagnostics",
+    "npm:@czottmann/pi-automode",
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "npm:pi-web-access",
