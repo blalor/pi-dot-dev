@@ -17,7 +17,8 @@
     "npm:pi-intercom",
     "npm:pi-prompt-template-model",
     "npm:pi-web-access",
-    "npm:pi-lsp"
+    "npm:pi-lsp",
+    "npm:@vanillagreen/pi-session-bridge"
   ],
   "extensions": [
     "extensions"
