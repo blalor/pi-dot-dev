@@ -11,6 +11,7 @@ fd.pkg-path = "fd"
 beads.pkg-path = "beads"
 gitleaks.pkg-path = "gitleaks"
 prek.pkg-path = "prek"
+python3.pkg-path = "python3"
 
 [vars]
 MCP_UI_VIEWER = "none"
