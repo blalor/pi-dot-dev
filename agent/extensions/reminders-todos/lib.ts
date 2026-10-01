@@ -37,6 +37,7 @@ export interface ProcessResult {
     stdout: string;
     stderr: string;
     code: number;
+    killed?: boolean;
 }
 
 export type ScriptExecutor = (args: string[], signal?: AbortSignal) => Promise<ProcessResult>;
@@ -71,6 +72,27 @@ function reminderRecord(reminder) {
     };
 }
 
+function reminderRecords(list) {
+    const reminders = list.reminders;
+    const ids = reminders.id();
+    const titles = reminders.name();
+    const notes = reminders.body();
+    const completed = reminders.completed();
+    const createdAt = reminders.creationDate();
+    const dueAt = reminders.dueDate();
+
+    return ids.map(function(id, index) {
+        return {
+            id: String(id),
+            title: String(titles[index] || ""),
+            notes: String(notes[index] || ""),
+            completed: Boolean(completed[index]),
+            createdAt: iso(createdAt[index]),
+            dueAt: iso(dueAt[index])
+        };
+    });
+}
+
 function run(argv) {
     const action = argv[0];
     const listName = argv[1];
@@ -91,7 +113,7 @@ function run(argv) {
         if (!list) return JSON.stringify({ listFound: false, reminders: [] });
         return JSON.stringify({
             listFound: true,
-            reminders: list.reminders().map(reminderRecord)
+            reminders: reminderRecords(list)
         });
     }
 
@@ -259,6 +281,10 @@ async function runJxa(
 ): Promise<unknown> {
     signal?.throwIfAborted();
     const result = await execute(["-l", "JavaScript", "-e", JXA_SCRIPT, action, REMINDERS_LIST_NAME, JSON.stringify(payload)], signal);
+    if (result.killed) {
+        signal?.throwIfAborted();
+        throw new Error("Reminders request timed out");
+    }
     if (result.code !== 0) {
         throw new Error(result.stderr.trim() || `osascript exited with status ${result.code}`);
     }

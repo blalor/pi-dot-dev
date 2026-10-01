@@ -167,3 +167,14 @@ test("Reminders bridge handles a missing list without creating it during search"
     });
     assert.deepEqual(await readReminders(execute), { listFound: false, reminders: [] });
 });
+
+test("Reminders bridge reports a terminated request as a timeout", async () => {
+    const execute: ScriptExecutor = async () => ({
+        code: 0,
+        killed: true,
+        stderr: "",
+        stdout: "",
+    });
+
+    await assert.rejects(readReminders(execute), /Reminders request timed out/);
+});
