@@ -8,6 +8,8 @@ compatibility: Requires a Herdr-managed Pi pane plus the herdr, pi, and jq execu
 
 Fork the current Pi session into a separate session file running in a new Herdr tab. This copies Pi's session history directly. It does not build a handoff summary, create a worktree, assign a task, or establish supervisor/worker coordination.
 
+Use pi-intercom's `/handover` instead when an existing reachable session only needs a summary and next task. Use `agent-handoff` when the destination needs a worktree, explicit writer ownership, or a bounded task contract.
+
 The bundled helper is the default compatibility boundary. Invoke it directly without loading the general Herdr skill, printing `herdr --skill`, or inspecting help for the commands it wraps. Read [`../herdr/SKILL.md`](../herdr/SKILL.md) and inspect live command help only when the helper fails, recovery requires a manual Herdr command, or the user requests behavior the helper does not expose.
 
 ## Safety and ownership
