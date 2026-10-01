@@ -40,17 +40,17 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/zvh1hkcgl8zp73y3pidhn39vhdn1nf57-beads-1.0.3.drv",
+      "derivation": "/nix/store/d0rd9805b45wiz4mv4bmhhi0gy4nf4fh-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:57:39.883452Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:28.769905Z",
       "stabilities": [
         "unstable"
       ],
@@ -60,7 +60,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/rhl9bdfbh36jdsxmxb8irb3j8c0vsa5b-beads-1.0.3"
+        "out": "/nix/store/ilkq2ihrf17z1fm522map9302ixbcvnx-beads-1.0.3"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -69,17 +69,17 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/v0az9f9mxbhwdqbsxhz0n89ark1wbadp-beads-1.0.3.drv",
+      "derivation": "/nix/store/91il64y9aa89v6hwadjikyvmpjbbfa84-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:15.228759Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:37.013762Z",
       "stabilities": [
         "unstable"
       ],
@@ -89,7 +89,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/qaqfqp1h1sm4xdjs9gxmp3hwidjdnml4-beads-1.0.3"
+        "out": "/nix/store/0m0cpwjz33bhqqj6cnvfiiziqd833wdc-beads-1.0.3"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -98,17 +98,17 @@
     {
       "attr_path": "beads",
       "broken": false,
-      "derivation": "/nix/store/1h6kbidvr0r34zr2n8v70h5kikz915la-beads-1.0.3.drv",
+      "derivation": "/nix/store/dr5hxr7hp7bpc0130vgazv63qzja6m12-beads-1.0.3.drv",
       "description": "Lightweight memory system for AI coding agents with graph-based issue tracking",
       "install_id": "beads",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "beads-1.0.3",
       "pname": "beads",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:01.081542Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:11.462292Z",
       "stabilities": [
         "unstable"
       ],
@@ -118,7 +118,7 @@
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/kfml4ci9j8s0d0lzg0rjcbwdn7ya25c1-beads-1.0.3"
+        "out": "/nix/store/9c3daxb78cz1axq5vwizr87nx8l1vwn8-beads-1.0.3"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
@@ -131,13 +131,13 @@
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "fd-10.5.0",
       "pname": "fd",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:57:40.847673Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:29.700763Z",
       "stabilities": [
         "unstable"
       ],
@@ -160,13 +160,13 @@
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "fd-10.5.0",
       "pname": "fd",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:16.514535Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:38.255610Z",
       "stabilities": [
         "unstable"
       ],
@@ -189,13 +189,13 @@
       "description": "Simple, fast and user-friendly alternative to find",
       "install_id": "fd",
       "license": "[ Apache-2.0, MIT ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "fd-10.5.0",
       "pname": "fd",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:02.497231Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:12.850236Z",
       "stabilities": [
         "unstable"
       ],
@@ -218,13 +218,13 @@
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:57:41.195602Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:30.127343Z",
       "stabilities": [
         "unstable"
       ],
@@ -247,13 +247,13 @@
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:17.053961Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:38.805079Z",
       "stabilities": [
         "unstable"
       ],
@@ -276,13 +276,13 @@
       "description": "Transparent file encryption in git",
       "install_id": "git-crypt",
       "license": "GPL-3.0-or-later",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "git-crypt-0.8.0",
       "pname": "git-crypt",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:03.121591Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:13.466361Z",
       "stabilities": [
         "unstable"
       ],
@@ -305,13 +305,13 @@
       "description": "Scan git repos (or files) for secrets",
       "install_id": "gitleaks",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "gitleaks-8.30.1",
       "pname": "gitleaks",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:57:41.242507Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:30.174686Z",
       "stabilities": [
         "unstable"
       ],
@@ -334,13 +334,13 @@
       "description": "Scan git repos (or files) for secrets",
       "install_id": "gitleaks",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "gitleaks-8.30.1",
       "pname": "gitleaks",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:17.115035Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:38.865917Z",
       "stabilities": [
         "unstable"
       ],
@@ -363,13 +363,13 @@
       "description": "Scan git repos (or files) for secrets",
       "install_id": "gitleaks",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "gitleaks-8.30.1",
       "pname": "gitleaks",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:03.184433Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:13.531337Z",
       "stabilities": [
         "unstable"
       ],
@@ -392,13 +392,13 @@
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "jq-1.8.2",
       "pname": "jq",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:57:56.785121Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:46.050343Z",
       "stabilities": [
         "unstable"
       ],
@@ -426,13 +426,13 @@
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "jq-1.8.2",
       "pname": "jq",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:37.186610Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:28:59.174403Z",
       "stabilities": [
         "unstable"
       ],
@@ -461,19 +461,20 @@
       "description": "Lightweight and flexible command-line JSON processor",
       "install_id": "jq",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "jq-1.8.2",
       "pname": "jq",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:24.830773Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:35.255846Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
       "version": "1.8.2",
       "outputs_to_install": [
+        "bin",
         "bin",
         "bin",
         "man"
@@ -496,19 +497,20 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "nodejs-24.19.0",
       "pname": "nodejs_24",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:58:04.764614Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:57:54.156595Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
       "version": "24.19.0",
       "outputs_to_install": [
+        "out",
         "out",
         "out"
       ],
@@ -526,19 +528,20 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "nodejs-24.19.0",
       "pname": "nodejs_24",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:29:53.460039Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:15.353478Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
       "version": "24.19.0",
       "outputs_to_install": [
+        "out",
         "out"
       ],
       "outputs": {
@@ -555,19 +558,21 @@
       "description": "Event-driven I/O framework for the V8 JavaScript engine",
       "install_id": "nodejs",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
       "name": "nodejs-24.19.0",
       "pname": "nodejs_24",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:06:42.789320Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:05:53.821825Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
       "version": "24.19.0",
       "outputs_to_install": [
+        "out",
+        "out",
         "out"
       ],
       "outputs": {
@@ -580,27 +585,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/16agdgq8fac8b2illjp7pb148pg16nnv-prek-0.4.14.drv",
+      "derivation": "/nix/store/5jqn0vjz5nqppps3y8xrlj9mhhcgivwa-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "name": "prek-0.4.14",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T04:58:19.938738Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T04:58:10.147973Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
-      "version": "0.4.14",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/l2cyc2wcwzn8n9r8ladniyy2kxvmqn2n-prek-0.4.14"
+        "out": "/nix/store/myvp74zvzw7bhm40p8f7qrivssj888ad-prek-0.5.2"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -609,27 +614,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/yhiw2k05vkc7dkd6xdyk307b28xgh7y0-prek-0.4.14.drv",
+      "derivation": "/nix/store/55vbns1ks243xckya4m3qxm8pzc6x3is-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "name": "prek-0.4.14",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T05:30:14.848526Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T05:29:35.881096Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
-      "version": "0.4.14",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/kxhxg4lxw2dq05w25l3l0bbz37ny0697-prek-0.4.14"
+        "out": "/nix/store/9ml4ari24brnvl12mdkcrbxcjzlnx4qm-prek-0.5.2"
       },
       "system": "aarch64-linux",
       "group": "toplevel",
@@ -638,27 +643,27 @@
     {
       "attr_path": "prek",
       "broken": false,
-      "derivation": "/nix/store/x15lfxbjil528bak243sgc4v9phra33c-prek-0.4.14.drv",
+      "derivation": "/nix/store/h3ybcvlag2mg42vvg3ixhxrglz2r6rh9-prek-0.5.2.drv",
       "description": "Better `pre-commit`, re-engineered in Rust ",
       "install_id": "prek",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "name": "prek-0.4.14",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "name": "prek-0.5.2",
       "pname": "prek",
-      "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "rev_count": 1064949,
-      "rev_date": "2026-08-31T12:23:27Z",
-      "scrape_date": "2026-09-01T06:07:04.264480Z",
+      "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
+      "rev_count": 1068089,
+      "rev_date": "2026-09-05T13:27:54Z",
+      "scrape_date": "2026-09-06T06:06:16.297540Z",
       "stabilities": [
         "unstable"
       ],
       "unfree": false,
-      "version": "0.4.14",
+      "version": "0.5.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/5wnvh7cnmcm822ljjxkwmnc875f61b1s-prek-0.4.14"
+        "out": "/nix/store/9qami79aaan9bwxjsc09z8ygjcj3ywwi-prek-0.5.2"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
