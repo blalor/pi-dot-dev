@@ -1,7 +1,7 @@
 ---
 name: wandb-model-sync
 description: Synchronize Pi's wandb provider in models.json with W&B Serverless Inference, assign documented context windows and modalities, and recommend W&B substitutes for preferred models. Use when W&B adds or removes inference models, model metadata needs refreshing, or the user asks which W&B models suit coding, reasoning, vision, or long-context work.
-compatibility: Requires Python 3, network access to api.inference.wandb.ai and trace.wandb.ai, and a W&B API key in WANDB_API_KEY or Pi auth.json.
+compatibility: Requires Python 3, network access to api.inference.wandb.ai or api.qa.inference.wandb.ai and trace.wandb.ai, and the matching W&B API key in WANDB_API_KEY, WANDB_QA_API_KEY, or Pi auth.json.
 ---
 
 # W&B model sync
@@ -10,8 +10,8 @@ Update the `wandb` provider from live W&B data and make recommendations supporte
 
 ## Safety and scope
 
-- Never print, persist, or pass the W&B API key as a literal command argument. The helper reads `WANDB_API_KEY` or `wandb.key` from Pi's `auth.json`.
-- Modify only `providers.wandb` in `models.json`. Preserve other providers and unrelated working-tree changes.
+- Never print, persist, or pass a W&B API key as a literal command argument. Production reads `WANDB_API_KEY` or `wandb.key`; QA reads `WANDB_QA_API_KEY` or `wandb-qa.key` from Pi's `auth.json`. Credentials are never shared across environments.
+- Modify only the requested W&B provider in `models.json`: `providers.wandb` by default, or `providers.wandb-qa` when the user explicitly requests QA. Preserve other providers and unrelated working-tree changes.
 - Use W&B's authenticated model endpoint as the source of available IDs. Use W&B's structured catalog for model metadata and its models.dev catalog as an independent consistency check.
 - Fail rather than assigning Pi's 128K fallback when an endpoint model lacks metadata or the structured sources disagree.
 - Do not send chat-completion requests merely to validate configuration. Listing models is sufficient unless the user requests a paid inference test.
@@ -42,9 +42,18 @@ python3 agent/skills/wandb-model-sync/scripts/fetch_catalog.py \
     --output "$snapshot_dir/catalog.json"
 ```
 
+For the explicitly requested QA provider, select its credential and endpoint:
+
+```bash
+python3 agent/skills/wandb-model-sync/scripts/fetch_catalog.py \
+    --auth-file agent/auth.json \
+    --auth-provider wandb-qa \
+    --output "$snapshot_dir/catalog-qa.json"
+```
+
 The helper:
 
-1. calls `GET https://api.inference.wandb.ai/v1/models` with bearer authentication;
+1. calls the selected fixed production or QA `/v1/models` endpoint with its matching bearer credential;
 2. reads names, modalities, exact context windows, reasoning support, tool-calling support, and lifecycle state from `https://trace.wandb.ai/inference/catalog/models`;
 3. verifies context windows, modalities, reasoning support, and tool-calling support against `https://trace.wandb.ai/inference/modelsdev/models`;
 4. records models.dev's advertised output limit without automatically exposing it in Pi;
@@ -55,7 +64,7 @@ The helper fails on malformed schemas, duplicate IDs, missing metadata for any l
 
 ## Reconcile `models.json`
 
-The final `providers.wandb.models` array must contain exactly the IDs in `catalog.json.models`. Add new IDs and remove unavailable IDs. Each entry must explicitly define:
+The requested provider's model array must contain exactly the IDs in its snapshot. Add new IDs and remove unavailable IDs. Each entry must explicitly define:
 
 ```json
 {
@@ -70,11 +79,11 @@ The final `providers.wandb.models` array must contain exactly the IDs in `catalo
 
 Apply these rules:
 
-- Copy `id`, catalog display name, `input`, `contextWindow`, and `reasoning` from the validated snapshot. Append ` (W&B)` to the display name.
+- Copy `id`, catalog display name, `input`, `contextWindow`, and `reasoning` from the validated snapshot. Append ` (W&B)` for production or ` (W&B QA)` for QA to the display name.
 - Treat `toolCalling` and `lifecycleStage` as validation and reporting metadata; Pi's model entry does not need extra fields for them.
 - Keep `maxTokens: 16384`. The snapshot's `advertisedMaxOutputTokens` is informational unless the user explicitly asks to expose a larger output budget.
 - Keep provider compatibility settings unless current API documentation requires a change. In particular, do not enable reasoning-effort controls without evidence that W&B accepts them.
-- Omit `apiKey` when authentication is stored in `auth.json`. Keep `authHeader: true` for bearer authentication.
+- Omit `apiKey` when authentication is stored in `auth.json`. Keep `authHeader: true` for bearer authentication. For QA, use the `wandb-qa` credential only with the QA endpoint.
 
 If a live endpoint model lacks either structured metadata source, or those sources disagree, stop reconciliation and report the exact ID and fields. Models listed in the catalog but absent from the endpoint are informational; remove them from `models.json` because the authenticated endpoint defines availability. Do not silently retain unavailable models or invent metadata.
 
@@ -146,7 +155,7 @@ git diff --check
 git diff -- agent/models.json SUITABLE_MODELS.md
 ```
 
-Success requires equal nonzero counts, empty `missing`, `stale`, `duplicateIds`, `missingContextWindows`, and `metadataMismatches` arrays, and all W&B models appearing in `pi --list-models wandb` with the intended context, reasoning, and image columns. An OpenAPI hash warning is informational when structured model validation still succeeds; inspect the schema change rather than blocking the synchronization automatically.
+Success requires equal nonzero counts, empty `missing`, `stale`, `duplicateIds`, `missingContextWindows`, and `metadataMismatches` arrays, and all W&B models appearing in `pi --list-models wandb` with the intended context, reasoning, and image columns. For QA, run the same checks against `catalog-qa.json` and `providers["wandb-qa"]`, expect the ` (W&B QA)` name suffix, and inspect the `wandb-qa` rows from `pi --list-models wandb-qa`. An OpenAPI hash warning is informational when structured model validation still succeeds; inspect the schema change rather than blocking the synchronization automatically.
 
 Run a reviewer after editing. Ask it to compare IDs against the snapshot, metadata against W&B's catalog, recommendations against cited evidence, and the diff against the user's requested scope.
 

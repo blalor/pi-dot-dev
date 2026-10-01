@@ -15,6 +15,9 @@ from pathlib import Path
 from typing import Any
 
 MODELS_URL = "https://api.inference.wandb.ai/v1/models"
+QA_MODELS_URL = "https://api.qa.inference.wandb.ai/v1/models"
+PROVIDER_ENDPOINTS = {"wandb": MODELS_URL, "wandb-qa": QA_MODELS_URL}
+PROVIDER_ENV_KEYS = {"wandb": "WANDB_API_KEY", "wandb-qa": "WANDB_QA_API_KEY"}
 CATALOG_URL = "https://trace.wandb.ai/inference/catalog/models"
 MODELS_DEV_URL = "https://trace.wandb.ai/inference/modelsdev/models"
 OPENAPI_URL = "https://trace.wandb.ai/openapi.json"
@@ -30,21 +33,29 @@ def parse_args() -> argparse.Namespace:
         "--auth-file",
         type=Path,
         default=Path("agent/auth.json"),
-        help="Pi auth.json containing wandb.key; ignored when WANDB_API_KEY is set",
+        help="Pi auth.json containing the provider key; ignored when its environment variable is set",
+    )
+    parser.add_argument(
+        "--auth-provider",
+        choices=tuple(PROVIDER_ENDPOINTS),
+        default="wandb",
+        help="W&B provider and credential to query (default: wandb)",
     )
     parser.add_argument("--output", type=Path, help="Write JSON to this path instead of stdout")
     return parser.parse_args()
 
 
-def api_key(auth_file: Path) -> str:
-    if key := os.environ.get("WANDB_API_KEY"):
+def api_key(auth_file: Path, provider: str) -> str:
+    environment_key = PROVIDER_ENV_KEYS[provider]
+    if key := os.environ.get(environment_key):
         return key
     try:
         auth = json.loads(auth_file.read_text())
-        key = auth["wandb"]["key"]
+        key = auth[provider]["key"]
     except (FileNotFoundError, KeyError, json.JSONDecodeError) as exc:
         raise SystemExit(
-            f"Set WANDB_API_KEY or provide a Pi auth file containing wandb.key: {exc}"
+            f"Set {environment_key} or provide a Pi auth file containing "
+            f"{provider}.key: {exc}"
         ) from exc
     if not isinstance(key, str) or not key:
         raise SystemExit("The W&B API key is empty or is not a string")
@@ -254,9 +265,10 @@ def openapi_fingerprint() -> dict[str, Any]:
 
 def main() -> int:
     args = parse_args()
+    endpoint_url = PROVIDER_ENDPOINTS[args.auth_provider]
     endpoint = fetch_json(
-        MODELS_URL,
-        {"Authorization": f"Bearer {api_key(args.auth_file)}"},
+        endpoint_url,
+        {"Authorization": f"Bearer {api_key(args.auth_file, args.auth_provider)}"},
         allow_redirects=False,
     )
     endpoint_ids = endpoint_model_ids(endpoint)
@@ -267,7 +279,7 @@ def main() -> int:
     result = {
         "retrievedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "sources": {
-            "endpoint": MODELS_URL,
+            "endpoint": endpoint_url,
             "catalog": CATALOG_URL,
             "modelsDev": MODELS_DEV_URL,
             "openapi": OPENAPI_URL,
