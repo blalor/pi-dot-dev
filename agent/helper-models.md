@@ -22,4 +22,4 @@ There is no active-model fallback. Missing, malformed, unavailable, or unauthent
 
 The friction-log extension does not make model calls.
 
-Run `/reload` after editing `helper-models.json` so session-started background helpers resolve the new route. The recap command reads the file each time it runs.
+The work-log extension resolves its route immediately before each summary starts, and the recap command reads the file each time it runs. Their configuration changes apply without `/reload`. Other session-started helpers may require `/reload`.

@@ -1,4 +1,7 @@
 {
+    "settings": {
+        "scriptMode": true
+    },
     "mcpServers": {
         "slack": {
             "type": "http",

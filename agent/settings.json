@@ -2,7 +2,10 @@
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "medium",
-  "theme": "dark",
+  "defaultTools": [
+    "+codemode"
+  ],
+  "theme": "system",
   "hideThinkingBlock": true,
   "quietStartup": true,
   "enableInstallTelemetry": false,
@@ -32,7 +35,7 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.99.2",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false
@@ -51,5 +54,6 @@
         "disabled": true
       }
     }
-  }
+  },
+  "deviceId": "fbe24681-bd96-4240-a71b-70ab5445e1ae"
 }
