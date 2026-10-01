@@ -1,16 +1,49 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { execFile } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { basename } from "node:path";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const NOTIFICATION_DELAY_MS = 750;
+const SUBAGENT_RPC_TIMEOUT_MS = 500;
 const MIN_NOTIFICATION_INTERVAL_MS = 2_000;
+// This is an optional, cross-extension integration rather than a core Pi lifecycle signal.
+// Keep it event-only: when pi-subagents is absent, the probe times out harmlessly and
+// notifications fall back to Pi's settled/idle state without requiring that package.
+const SUBAGENT_RPC_PROTOCOL_VERSION = 1;
+const SUBAGENT_RPC_REQUEST_EVENT = "subagents:rpc:v1:request";
+const SUBAGENT_RPC_READY_EVENT = "subagents:rpc:v1:ready";
+const SUBAGENT_RPC_REPLY_PREFIX = "subagents:rpc:v1:reply:";
 const ITERM2_TAB_ATTENTION_COLOR = { red: 255, green: 180, blue: 0 } as const;
 const FOCUS_IN_SEQUENCE = "\x1b[I";
 const FOCUS_OUT_SEQUENCE = "\x1b[O";
 
 type NotificationMethod = "iterm2" | "macos" | "none";
+
+type SubagentRpcReply = {
+	version?: number;
+	requestId?: string;
+	method?: string;
+	success?: boolean;
+	data?: unknown;
+};
+
+type SubagentPingData = {
+	version?: number;
+	capabilities?: {
+		fleetStatus?: {
+			version?: number;
+		};
+	};
+};
+
+type SubagentStatusData = {
+	fleet?: {
+		version?: number;
+		totalActive?: number;
+	};
+};
 
 function isITerm2(): boolean {
 	return process.env.TERM_PROGRAM === "iTerm.app" || !!process.env.ITERM_SESSION_ID;
@@ -103,15 +136,22 @@ async function notifyAttention(project: string, test = false): Promise<Notificat
 
 export default function (pi: ExtensionAPI) {
 	let lastNotificationAt = 0;
+	let notificationGeneration = 0;
 	let terminalFocused = true;
 	let tabColorState: "default" | "attention" = "default";
 	let focusReportingEnabled = false;
 	let focusListener: ((chunk: Buffer | string) => void) | undefined;
+	let subagentFleetStatusAvailable = false;
 	const pendingTimers = new Set<NodeJS.Timeout>();
+	const pendingRpcCancellations = new Set<() => void>();
 
 	function clearPendingTimers(): void {
 		for (const timer of pendingTimers) clearTimeout(timer);
 		pendingTimers.clear();
+	}
+
+	function cancelPendingRpcRequests(): void {
+		for (const cancel of [...pendingRpcCancellations]) cancel();
 	}
 
 	function setAttentionTabColor(): void {
@@ -155,13 +195,93 @@ export default function (pi: ExtensionAPI) {
 		}
 	}
 
+	function supportsFleetStatus(value: unknown): boolean {
+		const data = value as SubagentPingData;
+		return (
+			data?.version === SUBAGENT_RPC_PROTOCOL_VERSION &&
+			data.capabilities?.fleetStatus?.version === SUBAGENT_RPC_PROTOCOL_VERSION
+		);
+	}
+
+	async function requestSubagentRpc(method: "ping" | "status"): Promise<SubagentRpcReply | undefined> {
+		const requestId = randomUUID();
+		const replyEvent = `${SUBAGENT_RPC_REPLY_PREFIX}${requestId}`;
+
+		return new Promise((resolve) => {
+			let settled = false;
+			let timeout: NodeJS.Timeout | undefined;
+			let unsubscribe = () => {};
+			const finish = (reply: SubagentRpcReply | undefined) => {
+				if (settled) return;
+				settled = true;
+				if (timeout) clearTimeout(timeout);
+				unsubscribe();
+				pendingRpcCancellations.delete(cancel);
+				resolve(reply);
+			};
+			const cancel = () => finish(undefined);
+
+			unsubscribe = pi.events.on(replyEvent, (value) => {
+				const reply = value as SubagentRpcReply;
+				if (reply?.requestId === requestId) finish(reply);
+			});
+			pendingRpcCancellations.add(cancel);
+			timeout = setTimeout(cancel, SUBAGENT_RPC_TIMEOUT_MS);
+			timeout.unref?.();
+
+			pi.events.emit(SUBAGENT_RPC_REQUEST_EVENT, {
+				version: SUBAGENT_RPC_PROTOCOL_VERSION,
+				requestId,
+				method,
+				params: {},
+			});
+		});
+	}
+
+	function validRpcReply(reply: SubagentRpcReply | undefined, requestMethod: "ping" | "status"): boolean {
+		return (
+			reply?.version === SUBAGENT_RPC_PROTOCOL_VERSION &&
+			reply.method === requestMethod &&
+			reply.success === true
+		);
+	}
+
+	async function detectSubagentFleetStatus(): Promise<void> {
+		const reply = await requestSubagentRpc("ping");
+		if (validRpcReply(reply, "ping")) {
+			subagentFleetStatusAvailable = supportsFleetStatus(reply?.data);
+		}
+	}
+
+	async function shouldSuppressForSubagents(): Promise<boolean> {
+		if (!subagentFleetStatusAvailable) return false;
+
+		const reply = await requestSubagentRpc("status");
+		if (!validRpcReply(reply, "status")) return true;
+
+		const data = reply?.data as SubagentStatusData;
+		const fleet = data?.fleet;
+		if (
+			fleet?.version !== SUBAGENT_RPC_PROTOCOL_VERSION ||
+			typeof fleet.totalActive !== "number" ||
+			!Number.isSafeInteger(fleet.totalActive) ||
+			fleet.totalActive < 0
+		) {
+			return true;
+		}
+
+		return fleet.totalActive > 0;
+	}
+
 	function scheduleAttentionNotification(ctx: ExtensionContext): void {
 		if (process.platform !== "darwin" || !ctx.hasUI) return;
 
-		const timer = setTimeout(() => {
+		const generation = ++notificationGeneration;
+		const timer = setTimeout(async () => {
 			pendingTimers.delete(timer);
 
-			if (!ctx.isIdle() || ctx.hasPendingMessages()) return;
+			if (!ctx.isIdle() || ctx.hasPendingMessages() || (await shouldSuppressForSubagents())) return;
+			if (generation !== notificationGeneration || !ctx.isIdle() || ctx.hasPendingMessages()) return;
 
 			setAttentionTabColor();
 
@@ -177,21 +297,32 @@ export default function (pi: ExtensionAPI) {
 		pendingTimers.add(timer);
 	}
 
-	pi.on("session_start", async (_event, ctx) => {
+	const unsubscribeSubagentReady = pi.events.on(SUBAGENT_RPC_READY_EVENT, (value) => {
+		subagentFleetStatusAvailable = supportsFleetStatus(value);
+	});
+
+	pi.on("session_start", (_event, ctx) => {
+		subagentFleetStatusAvailable = false;
 		if (ctx.mode === "tui") installFocusListener();
+		void detectSubagentFleetStatus();
 	});
 
 	pi.on("agent_start", async () => {
+		notificationGeneration++;
 		clearPendingTimers();
+		cancelPendingRpcRequests();
 		resetTabColor();
 	});
 
-	pi.on("agent_end", async (_event, ctx) => {
+	pi.on("agent_settled", async (_event, ctx) => {
 		scheduleAttentionNotification(ctx);
 	});
 
 	pi.on("session_shutdown", async () => {
+		notificationGeneration++;
 		clearPendingTimers();
+		cancelPendingRpcRequests();
+		unsubscribeSubagentReady();
 		resetTabColor();
 		uninstallFocusListener();
 	});
