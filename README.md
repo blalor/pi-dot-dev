@@ -12,8 +12,7 @@ The entrypoint to the agent harness is `bin/pi`; put that on your path, or (what
 
 ## maintenance
 
-* `npm update`
-* `pi update --extensions`
+* `bin/pi-update`
 
 ## showing what's installed
 
