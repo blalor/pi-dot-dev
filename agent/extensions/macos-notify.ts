@@ -21,6 +21,10 @@ const FOCUS_OUT_SEQUENCE = "\x1b[O";
 
 type NotificationMethod = "iterm2" | "macos" | "none";
 
+export function completionNotificationsEnabled(environment: NodeJS.ProcessEnv = process.env): boolean {
+	return environment.HERDR_ENV !== "1";
+}
+
 type SubagentRpcReply = {
 	version?: number;
 	requestId?: string;
@@ -274,7 +278,7 @@ export default function (pi: ExtensionAPI) {
 	}
 
 	function scheduleAttentionNotification(ctx: ExtensionContext): void {
-		if (process.platform !== "darwin" || !ctx.hasUI) return;
+		if (!completionNotificationsEnabled() || process.platform !== "darwin" || !ctx.hasUI) return;
 
 		const generation = ++notificationGeneration;
 		const timer = setTimeout(async () => {
