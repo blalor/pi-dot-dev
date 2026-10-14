@@ -90,22 +90,6 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
-                    "name": "Qwen3 30B A3B (W&B)",
-                    "reasoning": false,
-                    "input": ["text"],
-                    "contextWindow": 262144,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "Qwen/Qwen3.6-27B",
-                    "name": "Qwen3.6 27B (W&B)",
-                    "reasoning": true,
-                    "input": ["text", "image"],
-                    "contextWindow": 262144,
-                    "maxTokens": 16384
-                },
-                {
                     "id": "MiniMaxAI/MiniMax-M3",
                     "name": "MiniMax M3 (W&B)",
                     "reasoning": true,
@@ -130,14 +114,6 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "JetBrains/Mellum2-12B-A2.5B-Instruct",
-                    "name": "JetBrains Mellum2 12B A2.5B (W&B)",
-                    "reasoning": false,
-                    "input": ["text"],
-                    "contextWindow": 131072,
-                    "maxTokens": 16384
-                },
-                {
                     "id": "deepseek-ai/DeepSeek-V4.1-Flash",
                     "name": "DeepSeek V4.1-Flash (W&B)",
                     "reasoning": true,
@@ -154,35 +130,11 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "ibm-granite/granite-4.1-8b",
-                    "name": "IBM Granite 4.1 8B (W&B)",
-                    "reasoning": false,
-                    "input": ["text"],
-                    "contextWindow": 131072,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "deepseek-ai/DeepSeek-V4-Pro",
-                    "name": "DeepSeek V4-Pro (W&B)",
-                    "reasoning": true,
-                    "input": ["text"],
-                    "contextWindow": 1048576,
-                    "maxTokens": 16384
-                },
-                {
                     "id": "google/gemma-4-31B-it",
                     "name": "Google Gemma 4 31B (W&B)",
                     "reasoning": true,
                     "input": ["text", "image"],
                     "contextWindow": 262144,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "OpenPipe/Qwen3-14B-Instruct",
-                    "name": "OpenPipe Qwen3 14B Instruct (W&B)",
-                    "reasoning": false,
-                    "input": ["text"],
-                    "contextWindow": 32768,
                     "maxTokens": 16384
                 },
                 {
@@ -234,14 +186,6 @@
                     "maxTokens": 16384
                 },
                 {
-                    "id": "meta-llama/Llama-3.1-70B-Instruct",
-                    "name": "Meta Llama 3.1 70B (W&B)",
-                    "reasoning": false,
-                    "input": ["text"],
-                    "contextWindow": 131072,
-                    "maxTokens": 16384
-                },
-                {
                     "id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
                     "name": "NVIDIA Nemotron 3 Ultra (W&B)",
                     "reasoning": true,
@@ -263,22 +207,6 @@
                     "reasoning": false,
                     "input": ["text"],
                     "contextWindow": 161000,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "deepseek-ai/DeepSeek-V4-Flash",
-                    "name": "DeepSeek V4-Flash (W&B)",
-                    "reasoning": true,
-                    "input": ["text"],
-                    "contextWindow": 1048576,
-                    "maxTokens": 16384
-                },
-                {
-                    "id": "Qwen/Qwen3.5-35B-A3B",
-                    "name": "Qwen3.5 35B A3B (W&B)",
-                    "reasoning": true,
-                    "input": ["text", "image"],
-                    "contextWindow": 262144,
                     "maxTokens": 16384
                 },
                 {
