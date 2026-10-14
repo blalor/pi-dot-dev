@@ -117,7 +117,7 @@ export default function autoSessionName(pi: ExtensionAPI) {
     });
 
     pi.on("before_agent_start", (event, ctx) => {
-        if (!eligible || pi.getSessionName()) return;
+        if (event.messageType !== "user" || !eligible || pi.getSessionName()) return;
 
         eligible = false;
         const prompt = event.prompt.trim();
