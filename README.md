@@ -32,5 +32,4 @@ in AGENTS.md:
 
 I'm experimenting with these; you may see references to them, but they may not be part of the Flox config.
 
-* herdr
 * worktrunk

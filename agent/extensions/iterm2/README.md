@@ -20,7 +20,7 @@ prompt events, so it uses `Custom interaction`.
 The public `ui_prompt_start` and `ui_prompt_end` events cover select, confirm,
 input, editor and custom UI. Pi emits one outer start/end pair for overlapping
 interactions and emits the end on rejection as well as normal completion. This
-integration does not modify dialog implementations or depend on `herdr:blocked`.
+integration does not modify dialog implementations.
 Core-owned login screens do not go through these extension prompt events.
 Manual compaction refreshes status after Pi clears its busy flag, including when
 compaction fails or is cancelled; it does not send a turn-completion notification.

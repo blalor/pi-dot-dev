@@ -1,7 +1,7 @@
 ---
 name: agent-handoff
 description: Hand repository work from the current Pi session to a visible Pi peer. Use when the user wants an independently inspectable agent session with bounded context transfer, optional Worktrunk isolation, optional pi-intercom supervision, or a structured handoff to an existing reachable peer.
-compatibility: Requires pi. Herdr is preferred for visible peer sessions; Worktrunk is preferred when the peer needs an isolated checkout. pi-intercom is optional for supervised handoffs.
+compatibility: Requires macOS, iTerm2, python3, pi, osascript, and ITERM_SESSION_ID. macOS must permit terminal automation of iTerm2. Worktrunk is used for isolated checkouts; pi-intercom is optional for supervision.
 ---
 
 # Agent Handoff
@@ -12,7 +12,7 @@ This differs from an ordinary `pi-subagents` worker launch. Use a visible peer w
 
 ## Existing peer handover
 
-Use pi-intercom's `handover` action when the target is already reachable through intercom, including a session on a saved Herdr machine, and a compact model-generated summary is enough. It sends the current state, decisions, changed files, open questions, and the next task without creating a second context artifact.
+Use pi-intercom's `handover` action when the target is already reachable through intercom and a compact model-generated summary is enough. It sends the current state, decisions, changed files, open questions, and the next task without creating a second context artifact.
 
 Do not use `handover` to create checkout isolation, transfer ownership of a shared checkout without an explicit agreement, or replace a handoff contract that requires defined scope, acceptance, and external-action boundaries. Use this skill's spawned-peer path in those cases. For an existing peer that needs those controls, agree on the contract first, then send it with `handover` or `send`.
 
@@ -22,9 +22,9 @@ Use the fast path when the outcome is bounded, the target repository or PR is kn
 
 1. Inspect the current checkout only enough to choose writer ownership.
 2. Create a Worktrunk worktree only when parallel writers or a different branch require one.
-3. Start one named Pi in a visible Herdr tab.
-4. Send a compact prompt containing outcome, scope, acceptance, checkout ownership, and explicitly authorized external actions.
-5. Treat successful `agent start` and `agent prompt --wait --until working` responses as startup verification, report the tab and checkout, then detach.
+3. Prepare a compact prompt containing outcome, scope, acceptance, checkout ownership, and explicitly authorized external actions.
+4. Start one named Pi in a visible iTerm2 tab with that prompt.
+5. Report the returned terminal location and checkout, then detach. Command submission is not proof that Pi is ready or working.
 
 Do not build a context artifact, launch reconnaissance, preflight intercom, read the new terminal, or repeat successful launcher verification on this path. Do not inspect help for commands already specified by this skill unless a command fails or non-default behavior is required.
 
@@ -110,8 +110,7 @@ if ! wt_output=$(wt switch \
     --create "$branch" \
     --base "$base" \
     --no-cd \
-    --format json \
-    -y 2>&1); then
+    --format json 2>&1); then
     printf '%s\n' "$wt_output" >&2
     exit 1
 fi
@@ -215,48 +214,26 @@ Call `status` or `list` only when establishing the supervised channel or diagnos
 
 ## Spawn the visible peer
 
-### Herdr
+### iTerm2
 
-Prefer Herdr when the current session has `HERDR_WORKSPACE_ID`. Do not guess a workspace ID.
+Use the bundled `scripts/launch-iterm.py` helper. Resolve its absolute path from this skill directory, but invoke it from the source Pi session's checkout. It matches `ITERM_SESSION_ID` to the calling terminal session and creates a tab in that window, even when another window is frontmost. It fails rather than guessing a window.
+
+Prepare the prompt below before launching. Write it to a session-scoped temporary file outside tracked files, then run:
 
 ```bash
-command -v herdr
-printf 'workspace=%s tab=%s pane=%s\n' \
-    "${HERDR_WORKSPACE_ID:-}" \
-    "${HERDR_TAB_ID:-}" \
-    "${HERDR_PANE_ID:-}"
-
-if [ -z "${HERDR_WORKSPACE_ID:-}" ]; then
-    printf 'No current Herdr workspace ID.\n' >&2
-    exit 1
-fi
-
-tab_json=$(herdr tab create \
-    --workspace "$HERDR_WORKSPACE_ID" \
+python3 <absolute-skill-directory>/scripts/launch-iterm.py \
     --cwd "$checkout_path" \
     --label "$label" \
-    --no-focus)
-printf '%s\n' "$tab_json"
-
-pane_id=$(jq -r '.result.root_pane.pane_id' <<< "$tab_json")
-tab_id=$(jq -r '.result.tab.tab_id' <<< "$tab_json")
-
-herdr agent start "$label" \
-    --kind pi \
-    --pane "$pane_id" \
-    --timeout 60000 \
-    -- --name "$label"
+    --prompt-file "$prompt_file"
 ```
 
-Passing `--name` through Herdr gives Pi a stable visible target and, when used, a stable pi-intercom target.
+The helper launches Pi with `--name` and the prompt as an argument through a private temporary script, without typing into a shell or waiting for shell readiness. The script removes itself when it starts; on a launch failure its path is printed for recovery. It uses the default iTerm2 profile and restores the previously selected tab; add `--focus` only when requested. It returns JSON containing the window ID, terminal session ID, checkout, label, and recovery command.
 
-A newly created tab can briefly exist before its shell is ready. If `herdr agent start` returns `agent_pane_busy`, preserve the tab and inspect it once with `herdr pane get "$pane_id"` and `herdr pane read "$pane_id"`. Retry `herdr agent start` once only if that inspection already shows an interactive shell. Otherwise stop and follow the startup-failure reporting path. Do not add a sleep or polling loop.
+`state: command-submitted` means iTerm2 accepted the command, not that Pi is ready or working. On the fast path, report this limitation and detach. For supervised work, the peer's intercom handshake establishes that it loaded and received the task.
 
-### Visible fallback
+Do not use intercom's `openProjectPaneIfMissing`, path-based `/handover` creation, or subagents' `project.open`; those launch paths still depend on Herdr. Use explicit reachable intercom targets after launching the peer yourself.
 
-If Herdr is unavailable, use the visible peer patterns from the `pi-intercom` skill. Prefer a cmux split, then a private tmux socket. Start Pi with `--name "$label"` in `"$checkout_path"`.
-
-Do not silently replace the requested visible peer with a headless subagent. If no visible launcher is available, explain the limitation.
+If iTerm2 automation is unavailable, report the limitation. A macOS automation denial may require enabling control in Privacy & Security > Automation. Do not silently substitute a headless subagent or another terminal.
 
 ## Prompt the peer
 
@@ -296,16 +273,7 @@ Read repository instructions and relevant skills before editing. Stop for an una
 On completion, report changed files, commits, commands with results, validation evidence, remaining risks, checkout status, and the exact withheld action needed next.
 ```
 
-Submit the prompt and wait only for Herdr to observe that work started:
-
-```bash
-herdr agent prompt "$label" "$prompt" \
-    --wait \
-    --until working \
-    --timeout 15000
-```
-
-A successful `agent start` followed by this successful prompt response is sufficient verification on the fast path. Do not follow it with `agent get`, `agent read`, or `intercom list`.
+Pass this prompt with `--prompt-file` in the launch command above; do not launch an idle peer first and submit it a second time. Do not follow a successful fast-path launch with terminal reads or `intercom list`.
 
 For a supervised handoff, the peer may send a non-blocking intercom handshake and proceed. Require a blocking `ask` plus supervisor `reply` before editing only when writer ownership is transferring in a shared checkout or action boundaries need explicit acknowledgement.
 
@@ -329,8 +297,8 @@ Completion does not authorize push, merge, deployment, task closure, worktree re
 
 Tell the user:
 
-- peer label and live state
-- launcher and tab or pane IDs
+- peer label and observed launch state, without claiming readiness from command submission
+- iTerm2 window and terminal session IDs
 - checkout path, branch, base, and writer ownership
 - assigned outcome
 - actions deliberately withheld
@@ -342,8 +310,8 @@ Tell the user:
 - **Branch or worktree already exists:** choose a new branch or stop. Never reuse another writer's checkout.
 - **Dirty checkout contains required changes:** transfer sole writer ownership or ask for an explicit materialization plan. Do not stash or discard automatically.
 - **Worktrunk partially succeeds:** inspect `wt list` before retrying. Do not create a duplicate checkout.
-- **Herdr tab creation succeeds but Pi startup fails:** preserve the tab and report its tab and pane IDs plus the recovery command.
-- **Pi starts but prompt submission fails:** preserve the session and report the exact retry command.
+- **Tab creation succeeds but Pi startup fails:** preserve the tab and report available window and terminal session IDs plus the recovery command. The tab retains a recovery shell when Pi exits. Run the recovery command only after confirming Pi is no longer running; never type it into an active Pi session.
+- **Launcher fails without identifiers:** a tab may already exist. Inspect iTerm2 before retrying so you do not create a duplicate.
 - **Peer does not appear in intercom:** check `intercom status` and `intercom list`; verify the same-machine Pi session loaded pi-intercom.
 - **Intercom ask times out:** do not assume authorization. Re-prompt through the visible launcher or stop the handoff.
 - **Two writers touch one checkout:** stop both writers and inspect the diff before continuing.
