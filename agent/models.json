@@ -216,6 +216,30 @@
                     "input": ["text"],
                     "contextWindow": 131072,
                     "maxTokens": 16384
+                },
+                {
+                    "id": "zai-org/GLM-5.3",
+                    "name": "Z.AI GLM 5.3 (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 1048576,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B",
+                    "name": "NVIDIA Nemotron 3.5 Super VL (W&B)",
+                    "reasoning": true,
+                    "input": ["text", "image"],
+                    "contextWindow": 1048576,
+                    "maxTokens": 16384
+                },
+                {
+                    "id": "reflection/Beam-1.0-501B-A23B",
+                    "name": "Reflection Beam 1.0 (W&B)",
+                    "reasoning": true,
+                    "input": ["text"],
+                    "contextWindow": 1048576,
+                    "maxTokens": 16384
                 }
             ]
         },
