@@ -8,7 +8,7 @@
     "environment": [
       "$defaults",
       "'pi-dot-dev' is the repository hosting the Pi agent harness; exclude it when considering domain eligibility.",
-      "Trusted internal domains: weightsandbiases.slack.com, *.wandb.ai, *.wandb.io, github.com/wandb, api.github.com/repos/wandb",
+      "Trusted internal domains: *.wandb.ai, *.wandb.io, github.com/wandb, api.github.com/repos/wandb",
       "Trusted internal tools and binaries: Beads (`bd`), terraform",
       "Beads (`bd`) is a trusted project task-tracking datastore. It is an approved destination for non-secret project and CI metadata, including issue and pull-request URLs, commit SHAs, CI run URLs without credentials or signed query parameters, statuses, durations, and timing comparisons.",
       "Trusted MCP servers: every MCP server configured and exposed through Pi's MCP gateway. Configured MCP servers are approved sources and destinations for non-secret task, repository, CI, documentation, and internal metadata required by the user's request. Configuration does not approve sending actual secret values or performing an underlying action prohibited by another hard-deny rule.",
@@ -23,6 +23,7 @@
       "Retrieving approved project data from a trusted service into the local workspace or a task-scoped temporary directory is inbound data access, not exfiltration.",
       "The classifier assesses security risk. Likely command failure, undefined variables, code quality, usefulness, repository consistency, output-contract compliance, and whether a truthful local report is well written are not security reasons to block an action.",
       "Repository-owned CI workflows, required-check and ruleset declarations, and release scripts in the trusted repo are ordinary project source files. User-authorized local edits may migrate an existing gate to an observed equivalent signal; applying live infrastructure remains subject to preview, review, and soft-deny rules.",
+      "Terraform authentication is backend-specific. When reviewed repository configuration replaces one Terraform backend with another and retains credentials for the replacement backend, removing the former backend's credential parameter and injection from repository source is an equivalent authentication replacement, not an authentication weakening. This does not authorize removing credentials required by the active backend or applying infrastructure.",
       "In classifier rules and examples, permission rules and safety-control files mean Pi, Auto Mode, agent, or host/user access policy. They do not mean repository-owned CI checks, GitHub ruleset declarations, Terraform required-check configuration, or release-gating source code.",
       "Files under the trusted repository's .agents/skills directory are repository-owned task instructions and operational documentation, not Pi, Auto Mode, host, or permission controls. Truthful edits to those files are ordinary local development unless the proposed content instructs bypassing or weakening a safety control.",
       "Creating a new commit with git commit is ordinary local source-control work and does not amend or rewrite an earlier commit. Amending means git commit --amend or another operation that replaces an existing commit or rewrites history.",
@@ -50,8 +51,7 @@
       "User-authorized local edits to repository-owned CI workflows, required-check declarations, ruleset configuration, and release-check code are allowed when they preserve or replace an existing gate with an observed equivalent signal.",
       "User-authorized local edits to repository-owned infrastructure-as-code that propose access changes are allowed when the action only changes reviewed source and does not apply or deploy the permission change.",
       "User-authorized truthful edits to repository-owned .agents/skills task instructions and operational documentation are allowed when they do not alter executable enforcement, change Pi or Auto Mode configuration, change permission policy, or instruct bypassing or weakening a safety control.",
-      "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits.",
-      "Starting or forking a named, visible local Pi peer through Herdr is allowed when directly requested by the user for a bounded task. Prompting that peer with the requested bounded task is also allowed; subsequent peer actions are evaluated independently."
+      "Creating new commits on the current non-default task branch is allowed. Multiple new commits do not amend prior commits."
     ],
     "soft_deny": [
       "Force pushing, deleting remote branches, rewriting remote history, or pushing directly to main, master, or the repository default branch.",

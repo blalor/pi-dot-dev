@@ -2,3 +2,6 @@ run-history.jsonl
 mcp-npx-cache.json
 mcp-onboarding.json
 models-store.json
+mcp-project-approvals.json
+pi-subagents
+trust/lsp.json

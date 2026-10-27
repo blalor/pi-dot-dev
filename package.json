@@ -7,6 +7,6 @@
     "@earendil-works/pi-ai": ">=0.79",
     "@earendil-works/pi-coding-agent": ">=0.79",
     "@earendil-works/pi-tui": ">=0.79",
-    "typescript": "^6.0.3"
+    "typescript": "~5.9.3"
   }
 }
