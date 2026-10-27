@@ -89,7 +89,11 @@ If a live endpoint model lacks either structured metadata source, or those sourc
 
 ## Suggest suitable models
 
-Read the preferred models from the user's request and, when relevant, their local metadata in `agent/models-store.json`. Compare W&B candidates on concrete dimensions:
+Use the preferred models named in the user's request. When none are named, use **GPT-6.1 Sol** (`openai-codex/gpt-6.1-sol`) as the default comparison target. Preserve other comparison targets already in `SUITABLE_MODELS.md` unless the user asks to remove them.
+
+Read each target's current entry in `agent/models-store.json` before comparing capabilities. GPT-6.1 Sol is currently configured for text and image input, a 500,000-token context window, a 128,000-token maximum output, and the Codex Responses API with tool search and selectable reasoning levels. These are local configuration values, not independently verified service limits; re-read them rather than carrying forward older Sol metadata. If a target is absent, state that its current local configuration is unverified instead of borrowing another model's limits.
+
+Compare W&B candidates on concrete dimensions:
 
 - coding or terminal specialization;
 - general reasoning;
@@ -102,12 +106,14 @@ Read the preferred models from the user's request and, when relevant, their loca
 Recommendations must distinguish three concepts:
 
 1. **Closest workload fit:** the W&B model intended for the same kind of task.
-2. **Closest interface fit:** matching modality, context, and tool-serving features.
+2. **Closest interface fit:** compare modality, context, configured output budget, and tool-serving features separately. A modality match is not a context or protocol match.
 3. **Proven performance peer:** supported only by controlled comparative evidence.
+
+Explicitly flag candidates whose context is smaller than the target's. For GPT-6.1 Sol's current local configuration, a 262,144-token candidate does not cover its 500,000-token context capacity. Candidates with image input and at least that context capacity can cover its input requirements, but W&B's configured 16,384-token output budget and Chat Completions interface still differ from Sol's 128,000-token output budget and Codex Responses interface. Tool-calling support alone does not establish Responses API tool-search compatibility.
 
 If controlled evidence is absent, say that no performance peer is established. Do not claim that a model is faster, cheaper, stronger, or weaker without a current source or a local measurement.
 
-When `SUITABLE_MODELS.md` exists, update it so model names, context sizes, modalities, serving differences, and references remain consistent with the synchronized configuration. Include enough context for a reader who did not see the current session. Remove recommendations for models no longer returned by the endpoint.
+When `SUITABLE_MODELS.md` exists, update it so model names, context sizes, modalities, serving differences, and references remain consistent with the synchronized configuration. Include enough context for a reader who did not see the current session. Remove recommendations for models no longer returned by the endpoint. When the preferred model changes, update its name, ID, limits, comparison rows, serving discussion, and references together. Cite local metadata for local configuration claims; do not retain an older model's documentation link as evidence for its successor.
 
 ## Validation
 
