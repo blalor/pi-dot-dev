@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import { mkdir, readFile, readdir, rename, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
-import { redactSensitiveText, type WorkEpisode } from "../work-log/lib.ts";
+import { redactSensitiveText, workEpisodeId, type WorkEpisode } from "../work-log/lib.ts";
 
 const lockfile = createRequire(import.meta.url)("proper-lockfile") as {
     lock(path: string, options: { realpath: boolean; stale: number; retries: number; lockfilePath: string }): Promise<() => Promise<void>>;
@@ -281,9 +281,13 @@ export async function readSourceEpisodes(workLogRoot: string): Promise<SourceEpi
             let episode: WorkEpisode;
             try {
                 episode = JSON.parse(line) as WorkEpisode;
-                for (const field of ["id", "sessionId", "fromEntryId", "toEntryId", "cwd", "endedAt", "startedAt"] as const) {
+                for (const field of ["sessionId", "fromEntryId", "toEntryId", "cwd", "endedAt", "startedAt"] as const) {
                     if (typeof episode?.[field] !== "string" || !episode[field]) throw new Error(`Missing ${field}`);
                 }
+                // Early work-log records predate persisted episode IDs. Derive the
+                // same identity the current writer uses, without rewriting history.
+                if (episode.id === undefined) episode = { ...episode, id: workEpisodeId(episode.sessionId, episode.fromEntryId, episode.toEntryId) };
+                if (typeof episode.id !== "string" || !episode.id) throw new Error("Invalid id");
                 for (const field of ["accomplished", "decisions", "artifacts", "validation", "blockers", "next"] as const) {
                     if (!Array.isArray(episode[field]) || episode[field].some((value) => typeof value !== "string")) throw new Error(`Invalid ${field}`);
                 }

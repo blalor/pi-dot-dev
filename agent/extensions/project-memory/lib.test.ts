@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test, { type TestContext } from "node:test";
-import { appendWorkEpisode } from "../work-log/lib.ts";
+import { appendWorkEpisode, workEpisodeId } from "../work-log/lib.ts";
 import { generationPrompt, propose } from "./batch.ts";
 import { enroll, enrolledProjects, hash, memoryItems, parseChanges, projectDirectory, projectKey, readSnapshot,
     readSourceEpisodes, refreshProposal, renderProposal, reviewChange, saveProposal, selectBatch,
@@ -69,6 +69,30 @@ test("sources come only from daily logs, retain provenance, and deduplicate", as
     assert.equal((await readSourceEpisodes(logs)).length, 1);
     await writeFile(saved[0].evidence.file, "{broken\n");
     await assert.rejects(readSourceEpisodes(logs), /jsonl:1:/);
+});
+test("legacy daily episodes derive stable IDs without modifying source records", async (t) => {
+    const root = await setup(t);
+    const logs = join(root, "logs");
+    const directory = join(logs, "2026", "01");
+    await mkdir(directory, { recursive: true });
+    const file = join(directory, "2026-01-01.jsonl");
+    const { id: _id, evidence: _evidence, ...legacy } = episode();
+    const identity = workEpisodeId(legacy.sessionId, legacy.fromEntryId, legacy.toEntryId);
+    const content = `${JSON.stringify(legacy)}\n${JSON.stringify({ ...legacy, id: identity })}\n`;
+    await writeFile(file, content);
+    const sources = await readSourceEpisodes(logs);
+    assert.equal(sources.length, 1);
+    assert.equal(sources[0].id, identity);
+    assert.equal(sources[0].evidence.episodeId, identity);
+    assert.equal(sources[0].evidence.line, 1);
+    assert.equal(await readFile(file, "utf8"), content);
+    assert.equal((await readSourceEpisodes(logs))[0].id, identity);
+
+    // A missing ID is supported history, not permission to accept other corruption.
+    for (const invalid of [{ ...legacy, fromEntryId: undefined }, { ...legacy, id: 42 }, { ...legacy, id: "" }]) {
+        await writeFile(file, `${JSON.stringify(invalid)}\n`);
+        await assert.rejects(readSourceEpisodes(logs), /jsonl:1:/);
+    }
 });
 test("selection scopes by remote across worktrees and explicitly mapped local paths", async (t) => {
     const root = await setup(t);

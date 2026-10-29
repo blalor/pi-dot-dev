@@ -101,6 +101,8 @@ Filesystem and other unsupported remote identities are skipped with a warning. T
 
 Each batch reads up to 20 unprocessed episodes within a 60,000-character episode budget. Generated output is limited to 12 changes. The input includes accepted memory and prior edits/rejections, with a total limit of 180,000 characters. Oversized input fails visibly instead of silently truncating evidence. A model failure or invalid output does not advance the cursor.
 
+Early work-log records without an `id` receive a stable in-memory identity derived from their session and entry range, using the current work-log writer's ID function. Source files are not rewritten, and duplicates with a later ID-bearing copy are deduplicated. Missing session/range fields and invalid explicit IDs still fail with a source file and line number.
+
 Only persisted daily work-log records are read. Pending work-log snapshots, raw transcripts, repositories, Slack, and GitHub are not queried. Generated evidence IDs must refer to supplied episodes. The model is instructed to distinguish reports from verified facts, preserve scope, and avoid treating a newer statement as automatically authoritative. Human review is still required to judge those conclusions.
 
 Generation uses the existing `workLog` route in `~/.pi/agent/helper-models.json`. `PI_PROJECT_MEMORY_MODEL=provider/model-id` overrides it for the process. There is no active-session model fallback. The standalone job uses Pi's normal model runtime and stored credentials; it does not load user extensions or grant the model tools.
