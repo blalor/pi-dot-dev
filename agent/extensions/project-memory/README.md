@@ -66,7 +66,7 @@ There is at most one pending proposal per project. Additional generation waits f
 
 ## Review
 
-`/project-memory review` opens a read-only screen showing the before/after text, rationale, uncertainty, and evidence. Actions are available directly; there is no preview to edit or submit. Scroll with Up/Down, PgUp/PgDn, Home/End, or the mouse wheel.
+`/project-memory review` opens a full-window, top-aligned read-only document showing the before/after text, rationale, uncertainty, and evidence. The action bar stays at the bottom of the window, including for short proposals. Actions are available directly; there is no preview to edit or submit. Scroll with Up/Down, PgUp/PgDn, Home/End, or the mouse wheel.
 
 - **a: Accept:** apply the proposed item.
 - **e: Edit and accept:** open an editor for the replacement item, then confirm it. Retain Kind, Status, and Scope lines. Original proposed text and applied text are recorded separately; evidence references are retained. This is the only action that opens an editor.

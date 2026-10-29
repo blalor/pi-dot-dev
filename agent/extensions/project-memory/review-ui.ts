@@ -37,8 +37,8 @@ export class ReviewScreen implements Component {
         const lines = this.viewport.render(width);
         const height = Math.max(0, availableRows - footer.length - 1);
         this.viewport.updateLayout(lines.length, height, this.requestRender);
-        return [truncateToWidth(this.title, width),
-            ...lines.slice(this.viewport.scrollTop, this.viewport.scrollTop + height), ...footer];
+        const body = Array.from({ length: height }, (_, index) => lines[this.viewport.scrollTop + index] ?? "");
+        return [truncateToWidth(this.title, width), ...body, ...footer];
     }
     handleInput(data: string): void {
         if (isKeyRelease(data)) return;
@@ -76,6 +76,6 @@ export async function chooseReviewAction(ctx: ExtensionCommandContext, project: 
     }
     return ctx.ui.custom<ReviewAction | undefined>((tui, _theme, keybindings, done) =>
         new ReviewScreen(title, new Markdown(preview, 0, 0, getMarkdownTheme()),
-            () => tui.terminal.rows - 2, keybindings, () => tui.requestRender(), done),
-        { overlay: true, overlayOptions: { width: "100%", margin: 1, anchor: "center" } });
+            () => tui.terminal.rows, keybindings, () => tui.requestRender(), done),
+        { overlay: true, overlayOptions: { width: "100%", maxHeight: "100%", margin: 0, anchor: "top-left" } });
 }
