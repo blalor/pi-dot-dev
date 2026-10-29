@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { StringDecoder } from "node:string_decoder";
 import { fileURLToPath } from "node:url";
@@ -12,7 +12,7 @@ const defaultOutput = resolve(projectRoot, ".pi_tmp", "rpc-smoke.jsonl");
 
 function usage() {
     console.error(
-        "Usage: pi-rpc-smoke.mjs [--extension <path>] [--command <slash-command>] [--output <path>] [--timeout <ms>]",
+        "Usage: pi-rpc-smoke.mjs [--extension <path>] [--command <slash-command>] [--output <path>] [--timeout <ms>] [--ui-responses <json-file>]",
     );
 }
 
@@ -22,6 +22,7 @@ function parseArgs(argv) {
         extensions: [],
         output: defaultOutput,
         timeoutMs: 15_000,
+        uiResponses: undefined,
     };
 
     for (let index = 0; index < argv.length; index += 1) {
@@ -35,6 +36,9 @@ function parseArgs(argv) {
             index += 1;
         } else if (argument === "--output" && value) {
             options.output = resolve(value);
+            index += 1;
+        } else if (argument === "--ui-responses" && value) {
+            options.uiResponses = resolve(value);
             index += 1;
         } else if (argument === "--timeout" && value && /^\d+$/.test(value)) {
             options.timeoutMs = Number(value);
@@ -81,6 +85,11 @@ function attachJsonlReader(stream, onLine) {
 
 async function main() {
     const options = parseArgs(process.argv.slice(2));
+    const dialogMethods = new Set(["select", "confirm", "input", "editor"]);
+    const uiResponses = options.uiResponses ? JSON.parse(await readFile(options.uiResponses, "utf8")) : undefined;
+    if (options.uiResponses && (!Array.isArray(uiResponses) || uiResponses.some((entry) => !entry || !dialogMethods.has(entry.method)))) {
+        throw new Error("--ui-responses must contain an array of dialog responses with a supported method");
+    }
     const requestId = `rpc-smoke-${randomUUID()}`;
     const executable = process.env.PI_RPC_BIN ?? resolve(projectRoot, "bin", "pi");
     const extensionArgs = options.extensions.flatMap((extension) => ["--extension", extension]);
@@ -112,6 +121,12 @@ async function main() {
         stdoutLines.push(line);
         try {
             const event = JSON.parse(line);
+            if (uiResponses && event.type === "extension_ui_request" && dialogMethods.has(event.method)) {
+                const response = uiResponses.shift();
+                if (!response || response.method !== event.method) throw new Error(`Unexpected dialog: ${event.method}`);
+                const { method: _method, ...answer } = response;
+                child.stdin.write(`${JSON.stringify({ ...answer, type: "extension_ui_response", id: event.id })}\n`);
+            }
             if (event.type === "response" && event.id === requestId) commandResponse = event;
             if (event.type === "extension_ui_request" && event.method === "notify") notification = event;
             closeInputWhenComplete();
@@ -139,7 +154,8 @@ async function main() {
     const stderrOutput = Buffer.concat(stderrChunks).toString("utf8");
     if (stderrOutput) await writeFile(`${options.output}.stderr`, stderrOutput, "utf8");
 
-    if (parseError) throw new Error(`Pi emitted invalid JSONL: ${parseError.message}`);
+    if (parseError) throw new Error(`Pi RPC event validation failed: ${parseError.message}`);
+    if (uiResponses?.length) throw new Error(`${uiResponses.length} scripted UI responses were not consumed`);
     if (!commandResponse) throw new Error(`No response arrived before Pi exited (${JSON.stringify(exit)})`);
     if (!commandResponse.success) throw new Error(`RPC command failed: ${commandResponse.error ?? "unknown error"}`);
     if (!notification) throw new Error("The extension command emitted no notification");

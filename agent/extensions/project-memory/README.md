@@ -66,13 +66,15 @@ There is at most one pending proposal per project. Additional generation waits f
 
 ## Review
 
-`/project-memory review` opens a scrollable editor showing the before/after text, rationale, uncertainty, and evidence. This first screen is a preview: edits are discarded. Submit it to choose an action, or cancel to leave everything unchanged.
+`/project-memory review` opens a read-only screen showing the before/after text, rationale, uncertainty, and evidence. Actions are available directly; there is no preview to edit or submit. Scroll with Up/Down, PgUp/PgDn, Home/End, or the mouse wheel.
 
-- **Accept:** apply the proposed item.
-- **Edit and accept:** edit the replacement item, then confirm it. Retain Kind, Status, and Scope lines. Original proposed text and applied text are recorded separately; evidence references are retained.
-- **Reject:** leave memory unchanged and record a required reason.
-- **Defer:** leave memory unchanged, optionally record a reason, and stop the review.
-- **Stop review:** leave remaining changes pending.
+- **a: Accept:** apply the proposed item.
+- **e: Edit and accept:** open an editor for the replacement item, then confirm it. Retain Kind, Status, and Scope lines. Original proposed text and applied text are recorded separately; evidence references are retained. This is the only action that opens an editor.
+- **r: Reject:** leave memory unchanged and record a required reason.
+- **d: Defer:** immediately leave the item pending and advance to the next item. No editor or reason prompt is required. Deferred items are skipped for the rest of this review session and revisited on a later `/project-memory review`.
+- **q or Escape: Stop review:** leave remaining changes pending.
+
+If every remaining item was deferred in this session, review ends without presenting those items again. RPC clients receive a single read-only selector containing the preview and actions instead of a custom terminal screen; clients must display the full selector text to show all evidence.
 
 Review decisions have an append-only history. Deferring and later accepting a change retains both decisions. Refresh records supersession separately rather than replacing the original decision, reason, or timestamp. Edits, rejections, and deferrals are supplied to subsequent generation. This helps the model avoid repeating a rejected inference; it is not a semantic guarantee that every future paraphrase will be detected.
 
@@ -151,3 +153,5 @@ node --experimental-strip-types --test agent/extensions/project-memory/*.test.*
 npm run check:extensions
 npm run test:rpc -- --extension agent/extensions/project-memory/index.ts --command '/project-memory help'
 ```
+
+The review transport test uses the same RPC smoke harness with `--ui-responses <json-file>` to answer its expected dialogs. It uses an isolated home directory and synthetic proposals, then verifies that deferral advances to the next item without an editor or input dialog.

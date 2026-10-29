@@ -1,7 +1,8 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { propose } from "./batch.ts";
 import { defaultMemoryRoot, enroll, projectDirectory, projectKey, readSnapshot, refreshProposal,
-    renderChange, reviewChange } from "./lib.ts";
+    reviewChange } from "./lib.ts";
+import { chooseReviewAction } from "./review-ui.ts";
 import { redactSensitiveText } from "../work-log/lib.ts";
 
 async function identity(pi: ExtensionAPI, ctx: ExtensionCommandContext, explicit?: string): Promise<string> {
@@ -17,18 +18,19 @@ async function identity(pi: ExtensionAPI, ctx: ExtensionCommandContext, explicit
 }
 async function review(root: string, project: string, ctx: ExtensionCommandContext): Promise<void> {
     if (!ctx.hasUI) throw new Error("Review requires interactive Pi or an RPC client with extension dialogs");
+    const deferred = new Set<string>();
     while (true) {
         const saved = await readSnapshot(root, project);
         const proposal = saved.pending;
         if (!proposal) { ctx.ui.notify("No pending project-memory proposal.", "info"); return; }
         if (proposal.baseHash !== saved.currentHash) throw new Error("Proposal is stale. Run /project-memory refresh to regenerate against accepted memory");
-        const change = proposal.changes.find((entry) => ["pending", "deferred"].includes(entry.review));
-        if (!change) return;
-        // Native editor provides scrolling in TUI and a portable preview in RPC.
-        // Preview edits are intentionally not interpreted as approvals or mutations.
-        const preview = await ctx.ui.editor("Inspect proposal; submit to choose an action. Preview edits are discarded.", renderChange(change));
-        if (preview === undefined) return;
-        const action = await ctx.ui.select(`${project}: ${change.id} (${change.itemId})`, ["Accept", "Edit and accept", "Reject", "Defer", "Stop review"]);
+        const change = proposal.changes.find((entry) => ["pending", "deferred"].includes(entry.review)
+            && !deferred.has(`${proposal.id}/${entry.id}`));
+        if (!change) {
+            ctx.ui.notify("Remaining changes are deferred. Run /project-memory review later to revisit them.", "info");
+            return;
+        }
+        const action = await chooseReviewAction(ctx, project, change);
         if (!action || action === "Stop review") return;
         let edited: string | undefined;
         if (action === "Edit and accept") {
@@ -36,17 +38,17 @@ async function review(root: string, project: string, ctx: ExtensionCommandContex
             if (edited === undefined) return;
             if (!await ctx.ui.confirm("Apply edited memory?", edited)) continue;
         }
-        let reason = "Approved during interactive review";
-        if (action === "Reject" || action === "Defer") {
-            const input = await ctx.ui.input(`${action}: explain why so future proposals can use this feedback`);
+        let reason = action === "Defer" ? "Deferred for later review" : "Approved during interactive review";
+        if (action === "Reject") {
+            const input = await ctx.ui.input("Reject: explain why so future proposals can use this feedback");
             if (input === undefined) return;
-            if (action === "Reject" && !input.trim()) { ctx.ui.notify("A rejection needs a reason.", "warning"); continue; }
+            if (!input.trim()) { ctx.ui.notify("A rejection needs a reason.", "warning"); continue; }
             reason = input;
         }
         const decision = action === "Accept" ? "accepted" : action === "Edit and accept" ? "edited" : action === "Reject" ? "rejected" : "deferred";
         await reviewChange(root, project, proposal, change.id, decision, reason, edited);
         ctx.ui.notify(`${change.itemId}: ${decision}`, "info");
-        if (decision === "deferred") return;
+        if (decision === "deferred") deferred.add(`${proposal.id}/${change.id}`);
     }
 }
 export default function projectMemoryExtension(pi: ExtensionAPI): void {
