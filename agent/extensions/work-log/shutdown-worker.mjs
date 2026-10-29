@@ -7,7 +7,6 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { complete } from "../../../node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/compat.js";
 import {
     appendWorkEpisode,
     parseWorkSummary,
@@ -103,7 +102,8 @@ async function readStdin() {
 async function recordFailure(file, error) {
     const message = error instanceof Error ? error.message : String(error);
     const errorFile = `${file}.error`;
-    await writeFile(errorFile, `${new Date().toISOString()} ${message}\n`, { encoding: "utf8", mode: 0o600 }).catch(() => undefined);
+    const safeMessage = redactSensitiveText(message).replace(/\s+/g, " ").slice(0, 2_000);
+    await writeFile(errorFile, `${new Date().toISOString()} ${safeMessage}\n`, { encoding: "utf8", mode: 0o600 }).catch(() => undefined);
 }
 
 let runtimeFile;
@@ -124,6 +124,8 @@ async function main() {
         throw new Error("Unsupported pending work-log record");
     }
 
+    // Resolve the package inside main so dependency failures reach the error handler.
+    const { complete } = await import("@earendil-works/pi-ai/compat");
     const repository = await repositoryFacts(pending.cwd, pending.startedAt);
     const response = await complete(
         runtime.model,

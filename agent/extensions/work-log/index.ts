@@ -138,9 +138,8 @@ async function repositoryFacts(
 async function summarizeEpisode(
     transcript: string,
     facts: string,
-    ctx: ExtensionContext,
+    runtime: HelperModelRuntime,
 ) {
-    const runtime = await resolveSummaryRuntime(ctx);
     const response = await complete(
         runtime.model,
         {
@@ -179,7 +178,7 @@ export default function workLogExtension(pi: ExtensionAPI) {
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let checkpointTail: Promise<void> = Promise.resolve();
     let summaryRuntime: HelperModelRuntime | undefined;
-    let summaryRuntimePromise: Promise<HelperModelRuntime> | undefined;
+    let runtimePreparationVersion = 0;
     let retriesActive = false;
     const warnedFailures = new Set<string>();
 
@@ -206,12 +205,20 @@ export default function workLogExtension(pi: ExtensionAPI) {
         return health;
     };
 
+    const prepareSummaryRuntime = async (ctx: ExtensionContext): Promise<HelperModelRuntime> => {
+        const expectedGeneration = generation;
+        const expectedPreparation = ++runtimePreparationVersion;
+        const runtime = await resolveSummaryRuntime(ctx);
+        if (expectedGeneration === generation && expectedPreparation === runtimePreparationVersion) {
+            summaryRuntime = runtime;
+        }
+        return runtime;
+    };
+
     const dispatchPendingWork = async (
         file: string,
-        availableRuntime?: HelperModelRuntime,
+        runtime: HelperModelRuntime,
     ): Promise<{ completion: Promise<void> }> => {
-        const runtime = availableRuntime ?? await summaryRuntimePromise;
-        if (!runtime) throw new Error("No work-log summary runtime is available");
         const child = spawn(process.execPath, ["--experimental-strip-types", SHUTDOWN_WORKER], {
             cwd: homedir(),
             detached: true,
@@ -247,14 +254,31 @@ export default function workLogExtension(pi: ExtensionAPI) {
         return { completion };
     };
 
-    const drainPendingWork = async (ctx: ExtensionContext): Promise<void> => {
+    const runtimeMatchesCurrentRoute = async (runtime: HelperModelRuntime): Promise<boolean> => {
+        const spec = await configuredHelperModel("workLog", process.env.PI_WORK_LOG_MODEL);
+        return `${runtime.model.provider}/${runtime.model.id}` === spec;
+    };
+
+    const dispatchReadyPendingWork = async (file: string): Promise<boolean> => {
+        const runtime = summaryRuntime;
+        if (!runtime || !await runtimeMatchesCurrentRoute(runtime)) return false;
+        await dispatchPendingWork(file, runtime);
+        return true;
+    };
+
+    const drainPendingWork = async (
+        ctx: ExtensionContext,
+        runtimePromise: Promise<HelperModelRuntime>,
+    ): Promise<void> => {
         const expectedGeneration = generation;
         const files = await listPendingWorkFiles(rootDir);
         if (files.length === 0 || expectedGeneration !== generation) return;
         retriesActive = true;
         ctx.ui.setStatus("work-log", `Retrying ${files.length} pending work-log summaries...`);
         try {
-            const launches = await Promise.allSettled(files.map((file) => dispatchPendingWork(file)));
+            const runtime = await runtimePromise;
+            if (!await runtimeMatchesCurrentRoute(runtime) || expectedGeneration !== generation) return;
+            const launches = await Promise.allSettled(files.map((file) => dispatchPendingWork(file, runtime)));
             for (const launch of launches) {
                 if (launch.status === "rejected" && expectedGeneration === generation) {
                     notifyFailure(ctx, launch.reason instanceof Error ? launch.reason.message : String(launch.reason), files.length);
@@ -265,6 +289,10 @@ export default function workLogExtension(pi: ExtensionAPI) {
             if (expectedGeneration === generation) {
                 const health = await notifyPersistedFailures(ctx);
                 if (health.pendingCount === 0) ctx.ui.notify("Work-log summary backlog processed.", "info");
+            }
+        } catch (error) {
+            if (expectedGeneration === generation) {
+                notifyFailure(ctx, error instanceof Error ? error.message : String(error), files.length);
             }
         } finally {
             if (expectedGeneration !== generation) return;
@@ -324,7 +352,8 @@ export default function workLogExtension(pi: ExtensionAPI) {
         );
         const transcript = serializeConversation(convertToLlm(messages));
         const repository = await repositoryFacts(pi, ctx.cwd, range.startedAt);
-        const summary = await summarizeEpisode(transcript, repository.facts, ctx);
+        const runtime = await prepareSummaryRuntime(ctx);
+        const summary = await summarizeEpisode(transcript, repository.facts, runtime);
 
         if (expectedGeneration !== generation) {
             return { logged: false, skipped: true, reason: "Session changed during checkpoint" };
@@ -390,18 +419,15 @@ export default function workLogExtension(pi: ExtensionAPI) {
         clearIdleTimer();
         generation += 1;
         activityVersion = 0;
-        sessionId = ctx.sessionManager.getSessionId();
         summaryRuntime = undefined;
-        const runtimeGeneration = generation;
-        summaryRuntimePromise = resolveSummaryRuntime(ctx).then((runtime) => {
-            summaryRuntime = runtime;
-            return runtime;
-        });
-        summaryRuntimePromise.catch((error) => {
-            if (runtimeGeneration === generation) {
+        const expectedGeneration = generation;
+        const runtimePromise = prepareSummaryRuntime(ctx);
+        void runtimePromise.catch((error) => {
+            if (expectedGeneration === generation) {
                 notifyFailure(ctx, error instanceof Error ? error.message : String(error));
             }
         });
+        sessionId = ctx.sessionManager.getSessionId();
         const existingState = await readWorkLogState(rootDir, sessionId);
         state = existingState ?? { updatedAt: new Date(0).toISOString() };
 
@@ -415,7 +441,7 @@ export default function workLogExtension(pi: ExtensionAPI) {
         await notifyPersistedFailures(ctx).catch((error) => {
             notifyFailure(ctx, error instanceof Error ? error.message : String(error));
         });
-        void drainPendingWork(ctx);
+        void drainPendingWork(ctx, runtimePromise);
     });
 
     pi.on("before_agent_start", (_event, ctx) => {
@@ -450,8 +476,8 @@ export default function workLogExtension(pi: ExtensionAPI) {
         clearIdleTimer();
         try {
             const result = await queueBackgroundCheckpoint(ctx);
-            if (result.queued && result.file && summaryRuntime) {
-                await dispatchPendingWork(result.file, summaryRuntime);
+            if (result.queued && result.file) {
+                await dispatchReadyPendingWork(result.file);
             }
         } catch (error) {
             notifyFailure(ctx, error instanceof Error ? error.message : String(error));
@@ -477,8 +503,10 @@ export default function workLogExtension(pi: ExtensionAPI) {
         try {
             const result = await queueBackgroundCheckpoint(ctx);
             if (!result.queued || !result.file) return;
-            if (summaryRuntime) await dispatchPendingWork(result.file, summaryRuntime);
-            ctx.ui.notify("Work-log summary queued in the background.", "info");
+            const dispatched = await dispatchReadyPendingWork(result.file);
+            ctx.ui.notify(dispatched
+                ? "Work-log summary queued in the background."
+                : "Work-log snapshot saved; summary will be retried in the next session.", "info");
         } catch (error) {
             const reason = error instanceof Error ? error.message : String(error);
             ctx.ui.notify(`Could not queue work-log summary: ${reason}`, "warning");

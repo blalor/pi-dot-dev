@@ -22,7 +22,7 @@ The summarizer returns `SKIP` when the episode contains no meaningful outcome. S
 
 Tree navigation and switch, fork, reload, and quit shutdowns do not wait for the summary model. The extension writes a redacted episode snapshot to `_pending`, advances the session cursor, and starts a detached Node worker when model credentials are ready. Shutdown also displays a brief status. The worker runs from the home directory rather than the session working directory, so deleting a checkout after exit does not prevent the summary. Repository facts are marked unavailable if the recorded directory has disappeared.
 
-A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. On session start, the extension reports existing failures once and points to `/work-log status`. While retries run, a temporary footer shows the backlog size; the footer clears when retry activity ends. If summary-model credentials were not ready when shutdown began, the extension leaves the snapshot for that later retry rather than delaying exit to resolve credentials.
+A successful worker removes its pending snapshot. A failed snapshot remains queued and is retried in the background when a later Pi session starts. On session start, the extension reports existing failures once and points to `/work-log status`. While retries run, a temporary footer shows the backlog size; the footer clears when retry activity ends. The extension prepares summary-model credentials in the background at session start and refreshes them during foreground checkpoints. Shutdown and tree navigation use only already-prepared credentials for the current model route. If those credentials are unavailable or the route has changed, the snapshot stays queued for a later session rather than delaying exit or navigation to resolve credentials.
 
 ## Storage
 
@@ -94,7 +94,7 @@ The persistent `workLog` route in `~/.pi/agent/helper-models.json` selects the s
 export PI_WORK_LOG_MODEL="provider/model-id"
 ```
 
-The route must name an available, authenticated model. Configuration errors do not fall back to the active model. See [`../../helper-models.md`](../../helper-models.md).
+The route is resolved immediately before each foreground or background summary starts, so configuration changes apply without restarting existing sessions. It must name an available, authenticated model. Configuration errors do not fall back to the active model. See [`../../helper-models.md`](../../helper-models.md).
 
 Change the idle interval with:
 
@@ -122,7 +122,7 @@ Pattern-based redaction is not a complete secret scanner. Episode records may co
 
 Query output is shown in a temporary Markdown widget and is not written to the session history or sent to the model. The widget clears when the next agent request starts. These queries do not force a checkpoint, so unsummarized work in the current episode is not shown.
 
-Run `/reload` after installing or changing the extension.
+Run `/reload` after installing or changing the extension code. Changes to `helper-models.json` apply to the next summary without a reload.
 
 ## Validation
 
@@ -130,6 +130,7 @@ Run the focused tests from the Pi configuration repository:
 
 ```bash
 node --experimental-strip-types --test \
+    agent/extensions/work-log/index.test.mjs \
     agent/extensions/work-log/lib.test.ts \
     agent/extensions/work-log/shutdown-worker.test.mjs \
     agent/extensions/work-log/work-log-report.test.mjs
