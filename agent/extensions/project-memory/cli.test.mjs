@@ -23,6 +23,7 @@ function episode(project) {
 test("CLI loads outside a repository and prints help without model access", () => {
     const result = spawnSync(process.execPath, ["--experimental-strip-types", fileURLToPath(new URL("./cli.mjs", import.meta.url)), "--help"], { cwd: "/", encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
+    assert.doesNotMatch(result.stderr, /MODULE_TYPELESS_PACKAGE_JSON/);
     assert.match(result.stdout, /Generation only writes proposals/);
 });
 test("CLI init, list, show and pending use the selected project", async (t) => {
