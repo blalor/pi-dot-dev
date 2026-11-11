@@ -1,21 +1,26 @@
 # Pi iTerm2 integration
 
-Uses native iTerm2 tabs, Session Status and notifications. It replaces the local
-`macos-notify.ts` and `iterm2-session-tab.ts` extensions. No AppleScript fallback,
-workspace manager, terminal wrapper or OSC 7501 support is required.
+Uses native iTerm2 tabs, Program Status (OSC 7501) and notifications. Requires
+iTerm2 3.7.5 or newer. It replaces the local `macos-notify.ts` and
+`iterm2-session-tab.ts` extensions. No AppleScript fallback or workspace manager
+is required.
 
 ## Status and attention
 
-OSC 21337 reports:
+[OSC 7501](https://www.superlogical.com/rex/docs/build/program-status) reports:
 
-- **Working** during a parent agent run or manual compaction.
-- **Waiting** while a `ctx.ui` interaction is open, including custom UI.
-- **Idle** once the parent session settles or an idle interaction closes.
+- `working` during a parent agent run or manual compaction.
+- `blocked` with `kind=question` while a `ctx.ui` interaction is open, including
+  custom UI. Prompt events do not distinguish permission requests from questions.
+- `idle` once the parent session settles or an idle interaction closes.
+
+Each report includes `app=pi`. iTerm2 chooses the labels and colors. The extension
+preserves its existing idle/completion behavior rather than emitting `done`.
 
 Open **View → Toolbelt → Session Status** for sessions in one window, or
-**Window → Cockpit** for the cross-window overview. Status detail is empty for
-Working and Idle; Waiting shows the prompt title. Custom UI has no title in Pi's
-prompt events, so it uses `Custom interaction`.
+**Window → Cockpit** for the cross-window overview. Working and idle reports omit
+`msg`; blocked reports include the prompt title as base64-encoded UTF-8. Custom UI
+has no title in Pi's prompt events, so it uses `Custom interaction`.
 
 The public `ui_prompt_start` and `ui_prompt_end` events cover select, confirm,
 input, editor and custom UI. Pi emits one outer start/end pair for overlapping
@@ -34,13 +39,18 @@ work. Status itself describes the parent session, not the subagent fleet.
 The session name sets the tab title. Native status dots replace the old
 whole-tab attention coloring; no terminal focus listener is installed.
 
-Released iTerm2 clears tab status on the OSC 133 prompt-start markers Pi uses
-when redrawing its transcript. While active, this extension observes stdout
-writes for those exact markers without modifying output. It restores the latest
-status after 75 ms of quiet, or within 250 ms of the first marker during continuous
-output. Quiet sessions do not poll. Shutdown/reload cancels the repair and detaches
-the observer. Repairs send only status, not OSC 9 attention notifications.
-iTerm2's own notify-on-status-change settings can still react to a restored status.
+OSC 7501 still expires transient records at shell prompts. Pi also emits OSC 133
+prompt-start markers when redrawing its transcript, so the extension retains a
+stdout observer for those exact markers without changing the original output.
+It queues one microtask to write the current status after the synchronous render
+finishes, avoiding insertion between chunks of a split escape sequence. iTerm2
+3.7.5 preserves reports newer than a prompt during deferred cleanup, so no
+redraw-repair timers, timed debounce or status polling are needed. Shutdown/reload
+detaches the observer and cancels queued reassertion.
+Removing it requires Pi to distinguish transcript markers from shell prompts.
+
+Reassertions do not send OSC 9 notifications. iTerm2's own status-change
+notification preferences apply independently and can produce additional alerts.
 
 Run `/iterm2-test` to refresh status and send a test notification.
 

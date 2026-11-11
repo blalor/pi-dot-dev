@@ -11,8 +11,6 @@ import {
 } from "./lib.ts";
 import { observePromptMarkers } from "./prompt-markers.ts";
 
-const STATUS_REPAIR_DELAY_MS = 75;
-const STATUS_REPAIR_MAX_DELAY_MS = 250;
 const NOTIFICATION_DELAY_MS = 750;
 const MIN_NOTIFICATION_INTERVAL_MS = 2_000;
 const SUBAGENT_RPC_TIMEOUT_MS = 500;
@@ -53,9 +51,8 @@ export function installITerm2Integration(pi: ExtensionAPI, output: TerminalOutpu
     let generation = 0;
     let notificationTimer: ReturnType<typeof setTimeout> | undefined;
     let statusRefreshTimer: ReturnType<typeof setTimeout> | undefined;
-    let statusRepairTimer: ReturnType<typeof setTimeout> | undefined;
-    let firstInvalidatedAt: number | undefined;
     let stopObservingOutput: (() => void) | undefined;
+    let pendingStatusReassertion: object | undefined;
     let subagentFleetStatusAvailable = false;
     const pendingRpcCancellations = new Set<() => void>();
 
@@ -68,7 +65,7 @@ export function installITerm2Integration(pi: ExtensionAPI, output: TerminalOutpu
 
     function publishStatus(ctx: ExtensionContext, force = false): void {
         if (!active) return;
-        const status = prompt ? "Waiting" : ctx.isIdle() ? "Idle" : "Working";
+        const status = prompt ? "blocked" : ctx.isIdle() ? "idle" : "working";
         const detail = prompt ? prompt.title || "Custom interaction" : "";
         const sequence = statusSequence(status, detail);
         if (force || sequence !== lastStatus) {
@@ -77,31 +74,23 @@ export function installITerm2Integration(pi: ExtensionAPI, output: TerminalOutpu
         }
     }
 
-    function stopStatusRepair(): void {
+    function stopObserving(): void {
         stopObservingOutput?.();
         stopObservingOutput = undefined;
-        if (statusRepairTimer) clearTimeout(statusRepairTimer);
-        statusRepairTimer = undefined;
-        firstInvalidatedAt = undefined;
+        pendingStatusReassertion = undefined;
     }
 
-    function repairAfterPrompt(ctx: ExtensionContext): void {
-        if (!active) return;
-        // iTerm2 asynchronously clears tab status on OSC 133;A. Reassert after
-        // the redraw instead of trusting the extension's cached status. Debounce
-        // batches, but cap the delay so streaming output cannot starve repairs.
-        lastStatus = undefined;
-        const now = Date.now();
-        firstInvalidatedAt ??= now;
-        if (statusRepairTimer) clearTimeout(statusRepairTimer);
-        const delay = Math.min(STATUS_REPAIR_DELAY_MS,
-            Math.max(0, firstInvalidatedAt + STATUS_REPAIR_MAX_DELAY_MS - now));
-        statusRepairTimer = setTimeout(() => {
-            statusRepairTimer = undefined;
-            firstInvalidatedAt = undefined;
+    function reassertAfterRender(ctx: ExtensionContext): void {
+        if (pendingStatusReassertion) return;
+        const request = {};
+        pendingStatusReassertion = request;
+        // Pi can split one synchronous render inside an escape sequence. Wait
+        // until all its chunks are written before adding another sequence.
+        queueMicrotask(() => {
+            if (pendingStatusReassertion !== request) return;
+            pendingStatusReassertion = undefined;
             publishStatus(ctx, true);
-        }, delay);
-        statusRepairTimer.unref?.();
+        });
     }
 
     function cancelStatusRefresh(): void {
@@ -220,14 +209,18 @@ export function installITerm2Integration(pi: ExtensionAPI, output: TerminalOutpu
     pi.on("session_start", (_event, ctx) => {
         cancelAttention();
         cancelStatusRefresh();
-        stopStatusRepair();
+        stopObserving();
         active = ctx.mode === "tui" && output.enabled();
         prompt = undefined;
         lastStatus = undefined;
         subagentFleetStatusAvailable = false;
         sessionName = pi.getSessionName();
         if (!active) return;
-        stopObservingOutput = output.observePromptMarkers(() => repairAfterPrompt(ctx));
+        // OSC 7501 transient records still expire at OSC 133;A. Pi emits these
+        // during transcript redraws, not just at shell prompts. iTerm2 3.7.5
+        // preserves reports written after the marker during its async cleanup,
+        // so reassert after the synchronous render with no repair timer.
+        stopObservingOutput = output.observePromptMarkers(() => reassertAfterRender(ctx));
         publishIdentity(ctx);
         publishStatus(ctx, true);
         void detectSubagents();
@@ -287,7 +280,7 @@ export function installITerm2Integration(pi: ExtensionAPI, output: TerminalOutpu
     pi.on("session_shutdown", () => {
         cancelAttention();
         cancelStatusRefresh();
-        stopStatusRepair();
+        stopObserving();
         unsubscribeReady();
         if (active) {
             output.write(clearStatusSequence());
