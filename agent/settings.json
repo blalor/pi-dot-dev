@@ -36,7 +36,7 @@
   "themes": [
     "themes"
   ],
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.2",
   "httpIdleTimeoutMs": 30000,
   "terminal": {
     "showTerminalProgress": false
@@ -60,5 +60,12 @@
   "tuiMode": "regular",
   "treeFilterMode": "no-tools",
   "steeringMode": "all",
-  "followUpMode": "all"
+  "followUpMode": "all",
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0",
+    "{\"source\":\"npm:@mjakl/pi-kagi-search\",\"scope\":\"user\"}": "2.0.0",
+    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.0",
+    "{\"source\":\"npm:pi-prompt-template-model\",\"scope\":\"user\"}": "0.12.3",
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.46.0"
+  }
 }
